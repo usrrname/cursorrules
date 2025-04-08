@@ -1,0 +1,9 @@
+/node_modules
+/build
+/dist
+.gitignore
+/xnotes
+/output
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

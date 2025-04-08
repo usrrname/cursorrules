@@ -1,0 +1,31 @@
+---
+description: Apply this rule to the entire repository
+globs: '**'
+alwaysApply: true
+---
+
+# Global Repository Rules
+
+<rule>
+name: global
+globs: *.mdc
+description: Applies this rule to the entire repository
+</rule>
+
+## Glob Pattern Examples
+The following describe where rules and instructions can act on generally within a code repository.
+
+Common glob patterns for different rule types:
+- Core standards: .cursor/rules/core/*.mdc
+- Util standards: .cursor/rules/utils/*.mdc
+- Static assets: public/**, assets/**/*(.png|.gif|.webp|.avif|.jpeg|.jpg),
+- Linting: eslintrc.json, .eslintrc, eslint.js, .prettierrc, prettier.json
+- Configuration files: **.config.(ts|js), Makefile
+- Testing standards: __test__/**/*.test(.ts|.js), *.test.(js|ts|tsx), *.spec.ts
+- Testing Cursor rules: test-**.mdc
+- React components: src/components/**/*.tsx
+- Vue components: src/components/**/*.vue
+- Documentation: docs/**/*.md, *.md
+- Github actions: .github/**/*.yml
+- Multiple extensions: *.js, *.ts, *.tsx
+- Multiple patterns: dist/**/*.*, docs/**/*.md, *test*.*

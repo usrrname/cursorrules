@@ -1,0 +1,167 @@
+---
+description: adds fun emojis to console logs
+globs: *.(js|ts|jsx|tsx|mjs)
+alwaysApply: true
+---
+
+# Console log emojis
+
+This rule adds fun emojis to console logs, making debugging a more joyful experience!
+
+<rule>
+name: console-vibes
+description: Adds vibes to console.log statements
+version: 1.0
+severity: suggestion
+
+filters:
+  - type: file_extension
+    pattern: "\\.(js|ts|jsx|tsx|mjs)$"
+  - type: content
+    pattern: "console\\.(log|info|debug|warn|error)\\([^)]*\\)"
+
+matches: |
+  // Match different types of console statements
+  console.log($message)
+  console.info($message)
+  console.debug($message)
+  console.warn($message)
+  console.error($message)
+
+transforms: |
+  // Transform to include fun emojis based on the message content
+  {{
+
+    const emojiDictionary = {
+      start: "🚀",
+      launch: '🎯'
+      success: "🎉",
+      complete: "✨",
+      done: "🌈",
+      ready: "🔋",
+      status: '🪩'
+      connect: '📡'
+      listen: '📡'
+      load: "⚡️",
+      data: "📊",
+      config: "⚙️",
+      user: "👽",
+      default: "🦔"
+      new: '✨'
+      search: '🔎'
+      here: '⛳️'
+      save: '💾'
+      test: '🧪'
+      missing: '😱'
+      remove: '🗑️'
+      oops: '😬'
+      error: '❌'
+      warn: '⚠️'
+      wait: '⏳'
+      nothing: '💀'
+      not: '😰'
+      exit: '💨'
+      debug: '🫖'
+    }
+
+    let emoji = "🌈"; // default emoji
+    const msgLower = message.toLowerCase();
+    
+    // Find the most appropriate emoji
+    for (const [key, value] of Object.entries(emojiDictionary)) {
+      if (msgLower.includes(key)) {
+        emoji = value;
+        break;
+      }
+    }
+
+    // Add emoji to the beginning of the message
+    const newMessage = message.startsWith('"') || message.startsWith("'") 
+      ? message.slice(0, 1) + emoji + " " + message.slice(1)
+      : emoji + " " + message;
+
+    return `console.${type}(${newMessage})`;
+  }}
+
+tests:
+  - input: |
+      console.log("Server started")
+    output: |
+      console.log("🚀 Server started")
+
+  - input: |
+      console.info("Loading configuration")
+    output: |
+      console.info("⚙️ Loading configuration")
+
+  - input: |
+      console.debug("User connected")
+    output: |
+      console.debug("👽 User connected")
+
+  - input: |
+      console.log("Test completed successfully")
+    output: |
+      console.log("🧪 Test completed successfully")
+
+  - input: |
+      console.info("Saving data to database")
+    output: |
+      console.info("💾 Saving data to database")
+
+  - input: |
+      console.debug("Searching for user")
+    output: |
+      console.debug("🔎 Searching for user")
+
+  - input: |
+      console.log('Connection ready')
+    output: |
+      console.log('🔋 Connection ready')
+
+  - input: |
+      console.info("Error occurred")
+    output: |
+      console.info("❌ Error occurred")
+
+  - input: |
+      console.debug('Nothing found')
+    output: |
+      console.debug('💀 Nothing found')
+
+examples:
+  - description: "Transform regular logs to fun logs"
+    input: |
+      console.log("Server started");
+      console.info("Loading configuration");
+      console.debug("User data received");
+    output: |
+      console.log("🚀 Server started");
+      console.info("⚙️ Loading configuration");
+      console.debug("User data received");
+</rule>
+
+## Usage
+
+This rule will automatically add contextually appropriate emojis to your console logs:
+
+- Success/completion messages get 🎉 or ✨
+- Start/initialization messages get 🚀
+- Loading messages get ⚡️
+- Configuration related messages get ⚙️
+- User-related messages get 👤
+- Data-related messages get 📊
+- Default messages get 🌈
+- Error messages get ❌
+
+The rule is smart enough to:
+1. Preserve existing string quotes
+2. Choose appropriate emojis based on message content
+3. Work with log, info, error, and debug statements
+4. Maintain code formatting
+
+## Key Principles
+
+- Makes logs more visually distinguishable
+- Make debugging and troubleshooting more fun and less demoraliziing
+- Make log scanning more intuitive with visual cues

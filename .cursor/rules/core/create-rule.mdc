@@ -1,0 +1,226 @@
+---
+description: Cursor Rules Creation Standards
+globs: *.mdc
+---
+# Creating cursor rules
+
+Standards for creating and adding new Cursor rules to a project or repository.
+
+<rule>
+name: create-rule
+description: Standards for creating and adding new Cursor rules
+alwaysApply: {true or false}
+filters:
+  # Match any .mdc files
+  - type: file_extension
+    pattern: "\\.mdc$"
+  # Match files that look like Cursor rules
+  - type: content
+    pattern: "(?s)<rule>.*?</rule>"
+  # Find examples in Cursor rules to enhance precision of implementation
+  - type: content
+    pattern: "(?s)<examples>.*?</examples>"
+  # Match file creation events
+  - type: event
+    pattern: "file_create"
+
+actions:
+  - type: suggest
+    message: |
+      When creating a new Cursor rule:
+
+      1. File Structure:
+         - Place in .cursor/rules/ directory
+         - Use either kebab-case or understores within filenames. Do not use both within the same repository.
+         - Include .mdc extension
+         - Example: .cursor/rules/your-rule-name.mdc
+
+      2. Rule Content:
+         - Start with YAML frontmatter (---)
+         - Include description and globs
+         - Use proper XML-style rule tags
+         - Include clear examples that account for specific conventions of the language or framework the rule applies to. 
+         - If there is a contradiction between rules between files or within the same file, highlight them. 
+         - Add relevant metadata
+
+      3. Rule Format:
+         ```mdc
+         ---
+         description: Your rule description
+         globs: pattern1,pattern2
+         ---
+         # Rule Title
+
+         <rule>
+         name: my-rule-name
+         description: Detailed rule description
+         filters:
+           - type: file_extension
+             pattern: "\\.ext$"
+         actions:
+           - type: suggest
+             message: "Your suggestion message"
+         examples:
+           - input: "Bad example"
+             output: "Good example"
+         metadata:
+           priority: medium
+           version: 1.0
+         </rule>
+         ```
+
+      4. Best Practices:
+         - Keep rules focused and specific
+         - Include clear technical examples
+         - Use proper escaping for patterns
+         - Add version and priority metadata
+         - Test rules before committing
+         - The agent MUST follow the rule
+        
+      5. Add test rules
+         - Create a test file for the rule in .cursor/rules/tests
+
+examples:
+  - input: |
+      # Bad example: Insufficient context with vague requirements and no examples
+       <rule>
+        name: calculate_total
+        description: get the total number of things
+      </rule>
+      # Good: Clear instructions with examples
+      <rule>
+        name: sum_of_numbers
+        description: given a series of numbers, returns the total of all numbers added together
+      </rule>
+      examples:
+       - input: |
+        function calculateTotal(price, tax) {
+            return price * (1 + tax);
+        }
+        output: |
+        /**
+        * @description Calculates total price including tax
+        * @param {number} price - Base price before tax
+        * @param {number} tax - Tax rate as decimal
+        * @returns {number} Final price including tax
+        */
+        function calculateTotal(price, tax) {
+            return price * (1 + tax);
+        }
+  - input: |
+      # Bad: Overly broad and non-specific to language
+      ---
+      description: Code standards
+      globs: *
+      ---
+      <rule>
+      name: all_code
+      description: Enforce all code standards
+      filters:
+        - type: file_extension
+          pattern: ".*"
+      actions:
+        - type: suggest
+          message: "Write better code"
+      </rule>
+      # Good: Specifies details and conventions pertaining to language
+      ---
+      description: JavaScript Function Documentation Standards
+      globs: *.{js,ts,jsx,tsx}
+      ---
+      <rule>
+      name: function_documentation
+      description: Enforces consistent function documentation using JSDoc
+      filters:
+        - type: content
+          pattern: "function\\s+\\w+\\s*\\([^)]*\\)\\s*{(?![\\s\\S]*\\*)"
+      actions:
+        - type: suggest
+          message: |
+            Add JSDoc documentation for functions. Example:
+            /**
+            * @description Brief description of function
+            * @param {type} paramName - Parameter description
+            * @returns {type} Description of return value
+            */
+  - input: |
+      # Bad: Missing frontmatter
+      <rule>
+      name: bad_rule
+      </rule>
+
+      # Good: Properly formatted rule
+      ---
+      description: Example rule
+      globs: *.ts
+      ---
+
+      # TypeScript Standards
+
+      <rule>
+      name: typescript_standards
+      description: Standards for TypeScript files
+      </rule>
+
+      filters:
+        - type: file_extension
+          pattern: "\\.ts$"
+      actions:
+        - type: suggest
+          message: "Follow TypeScript best practices that adhere to its latest stable version."
+    
+      # Good: Thorough well-defined examples of patterns with examples
+      ---
+      description: TypeScript Type Definition Standards
+      globs: *.ts
+      ---
+      <rule>
+      name: typescript_types
+      description: Enforces proper type definitions and usage in TypeScript
+      filters:
+        - type: content
+          pattern: "(any|Object|Function)(?!\\s*:.*\\s*=>)"
+      actions:
+        - type: suggest
+          message: |
+            Avoid using generic types like 'any', 'Object', or 'Function'.
+            Instead:
+            - Use specific interfaces or type definitions
+            - Define proper function signatures
+            - Utilize built-in utility types when appropriate
+      examples:
+        - input: |
+            function process(data: any): Object {
+                return { result: data };
+            }
+          output: |
+            interface ProcessInput {
+                id: string;
+                value: number;
+            }
+            
+            interface ProcessOutput {
+                result: ProcessInput;
+                timestamp: Date;
+            }
+            
+            function process(data: ProcessInput): ProcessOutput {
+                return { 
+                    result: data,
+                    timestamp: new Date()
+                };
+            }
+        - input: "var x = 1;"
+          output: "const x = 1;"
+        - input: "let a: any = '';"
+          output: "const a: undefined = '';"
+      metadata:
+        priority: high
+        version: 1.0
+      </rule>
+    output: "Correctly formatted Cursor rule"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

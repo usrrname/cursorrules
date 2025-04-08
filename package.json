@@ -1,0 +1,32 @@
+{
+  "name": "cursorrules",
+  "version": "0.0.1",
+  "description": "Standard lib of .cursor/rules",
+  "type": "module",
+  "bin": {
+    "cursorrules": "./cli.mjs"
+  },
+  "scripts": {
+    "test": "node cli.test.js ",
+    "test:local": "node ./cli.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usrrname/cursorrules.git"
+  },
+  "keywords": [
+    "cursorrules",
+    "cursor",
+    "agent"
+  ],
+  "author": "jen chan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/usrrname/cursorrules/issues"
+  },
+  "homepage": "https://github.com/usrrname/cursorrules#readme",
+  "devDependencies": {
+    "@types/node": "22.14.0",
+    "typescript": "^5.8.3"
+  }
+}
