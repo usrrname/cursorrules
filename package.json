@@ -7,8 +7,8 @@
     "cursorrules": "./cli.mjs"
   },
   "scripts": {
-    "test": "node cli.test.js ",
-    "test:local": "node ./cli.mjs"
+    "test": "node --test --watch \"**.test.js\"",
+    "test:ci": "node --test cli.test.js"
   },
   "repository": {
     "type": "git",

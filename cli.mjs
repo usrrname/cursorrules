@@ -12,7 +12,7 @@ const files = [
 
 const packageJson = JSON.parse(
     await fs.readFile(
-        url.fileURLToPath(url.resolve(import.meta.url, './package.json')),
+        url.fileURLToPath(url.resolve(import.meta.url, 'package.json')),
         'utf-8',
     )
 );
@@ -87,20 +87,20 @@ async function main() {
 
     switch (command) {
         case 'help':
-    // case hasCorrespondingFlag('help'):
+            // case hasCorrespondingFlag('help'):
             await help();
             break;
         case 'version':
-        // case hasCorrespondingFlag('version'):
+            // case hasCorrespondingFlag('version'):
             await version();
             break;
         case 'output':
-        //case hasCorrespondingFlag('output'):
+            //case hasCorrespondingFlag('output'):
             let outputDir = '';
             console.info('Downloading rules...');
             const isMissingOutputDir = !values.output || !args[0];
             if (isMissingOutputDir) {
-                outputDir = path.join(process.cwd(), 'output');
+                outputDir = path.join(process.cwd(), '../output');
                 console.warn('No output directory provided, creating ./output...');
                 await fs.mkdir(outputDir, { recursive: true });
                 console.info(`Output directory created: ${outputDir}`);
