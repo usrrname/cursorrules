@@ -9,11 +9,11 @@ A standard lib of rules for Cursor inspired by [@ghuntley](https://github.com/gh
 ## Install
 
 ```bash
-npx @usrrname/cursorrules
+npx @usrrname/cursorrules [options]
 ```
 
 ### Options
-
-- `-f, --flat`: Install without parent directory
-- `-o, --output`: Set output directory # Default: ./output
-- `-v, --version`: Show package version
+- `help`: Help instructions
+- `flat`: Install without parent directory
+- `output`: Set output directory # Default: ./output
+- `version`: Show package version
