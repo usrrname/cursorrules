@@ -4,7 +4,7 @@
   "description": "Standard lib of .cursor/rules",
   "type": "module",
   "bin": {
-    "cursorrules": "./cli.mjs"
+    "cursorrules": "cli.mjs"
   },
   "scripts": {
     "test": "node --test --watch \"cli.test.js\"",
