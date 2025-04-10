@@ -7,7 +7,7 @@
     "cursorrules": "./cli.mjs"
   },
   "scripts": {
-    "test": "node --test --watch \"**.test.js\"",
+    "test": "node --test --watch \"cli.test.js\"",
     "test:ci": "node --test cli.test.js"
   },
   "repository": {
