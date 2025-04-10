@@ -7,7 +7,7 @@
     "cursorrules": "cli.mjs"
   },
   "publishConfig": {
-    "@usrrname:registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "scripts": {
     "local:publish": "npm publish --registry http://localhost:4873/",

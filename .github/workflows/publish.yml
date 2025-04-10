@@ -10,25 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: npm ci
       - name: Run tests
         run: npm run test:ci
-      # Check if tag version matches package.json
-      - name: Check version
-        run: |
-          PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          TAG_VERSION=${GITHUB_REF#refs/tags/v}
-          if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
-            echo "Version mismatch: Tag version ($TAG_VERSION) doesn't match package.json version ($PACKAGE_VERSION)"
-            exit 1
-          fi
       - name: Update package version
         run: | 
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           npm version patch
-          git commit -m "Bump version"
           git push --follow-tags
 
   publish-npm:
@@ -43,7 +37,9 @@ jobs:
           scope: '@usrrname'
       - run: npm ci
       - name: Publish to NPM
-        run: npm publish --access public
+        run: |
+          npm config set registry https://npm.pkg.github.com/ --scope=@usrrname
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
@@ -62,6 +58,8 @@ jobs:
             scope: '@usrrname'
         - run: npm ci
         - name: Publish to GitHub Packages
-          run: npm publish
+          run: |
+            npm config set registry https://npm.pkg.github.com/ --scope=@usrrname
+            npm publish
           env:
             NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}} 
