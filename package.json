@@ -6,7 +6,13 @@
   "bin": {
     "cursorrules": "cli.mjs"
   },
+  "publishConfig": {
+    "@usrrname:registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
+    "local:publish": "npm publish --registry http://localhost:4873/",
+    "clear": "npm unpublish --registry http://localhost:4873/ @usrrname/cursorrules",
+    "lint": "tsc --noEmit --noImplicitAny",
     "test": "node --test --watch \"cli.test.js\"",
     "test:ci": "node --test cli.test.js"
   },
