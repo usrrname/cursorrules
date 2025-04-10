@@ -1,4 +1,4 @@
-name: NPM Publish
+name: Publish
 
 on:
   release:
@@ -27,7 +27,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
           scope: '@usrrname'
       - run: npm ci
-      - name: Publish
+      - name: Publish to NPM
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
