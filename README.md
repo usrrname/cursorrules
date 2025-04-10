@@ -1,6 +1,6 @@
 # cursorrules
 
-[![NPM Publish](https://github.com/usrrname/cursorrules/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/usrrname/cursorrules/actions/workflows/npm-publish.yml)
+[![Publish](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml/badge.svg)](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml)
 
 A standard lib of rules for Cursor inspired by [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/)
 
