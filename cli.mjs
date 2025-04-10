@@ -22,7 +22,6 @@ const packageJson = JSON.parse(
  */
 const config = {
     args: process.argv.slice(2),
-    allowPositionals: true,
     tokens: true,
     options: {
         flat: {
@@ -64,80 +63,71 @@ ${repository}
 
 const version = () => console.log(`${packageJson.name} v${packageJson.version}`);
 
+/**
+ * @param {string} dirname - output folder relative path
+ */
+const downloadFiles = async (dirname) => {
+    if (!dirname) throw new Error('Output directory is required');
+
+    console.info('Downloading rules...');
+
+    if (dirname.startsWith('=')) dirname = dirname.split('=')[1];
+
+    const outputDir = url.fileURLToPath(url.resolve(import.meta.url, dirname.trim()))
+
+    try {
+        // copy whole folder
+        await fs.cp(
+            url.fileURLToPath(url.resolve(import.meta.url, folder)),
+            outputDir,
+            { recursive: true },
+        )
+
+        // copy .files
+        for (const file of files) {
+            await fs.copyFile(
+                url.fileURLToPath(url.resolve(import.meta.url, file)),
+                path.join(outputDir, file),
+            )
+        }
+        console.log(`Success! .cursorrules saved to ${outputDir}`);
+    } catch (err) {
+        console.error(`Error: ${err.message}`);
+        process.exit(1);
+    }
+}
 
 async function main() {
+    console.log("🚀 Loading cursorrules...");
 
     const { positionals, values, tokens } = parseArgs(config);
 
     const [command, ...args] = positionals;
 
-    //     /**
-    //  * @param {string} flagName - 'help', 'version', 'output'
-    //  * @param tokens
-    //  * @returns {boolean | undefined}
-    //  */
-    //     const hasCorrespondingFlag = (flagName) => {
-    //         const token = tokens?.find(token => {
-    //             const isShortFormatAccepted = [`-${flagName.charAt(0)}`, `-${flagName}`, `--${flagName}`].includes(token.rawName)
-    //             const hasLongForm = token.kind === 'option' && token.name === flagName;
-    //             return hasLongForm && isShortFormatAccepted;
-    //         });
-    //         return token
-    //     }
+    const allowedKeys = ['flat', 'output']
 
-    switch (command) {
-        case 'help':
-            // case hasCorrespondingFlag('help'):
-            await help();
-            break;
-        case 'version':
-            // case hasCorrespondingFlag('version'):
-            await version();
-            break;
-        case 'output':
-            //case hasCorrespondingFlag('output'):
-            let outputDir = '';
-            console.info('Downloading rules...');
-            const isMissingOutputDir = !values.output || !args[0];
-            if (isMissingOutputDir) {
-                outputDir = path.join(process.cwd(), '../output');
-                console.warn('No output directory provided, creating ./output...');
-                await fs.mkdir(outputDir, { recursive: true });
-                console.info(`Output directory created: ${outputDir}`);
-            }
-            else outputDir = url.fileURLToPath(url.resolve(import.meta.url, args[0]))
+    for (let key in values) {
 
-            await fs.cp(
-                url.fileURLToPath(url.resolve(import.meta.url, folder)),
-                outputDir,
-                { recursive: true },
-            )
+        if (!allowedKeys.includes(key) && !values[key]) continue;
 
-            for (const file of files) {
-                await fs.copyFile(
-                    url.fileURLToPath(url.resolve(import.meta.url, file)),
-                    path.join(outputDir, file),
-                )
-            }
-            console.log(`Success! .cursorrules saved to ${outputDir}`);
-            break;
-        case 'flat':
-            console.log(`Flattening rules...`);
-            const currentDir = path.join(process.cwd());
-            await fs.cp(
-                url.fileURLToPath(url.resolve(import.meta.url, folder)),
-                currentDir,
-                { recursive: true },
-            )
-            console.log(`Success! .cursorrules saved to ${currentDir}`);
-            break;
-        default:
-            if (!command) {
-                console.error('Missing command');
+        switch (key) {
+            case 'version':
+                await version();
+                break;
+            case 'help':
                 await help();
-            }
+                break;
+            case 'output':
+                downloadFiles(values[key]?.toString() ?? '')
+                break;
+            case 'flat':
+            default:
+                console.log(`~~~~ Flattening rules ~~~~`);
+                downloadFiles(path.join(process.cwd()))
+                break;
+        }
     }
-}
+}   
 
 
 try {
