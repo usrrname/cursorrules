@@ -1,16 +1,15 @@
 # cursorrules
 
+[![NPM Publish](https://github.com/usrrname/cursorrules/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/usrrname/cursorrules/actions/workflows/npm-publish.yml)
+
 A standard lib of rules for Cursor inspired by [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/)
-
-## About
-
-["Rules for AI"](https://docs.cursor.com/context/rules-for-ai)
 
 ## Install
 
 ```bash
-npx @usrrname/cursorrules --options
+npx @usrrname/cursorrules
 ```
+By default, the package will save files to `output/` in your current directory.
 
 ### Options
 - `-h, --help`: Help instructions
@@ -18,7 +17,6 @@ npx @usrrname/cursorrules --options
 - `-o, --output`: Set output directory # Default: ./output
 - `-v, --version`: Show package version
 
-By default, the package will save files to `output/` in your current directory.
 
 ## Running and testing locally
 
