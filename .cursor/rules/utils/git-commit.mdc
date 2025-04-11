@@ -1,0 +1,121 @@
+---
+description: This rule enforces Git commit standards and conventions while committing and pushing code in Agent Mode
+globs: .git/COMMIT_EDITMSG
+alwaysApply: false
+---
+# Git Commit Standards
+
+<rule>
+name: git-commit
+description: This rule is crucial for keeping track of changes made by cursor agents, and should run whenever the user expresses they want to commit or push code changes made by the agent.
+version: 1.0
+filters:
+  - type: file_extension
+    pattern: "COMMIT_EDITMSG$"
+  - type: event
+    pattern: "(pre_commit|post_commit)"
+
+actions:
+  - type: suggest
+    message: |
+      When creating a git commit in Agent mode:
+
+      1. Commit Format:
+         ```
+         <type>(<scope>): <description> (#<issue-number>)
+
+         [optional body]
+
+         [optional footer]
+
+         Commit written by cursor agent
+         ```
+
+      2. Types must be one of:
+         - feat: A new feature
+         - fix: A bug fix
+         - docs: Documentation only changes
+         - style: Changes that don't affect the meaning of the code
+         - refactor: A code change that neither fixes a bug nor adds a feature
+         - perf: A code change that improves performance
+         - test: Adding missing tests or correcting existing tests
+         - chore: Changes to the build process or auxiliary tools
+         - ci: Changes to CI configuration files and scripts
+         - security: Changes made to codebase due to security threats or prevention of malicious attacks
+
+      3. Rules:
+         - Always commit from repository root
+         - Use present tense ("add" not "added")
+         - First line should not exceed 72 characters
+         - Reference GitHub issue or ticket number with #
+         - Describe what and why, not how
+         - Fixes should describe what error or problem was fixed or what behaviour no longer happens
+         - Separate subject from body with blank line
+         - Use imperative mood in subject line
+         - Include the fact a commit was written by an agent at the end of commit
+
+      4. Post-Commit Actions:
+         - Run linting checks
+         - If linting passes and commit is successful:
+           ```bash
+           git push origin <current-branch>
+           ```
+         - If linting fails:
+           - Fix linting issues
+           - Amend the commit
+           - Try push again
+         - If push fails:
+           - Pull latest changes
+           - Rebase if necessary
+           - Push again
+
+examples:
+  - input: |
+      added new feature
+    output: |
+      feat(api): add user authentication endpoint (#123)
+
+      Implement JWT-based authentication for user login
+      
+      Breaking change: requires new environment variables for JWT secret
+
+      Commit written by cursor agent
+
+      # Post-commit actions:
+      npm run lint && git push origin feature/auth
+  - input: |
+      fixing bug
+    output: |
+      fix(database): resolve connection timeout issue (#456)
+      
+      - Increase connection timeout to 30s
+      - Add connection retry logic
+
+      Commit written by cursor agent
+
+      # Post-commit actions:
+      npm run lint && git push origin fix/timeout
+  - input: |
+      update docs
+    output: |
+      docs(readme): update installation instructions (#789)
+      
+      Make setup steps clearer for new contributors
+
+      Commit written by cursor agent
+
+      # Post-commit actions:
+      npm run lint && git push origin docs/readme-update
+
+tests:
+  - input: "updated code"
+    output: "feat(core): update code processing logic (#567)\n\nCommit written by cursor agent\n\n# Post-commit actions:\nnpm run lint && git push origin feature/code-update"
+  - input: "fix error"
+    output: "fix(validation): resolve input sanitization error (#890)\n\nCommit written by cursor agent\n\n# Post-commit actions:\nnpm run lint && git push origin fix/validation"
+  - input: "add docs"
+    output: "docs(api): add OpenAPI documentation (#345)\n\nCommit written by cursor agent\n\n# Post-commit actions:\nnpm run lint && git push origin docs/api"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule> 
