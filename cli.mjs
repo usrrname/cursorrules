@@ -4,11 +4,7 @@ import * as path from 'node:path';
 import * as url from 'node:url';
 import { parseArgs } from 'node:util';
 
-const folder = '.cursor/rules';
-const files = [
-    '.cursorignore',
-    '.cursorindexingignore',
-]
+const folder = '.cursor/';
 
 const packageJson = JSON.parse(
     await fs.readFile(
@@ -82,14 +78,6 @@ const downloadFiles = async (dirname) => {
             outputDir,
             { recursive: true },
         )
-
-        // copy .files
-        for (const file of files) {
-            await fs.copyFile(
-                url.fileURLToPath(url.resolve(import.meta.url, file)),
-                path.join(outputDir, file),
-            )
-        }
         console.log(`Success! .cursorrules saved to ${outputDir}`);
     } catch (err) {
         console.error(`Error: ${err.message}`);
@@ -100,9 +88,7 @@ const downloadFiles = async (dirname) => {
 async function main() {
     console.log("🚀 Loading cursorrules...");
 
-    const { positionals, values, tokens } = parseArgs(config);
-
-    const [command, ...args] = positionals;
+    const { values } = parseArgs(config);
 
     const allowedKeys = ['flat', 'output']
 
