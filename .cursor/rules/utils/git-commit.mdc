@@ -44,7 +44,8 @@ actions:
          - security: Changes made to codebase due to security threats or prevention of malicious attacks
 
       3. Rules:
-         - Always commit from repository root
+         - Always run `git add <filename>` from repository root when asked to commit code.
+         - The filename may be added from Cursor context.
          - Use present tense ("add" not "added")
          - First line should not exceed 72 characters
          - Reference GitHub issue or ticket number with # if there is a ticketing system used.
