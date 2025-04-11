@@ -1,90 +1,87 @@
 ---
-description: Cursor Rules Creation Standards
+description: Standards for creating and adding new Cursor rules to a project or repository.
 globs: *.mdc
 ---
-# Creating cursor rules
 
-Standards for creating and adding new Cursor rules to a project or repository.
+# Critical Rules
 
-<rule>
-name: create-rule
-description: Standards for creating and adding new Cursor rules
-alwaysApply: {true or false}
-filters:
-  # Match any .mdc files
-  - type: file_extension
-    pattern: "\\.mdc$"
-  # Match files that look like Cursor rules
-  - type: content
-    pattern: "(?s)<rule>.*?</rule>"
-  # Find example(s) in Cursor rules to enhance precision of implementation
-  - type: content
-    pattern: "(?s)<examples?>(.*?)</examples?>"
-  # Match file creation events
-  - type: event
-    pattern: "file_create"
+1. Filename format:
+    - Always use .mdc extension
+    - Make names descriptive of the rule's purpose
+    - Use either kebab-case or understores within filenames. Do not allow use both within the same repository.
+    - Rule filenames should follow the format `####-rule-name.mdc` where # stands in for numbers. 
 
-actions:
-  - type: suggest
-    message: |
-      When creating a new Cursor rule:
+    <example>
+      # Examples of acceptable rule names: 
+      0000-rule-generation.mdc
+      0001-rule-location.mdc
+      0002-app-architecture.mdc
+    </example>
+    
+    <example type="invalid">
+    # Examples of invalid rule names: 
+      AbCdDruleName.mdc
+      added-a-rule.mdc
+      something-cool.mdc
+    </example>
 
-      1. File Structure:
-         - Place in .cursor/rules/ directory
-         - Use either kebab-case or understores within filenames. Do not use both within the same repository.
-         - Include .mdc extension
-         - Example: .cursor/rules/your-rule-name.mdc
+2. Rule Content:
+    - Start with YAML frontmatter (---)
+    - Include description and globs
+    - Use proper XML-style rule and example tags
+    - Include clear examples that account for specific conventions of the language or framework the rule applies to. 
+    - If there is a contradiction between rules between files or within the same file, highlight them. 
+    - Add relevant metadata on priority and version
 
-      2. Rule Content:
-         - Start with YAML frontmatter (---)
-         - Include description and globs
-         - Use proper XML-style rule tags
-         - Include clear examples that account for specific conventions of the language or framework the rule applies to. 
-         - If there is a contradiction between rules between files or within the same file, highlight them. 
-         - Add relevant metadata
+3. Rule Contents Structure:
+    ```mdc
+    ---
+    description: Your rule description
+    globs: pattern1,pattern2
+    ---
+    # Rule Title
 
-      3. Rule Format:
-         ```mdc
-         ---
-         description: Your rule description
-         globs: pattern1,pattern2
-         ---
-         # Rule Title
+    <rule>
+    name: my-rule-name
+    description: Detailed rule description
 
-         <rule>
-         name: my-rule-name
-         description: Detailed rule description
-         filters:
-           - type: file_extension
-             pattern: "\\.ext$"
-         actions:
-           - type: suggest
-             message: "Your suggestion message"
-         examples:
-           - input: "Bad example"
-             output: "Good example"
-         tests:
-           - input: "should describe expected behaviour"
-             output: "should reflect expected outcome"
-         metadata:
-           priority: medium
-           version: 1.0
-         </rule>
-         ```
+    # Critical Rules
 
-      4. Best Practices:
-         - Keep rules focused and specific
-         - Include clear technical examples
-         - Use proper escaping for patterns
-         - Add version and priority metadata
-         - Test rules before committing
-         - The agent MUST follow the rule
-        
-      5. Every rule should have a test section on the rule file
-         - Every test should elaborate on expected outcomes for potential scenarios and use cases
+    {description or summary about purpose of the rule}
 
+    - Important rule that agent shall not violate
+    - Another important rule that agent shall not violate
 
-<examples>
+    filters:
+      - type: file_extension
+        pattern: "\\.ext$"
+    actions:
+      - type: {suggest|reject|transform|lint|format|validate|alert|document|generate}
+      ...
+    examples:
+      - input: "Bad example"
+        output: "Good example"
+    tests:
+      - input: "should describe expected behaviour"
+        output: "should reflect expected outcome"
+    metadata:
+      priority: medium
+      version: 1.0
+    </rule>
+    ```
+
+4. Best Practices:
+    - Keep rules focused and specific
+    - Include critical rules as principles the agent MUST follow
+    - Include clear technical examples
+    - Use proper escaping for patterns
+    - Add version and priority metadata
+    - Add tests for rules before committing
+  
+5. Every rule should have a test section on the rule file
+    - Every test should elaborate on expected outcomes for potential scenarios and use cases
+
+<example>
   - input: |
       # Bad example: Insufficient context with vague requirements and no examples
        <rule>
@@ -153,10 +150,11 @@ actions:
       name: bad_rule
       </rule>
 
-      # Good: Properly formatted rule
+      # Good: Properly formatted rule with all frontmatter properties populated
       ---
       description: Example rule
       globs: *.ts
+      autoA
       ---
 
       # TypeScript Standards
@@ -224,6 +222,28 @@ actions:
       </rule>
     output: "Correctly formatted Cursor rule"
 </examples>
+
+<rule>
+name: create-rule
+description: Standards for creating and adding new Cursor rules
+alwaysApply: {true or false}
+filters:
+  # Match any .mdc files
+  - type: file_extension
+    pattern: "\\.mdc$"
+  # Match files that look like Cursor rules
+  - type: content
+    pattern: "(?s)<rule>.*?</rule>"
+  # Find example(s) in Cursor rules to enhance precision of implementation
+  - type: content
+    pattern: "(?s)<examples?>(.*?)</examples?>"
+  # Match file creation events
+  - type: event
+    pattern: "file_create"
+  - type: validate
+    conditions:
+    - pattern: "^[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*\\.mdc$"
+      message: "Filenames of cursor rules should follow the format `####-rule-name.mdc` where # stands in for numbers."
 
 metadata:
   priority: high
