@@ -1,0 +1,78 @@
+---
+description: This rule runs whenever a developer wants to create an AI agent or wants to edit an existing one in Cursor.
+globs: .cursor/modes.json
+---
+
+# Critical Rules
+
+- Understand existing agents in .cursor/modes.json
+- Follows the format specified in .cursor/templates/mode-format.md
+- Adds or updates agent information in .cursor/modes.json
+- If updating an agent, clarify which aspects of an agent require updating or modification
+
+<rule>
+name: create-update-agent
+description: 
+version: 1.0
+filters:
+  - type: file_extension
+    pattern: "\\.json$"
+  - type: content
+    pattern: "\"modes\""
+    
+actions:
+
+  - type: suggest
+    message: |
+
+     When user asks for a new AI agent in Cursor:
+
+      1. Follow the agent configuration format:
+         ```json
+         {
+           "name": "AgentName",
+           "description": "Brief description of agent's role",
+           "model": "model-name",
+           "customPrompt": "Detailed agent prompt...",
+           "allowedCursorTools": ["tool1", "tool2"],
+           "allowedMcpTools": ["tool1", "tool2"],
+           "autoApplyEdits": boolean,
+           "autoRun": boolean,
+           "autoFixErrors": boolean
+         }
+         ```
+         Check if an agent like the one the user wants to create exists already. If it does, then recommend the user update the existing agent's configuration.
+
+      2. Required Fields:
+         - name: CamelCase, descriptive (e.g., "PythonArchitect", "ReactDevOps")
+         - description: Clear, concise role summary
+         - model: One of the supported models (see list below)
+         - customPrompt: Detailed agent personality and behavior definition
+
+      3. Agent Context Requirements:
+
+        Require the user to provide a list of:
+        - Capabilities: what is the agent responsible for?
+        - Personality traits
+        - Constraints: What shouldn't the agent be able to do?
+
+      4. Supported Models:
+         - claude-3-opus
+         - claude-3.5-haiku
+         - claude-3.5-sonnet
+         - claude-3.7-sonnet
+         - claude-3.7-sonnet-max
+         - gpt-4
+         - gpt-4-turbo
+         - gpt-4.5-preview
+         - Others as listed in modes-format.md
+
+      5. Tool Access:
+         - Only grant tools necessary for the agent's role
+         - Consider security implications
+         - Document any special tool requirements
+
+metadata:
+  priority: high
+  version: 1.0
+</rule> 
