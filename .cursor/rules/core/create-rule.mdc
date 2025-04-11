@@ -17,9 +17,9 @@ filters:
   # Match files that look like Cursor rules
   - type: content
     pattern: "(?s)<rule>.*?</rule>"
-  # Find examples in Cursor rules to enhance precision of implementation
+  # Find example(s) in Cursor rules to enhance precision of implementation
   - type: content
-    pattern: "(?s)<examples>.*?</examples>"
+    pattern: "(?s)<examples?>(.*?)</examples?>"
   # Match file creation events
   - type: event
     pattern: "file_create"
@@ -63,6 +63,9 @@ actions:
          examples:
            - input: "Bad example"
              output: "Good example"
+         tests:
+           - input: "should describe expected behaviour"
+             output: "should reflect expected outcome"
          metadata:
            priority: medium
            version: 1.0
@@ -77,10 +80,11 @@ actions:
          - Test rules before committing
          - The agent MUST follow the rule
         
-      5. Add test rules
-         - Create a test file for the rule in .cursor/rules/tests
+      5. Every rule should have a test section on the rule file
+         - Every test should elaborate on expected outcomes for potential scenarios and use cases
 
-examples:
+
+<examples>
   - input: |
       # Bad example: Insufficient context with vague requirements and no examples
        <rule>
@@ -219,6 +223,7 @@ examples:
         version: 1.0
       </rule>
     output: "Correctly formatted Cursor rule"
+</examples>
 
 metadata:
   priority: high
