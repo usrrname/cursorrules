@@ -1,10 +1,7 @@
 ---
-description: Cursor Rules Location
+description: Rules for placing and organizing Cursor rule files in the repository.
 globs: *.mdc
 ---
-# Cursor Rules Location
-
-Rules for placing and organizing Cursor rule files in the repository.
 
 <rule>
 name: rules-location
@@ -25,8 +22,8 @@ actions:
     conditions:
       - pattern: "^(?!\\.\\/\\.cursor\\/rules\\/.*\\.mdc$)"
         message: "Cursor rule files (.mdc) must be placed in the .cursor/rules directory"
-
-  - type: suggest
+     
+  - type: validate
     message: |
       When creating Cursor rules:
 
@@ -37,30 +34,26 @@ actions:
          ├── another-rule.mdc
          └── ...
          ```
+         Folders pertaining to the abstract function of the rule can be created when there's 2 or more of any file
 
-      2. Follow the naming convention:
-         - Use kebab-case for filenames
-         - Always use .mdc extension
-         - Make names descriptive of the rule's purpose
+      2. Directory structure for cursor rules:
+        ```
+        PROJECT_ROOT/
+        └──.cursor
+            └── rules
+                ├── core        required global rules for agentic codegen
+                ├── templates   document templates
+                └── utils       rules that improve devex
+        ```
+        Where this should live for projects that use this set of rules.
 
-      3. Directory structure:
-         ```
-         PROJECT_ROOT/
-         ├── .cursor/
-         │   └── rules/
-         |       ├── core/
-         │       ├── your-rule-name.mdc
-         │       └── ...
-         └── ...
-         ```
-
-      4. Never place rule files:
+      3. Never place rule files:
          - In the project root
          - In subdirectories outside .cursor/rules
          - In any other location
 
-examples:
-  - input: |
+<example>
+ - input: |
       # Bad: Rule file in wrong location
       rules/my-rule.mdc
       my-rule.mdc
@@ -69,6 +62,7 @@ examples:
       # Good: Rule file in correct location
       .cursor/rules/my-rule.mdc
     output: "Correctly placed Cursor rule file"
+</example> 
 
 metadata:
   priority: high
