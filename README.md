@@ -2,7 +2,19 @@
 
 [![Publish](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml/badge.svg)](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml)
 
-A standard lib of rules for Cursor inspired by [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/)
+A standard lib of rules for Cursor inspired by [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/) and [@bmad](https://github.com/bmad)'s [Cursor Custom Agents Rules Generator](https://github.com/bmadcode/cursor-custom-agents-rules-generator)
+
+## Folder structure
+
+The project is organized into the following folders:
+
+```
+.cursor
+└── rules
+    ├── core        required global rules for agentic codegen
+    ├── templates   document templates for project context 
+    └── utils       rules about tooling and config that improve devex
+```
 
 ## Install
 
