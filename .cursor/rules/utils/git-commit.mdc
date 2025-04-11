@@ -47,7 +47,7 @@ actions:
          - Always commit from repository root
          - Use present tense ("add" not "added")
          - First line should not exceed 72 characters
-         - Reference GitHub issue or ticket number with #
+         - Reference GitHub issue or ticket number with # if there is a ticketing system used.
          - Describe what and why, not how
          - Fixes should describe what error or problem was fixed or what behaviour no longer happens
          - Separate subject from body with blank line
