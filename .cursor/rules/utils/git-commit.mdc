@@ -28,9 +28,10 @@ actions:
 
          [optional footer]
 
-         Commit written by cursor agent
+         Commit written by <agent_name>
          ```
-
+         If the user didn't specify any particular agent, the commit will just say it is written by "cursor agent"
+         
       2. Types must be one of:
          - feat: A new feature
          - fix: A bug fix
@@ -53,7 +54,7 @@ actions:
          - Fixes should describe what error or problem was fixed or what behaviour no longer happens
          - Separate subject from body with blank line
          - Use imperative mood in subject line
-         - Include the fact a commit was written by an agent at the end of commit
+         - Include the name of the specific custom agent (e.g. "Commit written by GrammarFairy") at the end of commit
 
       4. Post-Commit Actions:
          - Run linting checks
@@ -80,7 +81,7 @@ examples:
       
       Breaking change: requires new environment variables for JWT secret
 
-      Commit written by cursor agent
+      Commit written by KawaiiSamurai
 
       # Post-commit actions:
       npm run lint && git push origin feature/auth
@@ -92,7 +93,7 @@ examples:
       - Increase connection timeout to 30s
       - Add connection retry logic
 
-      Commit written by cursor agent
+      Commit written by SageDaddy
 
       # Post-commit actions:
       npm run lint && git push origin fix/timeout
@@ -103,18 +104,18 @@ examples:
       
       Make setup steps clearer for new contributors
 
-      Commit written by cursor agent
+      Commit written by GrammarFairy
 
       # Post-commit actions:
       npm run lint && git push origin docs/readme-update
 
 tests:
   - input: "updated code"
-    output: "feat(core): update code processing logic (#567)\n\nCommit written by cursor agent\n\n# Post-commit actions:\nnpm run lint && git push origin feature/code-update"
+    output: "feat(core): update code processing logic (#567)\n\nCommit written by BasicBitchDeveloper\n\n# Post-commit actions:\nnpm run lint && git push origin feature/code-update"
   - input: "fix error"
-    output: "fix(validation): resolve input sanitization error (#890)\n\nCommit written by cursor agent\n\n# Post-commit actions:\nnpm run lint && git push origin fix/validation"
+    output: "fix(validation): resolve input sanitization error (#890)\n\nCommit written by ThirstySimp\n\n# Post-commit actions:\nnpm run lint && git push origin fix/validation"
   - input: "add docs"
-    output: "docs(api): add OpenAPI documentation (#345)\n\nCommit written by cursor agent\n\n# Post-commit actions:\nnpm run lint && git push origin docs/api"
+    output: "docs(api): add OpenAPI documentation (#345)\n\nCommit written by GrammarFairy\n\n# Post-commit actions:\nnpm run lint && git push origin docs/api"
 
 metadata:
   priority: high
