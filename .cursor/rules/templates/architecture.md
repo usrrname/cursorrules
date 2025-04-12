@@ -1,4 +1,4 @@
-# Architecture for {PRD Title}
+# Architecture for {PBI Title}
 
 Status: { Draft | Approved | Rejected }
 

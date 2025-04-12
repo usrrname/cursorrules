@@ -1,4 +1,4 @@
-## User Story Template for { PRD # }
+## User Story Template for { PBI # }
 
 Status: { ToDo | In Progress | Done }
 

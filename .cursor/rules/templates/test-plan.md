@@ -1,4 +1,4 @@
-## Test Plan Template for { PRD # }
+## Test Plan Template for { PBI # }
 
 ### Title
 
@@ -39,7 +39,7 @@
 
 ### Regression Test Cases
 
-{enumerate regression or impact testing cases from previous releases or PRD#}
+{enumerate regression or impact testing cases from previous releases or PBI#}
 
 ### Regression Test Cases
 
