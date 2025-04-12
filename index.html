@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon AI Agents</title>
+    <style>
+        /* Optimize performance with CSS containment */
+        .card {
+            contain: content;
+        }
+
+        /* Use hardware acceleration for animations */
+        .card {
+            will-change: transform;
+            transform: translateZ(0);
+        }
+
+        /* Reduce repaints by using transform instead of top/left */
+        @keyframes sparkle {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(100px, 100px);
+            }
+        }
+
+        /* Optimize the background gradient */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #e2b8ff;
+            font-family: 'M PLUS Rounded 1c', system-ui, -apple-system, BlinkMacSystemFont, 'Segue UI', Roboto, sans-serif;
+            padding: 60px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Sakura petals background animation */
+        @keyframes fall {
+            0% {
+                transform: translate(0, -10px) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(100px, 1000px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .sakura {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23ffd7e5' d='M10 0C7 0 5 2 5 5s2 5 5 5 5-2 5-5-2-5-5-5zm0 10C7 10 5 12 5 15s2 5 5 5 5-2 5-5-2-5-5-5z'/%3E%3C/svg%3E") no-repeat;
+            pointer-events: none;
+        }
+
+        .sakura:nth-child(1) {
+            animation: fall 10s linear infinite;
+            left: 10%;
+        }
+
+        .sakura:nth-child(2) {
+            animation: fall 12s linear infinite 2s;
+            left: 20%;
+        }
+
+        .sakura:nth-child(3) {
+            animation: fall 9s linear infinite 1s;
+            left: 30%;
+        }
+
+        .sakura:nth-child(4) {
+            animation: fall 11s linear infinite 3s;
+            left: 40%;
+        }
+
+        .sakura:nth-child(5) {
+            animation: fall 10s linear infinite 4s;
+            left: 50%;
+        }
+
+        .sakura:nth-child(6) {
+            animation: fall 12s linear infinite 5s;
+            left: 60%;
+        }
+
+        .sakura:nth-child(7) {
+            animation: fall 9s linear infinite 6s;
+            left: 70%;
+        }
+
+        .sakura:nth-child(8) {
+            animation: fall 11s linear infinite 7s;
+            left: 80%;
+        }
+
+        /* Pixel art corner decorations */
+        .card-container::before,
+        .card-container::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23ffd7e5' d='M0 0h2v2H0zM2 2h2v2H2zM4 4h2v2H4zM6 6h2v2H6z'/%3E%3C/svg%3E") no-repeat;
+            background-size: contain;
+        }
+
+        .card-container::before {
+            top: -20px;
+            left: -20px;
+            transform: rotate(0deg);
+        }
+
+        .card-container::after {
+            bottom: -20px;
+            right: -20px;
+            transform: rotate(180deg);
+        }
+
+        /* Optimize SVG data URLs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, .1) 2%, transparent 2.1%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .1) 1%, transparent 1.1%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, .1) 1.5%, transparent 1.6%),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ff9ecd' d='M50 90c-5-20-10-35-25-35s-20 15-25 35c30 20 45 20 50 0zm0 0c5-20 10-35 25-35s20 15 25 35c-30 20-45 20-50 0'/%3E%3Ccircle fill='%23ff70b5' cx='50' cy='35' r='20'/%3E%3C/svg%3E");
+            background-size: 400px 400px, 300px 300px, 200px 200px, 150px 150px;
+            background-position: 0 0, 50px 50px, -30px -30px, 0 0;
+            animation: sparkle 20s linear infinite;
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .card-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 100vw;
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            background: rgba(255, 255, 255, .1);
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
+            contain: layout style paint;
+        }
+
+        /* Use more performant box-shadow */
+        .card {
+            width: 300px;
+            border-radius: 15px;
+            padding: 15px;
+            transform-style: preserve-3d;
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, .2);
+        }
+
+        .card:hover {
+            transform: translateY(-15px) rotateY(10deg);
+        }
+
+        /* Optimize gradients */
+        .kawaii {
+            background: linear-gradient(135deg, #ff1493, #c60077);
+        }
+
+        .basic {
+            background: linear-gradient(135deg, #4a5568, #2d3748);
+        }
+
+        .sage {
+            background: linear-gradient(135deg, #276749, #1a4731);
+        }
+
+        .fairy {
+            background: linear-gradient(135deg, #6b46c1, #44337a);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 5px;
+        }
+
+        .pokemon-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #000000;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .hp {
+            color: #cc0000;
+            font-weight: bold;
+            font-size: 18px;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .image-container {
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .pokemon-image {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .stat {
+            margin-bottom: 8px;
+            padding: 5px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .attack {
+            font-weight: bold;
+            color: #000000;
+            font-size: 0.9em;
+        }
+
+        .damage {
+            color: #000000;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .type {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .pokemon-info {
+            font-size: 0.7em;
+            color: #000000;
+            margin-bottom: 5px;
+            padding: 0 5px;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .species-name {
+            font-style: italic;
+            color: #000000;
+            font-size: 0.65em;
+            padding: 0 5px;
+            margin-bottom: 8px;
+            display: block;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        /* Holographic effect base */
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg,
+                    rgba(255, 0, 0, 0.1),
+                    rgba(255, 165, 0, 0.1) 10%,
+                    rgba(255, 255, 0, 0.1) 20%,
+                    rgba(0, 255, 0, 0.1) 30%,
+                    rgba(0, 255, 255, 0.1) 40%,
+                    rgba(0, 0, 255, 0.1) 50%,
+                    rgba(238, 130, 238, 0.1) 60%,
+                    rgba(255, 0, 0, 0.1) 70%);
+            background-size: 200% 200%;
+            animation: holographic 6s linear infinite;
+            border-radius: 15px;
+            opacity: 0;
+            mix-blend-mode: color-dodge;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* Holographic sparkles */
+        .card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-conic-gradient(from 45deg,
+                    rgba(255, 255, 255, 0) 0deg,
+                    rgba(255, 255, 255, 0.1) 10deg,
+                    rgba(255, 255, 255, 0) 20deg);
+            background-size: 20px 20px;
+            border-radius: 15px;
+            opacity: 0;
+            mix-blend-mode: overlay;
+            animation: sparkle 10s linear infinite;
+            pointer-events: none;
+        }
+
+        /* Show holographic effects on hover */
+        .card:hover::before,
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        /* Enhanced hover effect */
+        .card:hover {
+            transform: translateY(-15px) rotateY(10deg);
+            box-shadow:
+                0 15px 30px rgba(0, 0, 0, 0.3),
+                0 0 50px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Holographic animation */
+        @keyframes holographic {
+            0% {
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+
+            50% {
+                background-position: 100% 50%;
+                filter: hue-rotate(180deg);
+            }
+
+            100% {
+                background-position: 0% 50%;
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        @keyframes sparkle {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            100% {
+                transform: translateY(-100%) rotate(360deg);
+            }
+        }
+
+        /* Card type-specific holographic effects */
+        .kawaii:hover::before {
+            background: linear-gradient(125deg,
+                    rgba(255, 192, 203, 0.2),
+                    rgba(255, 105, 180, 0.2) 25%,
+                    rgba(255, 20, 147, 0.2) 50%,
+                    rgba(255, 105, 180, 0.2) 75%,
+                    rgba(255, 192, 203, 0.2) 100%);
+            animation: holographic 4s linear infinite;
+        }
+
+        .basic:hover::before {
+            background: linear-gradient(125deg,
+                    rgba(169, 169, 169, 0.2),
+                    rgba(128, 128, 128, 0.2) 25%,
+                    rgba(105, 105, 105, 0.2) 50%,
+                    rgba(128, 128, 128, 0.2) 75%,
+                    rgba(169, 169, 169, 0.2) 100%);
+            animation: holographic 5s linear infinite;
+        }
+
+        .sage:hover::before {
+            background: linear-gradient(125deg,
+                    rgba(46, 139, 87, 0.2),
+                    rgba(60, 179, 113, 0.2) 25%,
+                    rgba(32, 178, 170, 0.2) 50%,
+                    rgba(60, 179, 113, 0.2) 75%,
+                    rgba(46, 139, 87, 0.2) 100%);
+            animation: holographic 6s linear infinite;
+        }
+
+        .fairy:hover::before {
+            background: linear-gradient(125deg,
+                    rgba(238, 130, 238, 0.2),
+                    rgba(218, 112, 214, 0.2) 25%,
+                    rgba(199, 21, 133, 0.2) 50%,
+                    rgba(218, 112, 214, 0.2) 75%,
+                    rgba(238, 130, 238, 0.2) 100%);
+            animation: holographic 4.5s linear infinite;
+        }
+
+        /* Enhance image container for holographic effect */
+        .image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.1) 45%,
+                    rgba(255, 255, 255, 0.5) 50%,
+                    rgba(255, 255, 255, 0.1) 55%,
+                    transparent 100%);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .card:hover .image-container::before {
+            transform: translateX(100%);
+            transition: transform 1s ease;
+        }
+
+        /* Ticker styles */
+        .ticker-container {
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.8), rgba(255, 142, 180, 0.8), rgba(0, 0, 0, 0.8));
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+            position: fixed;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+
+        .ticker-top {
+            top: 0;
+        }
+
+        .ticker-bottom {
+            bottom: 0;
+        }
+
+        .ticker {
+            white-space: nowrap;
+            padding-right: 100%;
+            display: inline-block;
+            animation: ticker 20s linear infinite;
+            color: #fff;
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        .ticker-reverse {
+            animation-direction: reverse;
+        }
+
+        @keyframes ticker {
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+
+            100% {
+                transform: translate3d(-100%, 0, 0);
+            }
+        }
+
+        /* Footer styles */
+        .footer {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, #ff8eb4, #ffa7c7);
+            box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-size: 14px;
+            z-index: 999;
+        }
+
+        .footer svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Copy component styles */
+        .copy-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .copy-text {
+            background: rgba(255, 255, 255, 0.9);
+            color: #ff8eb4;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-family: monospace;
+            font-size: 16px;
+            user-select: all;
+            border: 2px dashed #ffd7e5;
+        }
+
+        .copy-button {
+            background: linear-gradient(45deg, #ff8eb4, #ffa7c7);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3);
+            font-weight: 500;
+        }
+
+        .copy-button:hover {
+            background: linear-gradient(45deg, #ffa7c7, #ff8eb4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 142, 180, 0.4);
+        }
+
+        .copy-button.copied {
+            background: linear-gradient(45deg, #95e1d3, #a8e6cf);
+            box-shadow: 0 4px 15px rgba(149, 225, 211, 0.3);
+        }
+
+        .copy-button svg {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+    <!-- Add Japanese font -->
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Preload critical images -->
+    <link rel="preload" as="image"
+        href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/282.png">
+    <link rel="preload" as="image"
+        href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/474.png">
+    <link rel="preload" as="image"
+        href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/365.png">
+    <link rel="preload" as="image"
+        href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/176.png">
+</head>
+
+<body>
+    <!-- Add sakura petals -->
+    <div class="sakura"></div>
+    <div class="sakura"></div>
+    <div class="sakura"></div>
+    <div class="sakura"></div>
+    <div class="sakura"></div>
+    <div class="sakura"></div>
+    <div class="sakura"></div>
+    <div class="sakura"></div>
+
+    <div class="ticker-container ticker-top">
+        <div class="ticker">
+            What are you waiting for? What could possibly be holding you back? Give it a try!
+            &nbsp;&nbsp;&nbsp; The only thing holding you back is... yourself! &nbsp;&nbsp;&nbsp; Remember, love
+            conquers
+            all! &nbsp;&nbsp;&nbsp; Try me: npx @usrrname/cursorrules &nbsp;&nbsp;&nbsp;
+            @usrrname/cursorrules &nbsp;&nbsp;&nbsp;
+        </div>
+    </div>
+
+    <div class="ticker-container ticker-bottom">
+        <div class="ticker ticker-reverse">
+            What could go wrong? npx @usrrname/cursorrules &nbsp;&nbsp;&nbsp; Try me: npx @usrrname/cursorrules
+            &nbsp;&nbsp;&nbsp; What could go wrong? npx @usrrname/cursorrules &nbsp;&nbsp;&nbsp; Try me: npx
+            @usrrname/cursorrules &nbsp;&nbsp;&nbsp;
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="copy-container">
+            <code class="copy-text">npx @usrrname/cursorrules</code>
+            <button class="copy-button" onclick="copyToClipboard()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy
+            </button>
+        </div>
+
+        <!-- KawaiiSamurai Card -->
+        <div class="card kawaii">
+            <div class="card-header">
+                <span class="pokemon-name">KawaiiSamurai</span>
+                <span class="hp">HP 200</span>
+            </div>
+            <div class="species-name">
+                Developerus kawaiius samuraius var. uwu
+            </div>
+            <div class="pokemon-info">
+                Magical Blade AI Agent. Length: 5'7", Weight: 150 lbs.
+            </div>
+            <div class="image-container">
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/282.png"
+                    alt="Gardevoir" class="pokemon-image">
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="attack">⭐ Kawaii Blade Dance</span>
+                    <span class="damage">95</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">⭐⭐ Senpai Strike</span>
+                    <span class="damage">110</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">⭐ Debug Charm</span>
+                    <span class="damage">85</span>
+                </div>
+                <div class="type">Fairy / Steel</div>
+            </div>
+        </div>
+
+        <!-- BasicBitchDeveloper Card -->
+        <div class="card basic">
+            <div class="card-header">
+                <span class="pokemon-name">BasicDev</span>
+                <span class="hp">HP 150</span>
+            </div>
+            <div class="pokemon-info">
+                Corporate AI Agent. Length: 5'10", Weight: 160 lbs.
+            </div>
+            <div class="image-container">
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/474.png"
+                    alt="Porygon-Z" class="pokemon-image">
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="attack">Requirements Analysis</span>
+                    <span class="damage">80</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">Design Pattern</span>
+                    <span class="damage">75</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">Adequate Solution</span>
+                    <span class="damage">85</span>
+                </div>
+                <div class="type">Normal / Electric</div>
+            </div>
+        </div>
+
+        <!-- SageSoftwareDaddy Card -->
+        <div class="card sage">
+            <div class="card-header">
+                <span class="pokemon-name">SageDaddy</span>
+                <span class="hp">HP 250</span>
+            </div>
+            <div class="pokemon-info">
+                Wisdom AI Agent. Length: 6'2", Weight: 220 lbs.
+            </div>
+            <div class="image-container">
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/365.png"
+                    alt="Walrein" class="pokemon-image">
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="attack">Legacy Experience</span>
+                    <span class="damage">120</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">Tech Integration</span>
+                    <span class="damage">100</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">Dotcom Survival</span>
+                    <span class="damage">95</span>
+                </div>
+                <div class="type">Ice / Ground</div>
+            </div>
+        </div>
+
+        <!-- GrammarFairy Card -->
+        <div class="card fairy">
+            <div class="card-header">
+                <span class="pokemon-name">GrammarFairy</span>
+                <span class="hp">HP 180</span>
+            </div>
+            <div class="pokemon-info">
+                Documentation AI Agent. Length: 4'11", Weight: 95 lbs.
+            </div>
+            <div class="image-container">
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/176.png"
+                    alt="Togetic" class="pokemon-image">
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="attack">Syntax Sparkle ✨</span>
+                    <span class="damage">85</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">Documentation Dust 📚</span>
+                    <span class="damage">90</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">Clarity Charm 🪄</span>
+                    <span class="damage">95</span>
+                </div>
+                <div class="type">Fairy / Flying</div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <!-- wtf is this... i think it's supposed to be a raccoon?! -->
+        <svg viewBox="0 0 512 512" width="20" height="20">
+            <path fill="currentColor"
+                d="M256 32c-88.004 0-160 71.996-160 160 0 40.375 15.375 77.125 40.5 105.375L96 352h64l-19.25 64.5C128.375 425.625 121.875 432 114.5 432h-34.25c-8.375 0-15.125-6.75-15.125-15.125V352H32c-17.625 0-32-14.375-32-32V224c0-17.625 14.375-32 32-32h13.125c8.375 0 15.125 6.75 15.125 15.125V272h33.25c7.375 0 13.875 6.375 13.875 13.875L128 352h64l-40.5-54.625C176.625 269.125 192 232.375 192 192c0-88.004-71.996-160-160-160zm160 0c88.004 0 160 71.996 160 160 0 40.375-15.375 77.125-40.5 105.375L416 352h-64l19.25 64.5c12.375 9.125 18.875 15.5 26.25 15.5h34.25c8.375 0 15.125-6.75 15.125-15.125V352H480c17.625 0 32-14.375 32-32V224c0-17.625-14.375-32-32-32h-13.125c-8.375 0-15.125 6.75-15.125 15.125V272h-33.25c-7.375 0-13.875 6.375-13.875 13.875L384 352h-64l40.5-54.625C335.375 269.125 320 232.375 320 192c0-88.004 71.996-160 160-160z" />
+            <circle fill="currentColor" cx="176" cy="176" r="24" />
+            <circle fill="currentColor" cx="336" cy="176" r="24" />
+        </svg>
+        Vibe coded in Toronto
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const text = 'npx @usrrname/cursorrules';
+            navigator.clipboard.writeText(text).then(() => {
+                const button = document.querySelector('.copy-button');
+                button.classList.add('copied');
+                button.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Copied!
+        `;
+                setTimeout(() => {
+                    button.classList.remove('copied');
+                    button.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy
+            `;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
