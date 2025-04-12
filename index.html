@@ -4,7 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Problematic Cursor Agents</title>
+    <meta name="description" content="Problematic Cursor Agents from hell">
+    <meta name="keywords" content="Cursor Agents, Problematic, Hell, Coding, Assistance">
+    <meta name="author" content="Problematic Cursor Agents">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="bingbot" content="index, follow">
+    <meta name="alexa" content="index, follow">
+    <meta name="og:author" content="Jen Chan <6406037+usrrname@users.noreply.github.com>">
+    <meta name="og:title" content="Problematic Cursor Agents">
+    <meta name="og:description" content="Problematic Cursor Agents">
+    <meta name="og:image" content="">
+    <meta name="og:url" content="">
+    <meta name="og:site_name" content="Problematic Cursor Agents">
+    <meta name="og:type" content="website">
+    <meta name="og:locale" content="en_US">
+    <title>Problematic Cursor Agents</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Doto&display=swap" rel="stylesheet" />
+    <!-- Add Japanese font -->
+    <link rel="preload" as="font"
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;500;700&display=swap" rel="stylesheet">
+    <!-- Preload critical images -->
+    <link rel="preload" as="image"
+        href="https://64.media.tumblr.com/93d6985c1e43fc60af8b0b00933fbae5/2e5abd8b6472caf5-e7/s540x810/9bc3765938f78d8ca1edfcb2afb83ddb99fcfffd.gif">
+    <link rel="preload" as="image" href="https://img.wattpad.com/010697b3d2ebd7ece3c4ef45bb8ee45163752439/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f64497736424f626c39415a6f6e513d3d2d313931332e313636653662646361616534303532633933353139303631353531302e676966>
+                            <link rel=" preload" as="image"
+        href="https://cdn.myanimelist.net/images/characters/8/327520.jpg">
+    <link rel="preload" as="image"
+        href="https://gifdb.com/images/high/anime-elf-frieren-going-to-eat-cake-33rvseyebg1a1wgj.gif">
+    <link rel="preload" as="image"
+        href="https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966">
     <style>
         /* Optimize performance with CSS containment */
         .card {
@@ -143,7 +174,7 @@
                 radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .1) 1%, transparent 1.1%),
                 radial-gradient(circle at 80% 20%, rgba(255, 255, 255, .1) 1.5%, transparent 1.6%),
                 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ff9ecd' d='M50 90c-5-20-10-35-25-35s-20 15-25 35c30 20 45 20 50 0zm0 0c5-20 10-35 25-35s20 15 25 35c-30 20-45 20-50 0'/%3E%3Ccircle fill='%23ff70b5' cx='50' cy='35' r='20'/%3E%3C/svg%3E");
-            background-size: 400px 400px, 300px 300px, 200px 200px, 150px 150px;
+            background-size: contain;
             background-position: 0 0, 50px 50px, -30px -30px, 0 0;
             animation: sparkle 20s linear infinite;
             opacity: 0.3;
@@ -500,15 +531,16 @@
 
         /* Ticker styles */
         .ticker-container {
-            width: 100%;
+            max-width: 650px;
+            width: auto;
             height: 40px;
             background: linear-gradient(90deg, rgba(0, 0, 0, 0.8), rgba(255, 142, 180, 0.8), rgba(0, 0, 0, 0.8));
             backdrop-filter: blur(5px);
             overflow: hidden;
-            position: fixed;
-            left: 0;
+            position: relative;
             z-index: 1000;
             display: flex;
+            justify-content: center;
             align-items: center;
         }
 
@@ -524,9 +556,9 @@
             white-space: nowrap;
             padding-right: 100%;
             display: inline-block;
-            animation: ticker 20s linear infinite;
+            animation: ticker 60s linear infinite;
             color: #fff;
-            font-family: monospace;
+            font-family: 'Doto';
             font-size: 16px;
         }
 
@@ -590,7 +622,6 @@
         .copy-button {
             background: linear-gradient(45deg, #ff8eb4, #ffa7c7);
             color: darkslategray;
-            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
             border: none;
             padding: 12px 20px;
             border-radius: 25px;
@@ -626,19 +657,9 @@
             width: 16px;
             height: 16px;
         }
+
     </style>
-    <!-- Add Japanese font -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;500;700&display=swap"
-        rel="stylesheet">
-    <!-- Preload critical images -->
-    <link rel="preload" as="image"
-        href="https://64.media.tumblr.com/93d6985c1e43fc60af8b0b00933fbae5/2e5abd8b6472caf5-e7/s540x810/9bc3765938f78d8ca1edfcb2afb83ddb99fcfffd.gif">
-    <link rel="preload" as="image" href="https://img.wattpad.com/010697b3d2ebd7ece3c4ef45bb8ee45163752439/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f64497736424f626c39415a6f6e513d3d2d313931332e313636653662646361616534303532633933353139303631353531302e676966>
-    <link rel="preload" as="image" href="https://cdn.myanimelist.net/images/characters/8/327520.jpg">
-    <link rel="preload" as="image"
-        href="https://gifdb.com/images/high/anime-elf-frieren-going-to-eat-cake-33rvseyebg1a1wgj.gif">
-    <link rel="preload" as="image"
-        href="https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966">
+    
 </head>
 
 <body>
@@ -652,20 +673,21 @@
     <div class="sakura"></div>
     <div class="sakura"></div>
 
-    <div class="ticker-container ticker-top">
-        <div class="ticker">
-            What are you waiting for? What could possibly be holding you back? Give it a try!
-            &nbsp;&nbsp;&nbsp; The only thing holding you back is... yourself! &nbsp;&nbsp;&nbsp; Remember, love
-            conquers
-            all! &nbsp;&nbsp;&nbsp; Live passionately! &nbsp;&nbsp;&nbsp;
-            Mirror mirror on the wall, who's the best ai of them all? &nbsp;&nbsp;&nbsp;
-        </div>
-    </div>
     <div class="">
         <div class="copy-container">
             <div class="copy-text">
                 <h1>Cursor Agents from hell</h1>
                 <h2>Coding assistance with personality</h2>
+            </div>
+            <div class="ticker-container ticker-top">
+                <div class="ticker">
+                    This page may or may not stay online. What are you waiting for? What could possibly be holding you back? Give it
+                    a try!
+                    &nbsp;&nbsp;&nbsp; The only thing holding you back is... yourself! &nbsp;&nbsp;&nbsp; Remember, love conquers
+                    all!
+                    &nbsp;&nbsp;&nbsp; Live passionately! &nbsp;&nbsp;&nbsp;
+                    Mirror mirror on the wall, who's the best agent of them all? &nbsp;&nbsp;&nbsp;
+                </div>
             </div>
         <div class="copy-button-container">
             <code class="copy-text">npx @usrrname/cursorrules</code>
@@ -678,7 +700,7 @@
             Copy
         </button>
         </div>
-    </div>
+        </div>
     <div class="card-container">
     <!-- ThirstySimp Card -->
     <div class="card basic">
@@ -840,7 +862,7 @@
                 <div class="type">Fairy / Flying</div>
             </div>
         </div>
-        </div>
+    </div>
 </div>
     <div class="footer">
         🦝 Vibe coded in Toronto
