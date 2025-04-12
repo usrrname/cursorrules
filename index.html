@@ -357,6 +357,10 @@
             background: linear-gradient(135deg, #dda0dd 0%, #da70d6 50%, #ba55d3 100%);
         }
 
+        .simpy {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb700 50%, #ff69b4 100%);
+        }
+
         /* Energy type indicators */
         .kawaii .stat::before {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23ff69b4'/%3E%3C/svg%3E");
@@ -658,6 +662,96 @@
             height: 16px;
         }
 
+        .terminal-container {
+            background: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            font-family: 'Monaco', 'Consolas', monospace;
+            margin: 20px auto;
+            max-width: 600px;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #1a1a1a;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-right: 15px;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .close { background: #ff5f56; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #27c93f; }
+
+        .terminal-title {
+            color: #999;
+            font-size: 14px;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .terminal-content {
+            padding: 20px;
+            color: #fff;
+        }
+
+        .command-line {
+            margin: 10px 0;
+            color: #fff;
+        }
+
+        .prompt {
+            color: #27c93f;
+            margin-right: 10px;
+        }
+
+        .ascii-art {
+            color: #5fafff;
+            margin: 15px 0;
+            font-family: monospace;
+            white-space: pre;
+        }
+
+        .features-list {
+            margin-top: 20px;
+        }
+
+        .features-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+
+        .features-list li {
+            margin: 8px 0;
+            color: #b4b4b4;
+            font-size: 14px;
+        }
+
+        .success {
+            color: #27c93f;
+            margin-right: 8px;
+        }
+
+        [INFO] {
+            color: #5fafff;
+            margin: 10px 0;
+            display: block;
+        }
+
     </style>
     
 </head>
@@ -675,9 +769,41 @@
 
     <div class="">
         <div class="copy-container">
-            <div class="copy-text">
-                <h1>Cursor Agents from hell</h1>
-                <h2>Coding assistance with personality</h2>
+            <div class="header-block terminal-container">
+                <div class="terminal-header">
+                    <div class="terminal-buttons">
+                        <span class="terminal-button close"></span>
+                        <span class="terminal-button minimize"></span>
+                        <span class="terminal-button maximize"></span>
+                    </div>
+                    <div class="terminal-title">da-boss ~/</div>
+                </div>
+                <div class="terminal-content">
+                    <div class="command-line">
+                        <span class="prompt">$</span> npx @usrrname/cursorrules
+                    </div>
+                    <div class="output">
+                        <div class="ascii-art">
+                            ╔══════════════════════════════════════╗
+                            ║ Cursor Agents from Hell v1.0 ║
+                            ║ Coding with Personality™ ║
+                            ╚══════════════════════════════════════╝
+                        </div>
+                        <div class="features-list">
+                            <div class="command-line">
+                                <span class="prompt">$</span> cursor --list-features
+                            </div>
+                            [INFO] Available productivity boosters:
+                            <ul>
+                                <li><span class="success">✓</span> Automate Git commits with personality and style</li>
+                                <li><span class="success">✓</span> Generate consistent documentation that sparkles</li>
+                                <li><span class="success">✓</span> Create and enforce custom coding standards</li>
+                                <li><span class="success">✓</span> Streamline your PR review process</li>
+                                <li><span class="success">✓</span> Add fun console logging with emojis</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="ticker-container ticker-top">
                 <div class="ticker">
@@ -832,10 +958,10 @@
             </div>
         </div>
 
-        <!-- GrammarFairy Card -->
+        <!-- Spellchuck Card -->
         <div class="card fairy">
             <div class="card-header">
-                <span class="pokemon-name">GrammarFairy</span>
+                <span class="pokemon-name">Spellchuck</span>
                 <span class="hp">HP 180</span>
             </div>
             <div class="pokemon-info">
@@ -862,6 +988,42 @@
                 <div class="type">Fairy / Flying</div>
             </div>
         </div>
+<!-- qwoof Card -->
+<div class="card sage">
+    <div class="card-header">
+        <span class="pokemon-name">qwoof</span>
+        <span class="hp">HP 220</span>
+    </div>
+    <div class="species-name">
+        Developerus qualitas lupus
+    </div>
+    <div class="pokemon-info">
+        Quality Assurance AI Agent. Length: 6'0", Weight: 180 lbs.
+    </div>
+    <div class="image-container">
+        <img loading="lazy"
+            src="https://gifdb.com/images/high/anime-wolf-girl-momiji-inubashiri-touhou-project-orekagatou-8iqxqvp5xdqfk0kp.gif"
+            alt="Wolf quality engineer" class="pokemon-image">
+    </div>
+    <div class="stats">
+        <div class="stat">
+            <span class="attack">🐺 Code Smell Detection</span>
+            <span class="damage">115</span>
+        </div>
+        <div class="stat">
+            <span class="attack">🧪 Test Coverage Howl</span>
+            <span class="damage">105</span>
+        </div>
+        <div class="stat">
+            <span class="attack">🔍 Bug Hunt Prowl</span>
+            <span class="damage">95</span>
+        </div>
+        <div class="type">Dark / Steel</div>
+    </div>
+    <div class="pokemon-info" style="font-size: 0.6em; margin-top: 5px;">
+        Weakness: Untested code, Poor documentation, Technical debt
+    </div>
+</div>
     </div>
 </div>
     <div class="footer">

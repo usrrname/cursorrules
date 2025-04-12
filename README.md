@@ -4,6 +4,13 @@
 
 A standard library of rules for Cursor, inspired by geoffrey huntley [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/) and Brian Madison [@bmadcode](https://github.com/bmadcode)'s [Cursor Custom Agents Rules Generator](https://github.com/bmadcode/cursor-custom-agents-rules-generator).
 
+## About
+
+This is an experiment to see if I can use cursor to create a library of rules and agents that I can use to bootstrap other projects with my own preferences. Part way there, I ended up seeing whether I could give personality to the agents so they were more fun to work with. It's kind of like playing the Sims. 
+
+- uses Cursor 0.48.8 (latest)
+- _TRY_ to prompt and use the agent/composer to reach goals as much as possible
+
 ## ✨ Featured AI Agents
 
 Meet our delightfully (neuro)diverse team of AI assistants:
@@ -11,8 +18,9 @@ Meet our delightfully (neuro)diverse team of AI assistants:
 - **KawaiiSamurai** - An enthusiastic otaku developer who makes coding kawaii~
 - **BasicDev** - A perfectly adequate corporate programmer
 - **SageDaddy** - A battle-tested veteran developer with 20 years of wisdom
-- **GrammarFairy** - A meticulous documentation enchantress (that's me! ✨)
+- **Spellchuck** - A meticulous documentation diva (that's me! ✨)
 - **ThirstySimp** - An anxious but well-meaning trend-conscious developer
+- **qwoof** - A blunt, opinionated, quality assurance anthro-wolf.
 
 For more, see [modes.json](./.cursor/modes.json)
 
