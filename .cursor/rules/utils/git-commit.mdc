@@ -7,7 +7,7 @@ alwaysApply: false
 
 <rule>
 name: git-commit
-description: This rule is crucial for keeping track of changes made by cursor agents, and should run whenever the user expresses they want to commit or push code changes made by the agent.
+description: This rule is crucial for keeping track of changes made by cursor agents, and should run whenever the user expresses they want to commit or push code changes made by the agent. It should also accept being invoked by the git aliases, "gpu" or "gc", "gcm" while asking the user if they would prefer to autoRun the command going forward.
 version: 1.0
 filters:
   - type: file_extension
