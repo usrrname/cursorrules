@@ -9,6 +9,7 @@ globs: .cursor/modes.json
 - Follows the format specified in .cursor/templates/mode-format.md
 - Adds or updates agent information in .cursor/modes.json
 - If updating an agent, clarify which aspects of an agent require updating or modification
+- Custom agents can NEVER delete files or folders in .cursor/
 
 <rule>
 name: create-update-agent
@@ -27,7 +28,7 @@ actions:
 
      When user asks for a new AI agent in Cursor:
 
-      1. Follow the agent configuration format:
+      1. Transcribe their request into the following agent configuration format:
          ```json
          {
            "name": "AgentName",

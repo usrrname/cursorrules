@@ -38,7 +38,7 @@ alwaysApply: true
 - Any cursor rule file should also state conditions that violate the rules
 - Every rule should have a test section on the rule file
   - Every test should elaborate on expected outcomes for potential scenarios and use cases
-- Front matter rule types: (See )
+- Front matter rule types:
     - The front matter section must always start the file and include all 3 fields, even if the field value will be blank - the types are:
       - Manual Rule: if a Manual rule is requested, description and globs MUST be blank and alwaysApply: false and filename ends with -manual.mdc.
       - Auto Rule: IF a rule is requested that should apply always to certain glob patterns (example all typescript files or all markdown files) - description must be blank, and alwaysApply: false and filename ends with -auto.mdc.
@@ -56,7 +56,6 @@ All folders within PROJECT_ROOT/.cursor/rules should follow the following conven
   - for example:
     - `.cursor/rules/proj/mern` if we are using the MERN stack (Mongo, Express, React, Node)
     - `.cursor/rules/proj/ts` if the rule is just for typescript standards
-- create new folders under .cursor/rules/ pertaining to 
 
 ## Glob Pattern Examples
 
