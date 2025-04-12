@@ -43,14 +43,20 @@ const config = {
 
 const help = () => {
     const repository = packageJson.repository.url.replace('git+', '').replace('.git', '');
-    return console.info(`Usage:
-==================================
+    const version = packageJson.version;
+    return console.info(`
+╔══════════════════════════════════════╗
+║ @usrrname/cursorrules v${version}    ║
+║ aka. Coding Agents from Hell         ║
+╚══════════════════════════════════════╝
+Usage:
+=======================================
 npx @usrrname/cursorrules [options]
 
 Options:
 -f, --flat: Install without parent directory
--h, --help: Help instructions # You are here
--o, --output: Set output directory # Default: ./output
+-h, --help: Help instructions <----- You are here
+-o, --output: Set output directory (Default: ./output)
 -v, --version: Show package version
 
 ${repository}
