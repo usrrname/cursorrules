@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokemon AI Agents</title>
+<title>Problematic Cursor Agents</title>
     <style>
         /* Optimize performance with CSS containment */
         .card {
@@ -54,7 +54,11 @@
                 opacity: 0;
             }
         }
-
+        @media (prefers-reduced-motion: reduce) {
+            .sakura, .card::before, .card::after {
+                animation: none;
+            }
+        }
         .sakura {
             position: fixed;
             width: 15px;
@@ -174,7 +178,10 @@
             position: relative;
             box-shadow: 0 10px 20px rgba(0, 0, 0, .2);
         }
-
+        .card {
+            contain: content;
+            will-change: transform;
+        }
         .card:hover {
             transform: translateY(-15px) rotateY(10deg);
         }
@@ -511,6 +518,7 @@
         /* Copy component styles */
         .copy-container {
             display: flex;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
             margin-bottom: 30px;
@@ -530,7 +538,8 @@
 
         .copy-button {
             background: linear-gradient(45deg, #ff8eb4, #ffa7c7);
-            color: white;
+            color: darkslategray;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
             border: none;
             padding: 12px 20px;
             border-radius: 25px;
@@ -561,7 +570,7 @@
         }
     </style>
     <!-- Add Japanese font -->
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;500;700&display=swap"
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;500;700&display=swap"
         rel="stylesheet">
     <!-- Preload critical images -->
     <link rel="preload" as="image"
@@ -590,32 +599,27 @@
             What are you waiting for? What could possibly be holding you back? Give it a try!
             &nbsp;&nbsp;&nbsp; The only thing holding you back is... yourself! &nbsp;&nbsp;&nbsp; Remember, love
             conquers
-            all! &nbsp;&nbsp;&nbsp; Try me: npx @usrrname/cursorrules &nbsp;&nbsp;&nbsp;
-            @usrrname/cursorrules &nbsp;&nbsp;&nbsp;
+            all! &nbsp;&nbsp;&nbsp; Live passionately! &nbsp;&nbsp;&nbsp;
+            Mirror mirror on the wall, who's the best ai of them all? &nbsp;&nbsp;&nbsp;
         </div>
     </div>
-
-    <div class="ticker-container ticker-bottom">
-        <div class="ticker ticker-reverse">
-            What could go wrong? npx @usrrname/cursorrules &nbsp;&nbsp;&nbsp; Try me: npx @usrrname/cursorrules
-            &nbsp;&nbsp;&nbsp; What could go wrong? npx @usrrname/cursorrules &nbsp;&nbsp;&nbsp; Try me: npx
-            @usrrname/cursorrules &nbsp;&nbsp;&nbsp;
-        </div>
-    </div>
-
-    <div class="card-container">
+    <div class="">
         <div class="copy-container">
+            <div class="copy-text">
+                <h1>Problematic Cursor Agents from hell</h1>
+                <h2>Get your cursor agents here!</h2>
+            </div>
             <code class="copy-text">npx @usrrname/cursorrules</code>
-            <button class="copy-button" onclick="copyToClipboard()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Copy
-            </button>
+        <button class="copy-button" aria-label="Copy command to clipboard" onclick="copyToClipboard()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copy
+        </button>
         </div>
-
+    <div class="card-container">
         <!-- KawaiiSamurai Card -->
         <div class="card kawaii">
             <div class="card-header">
@@ -629,7 +633,8 @@
                 Magical Blade AI Agent. Length: 5'7", Weight: 150 lbs.
             </div>
             <div class="image-container">
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/282.png"
+                <img loading="lazy"
+                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/282.png"
                     alt="Gardevoir" class="pokemon-image">
             </div>
             <div class="stats">
@@ -659,7 +664,8 @@
                 Corporate AI Agent. Length: 5'10", Weight: 160 lbs.
             </div>
             <div class="image-container">
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/474.png"
+                <img loading="lazy"
+                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/474.png"
                     alt="Porygon-Z" class="pokemon-image">
             </div>
             <div class="stats">
@@ -689,7 +695,8 @@
                 Wisdom AI Agent. Length: 6'2", Weight: 220 lbs.
             </div>
             <div class="image-container">
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/365.png"
+                <img loading="lazy"
+                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/365.png"
                     alt="Walrein" class="pokemon-image">
             </div>
             <div class="stats">
@@ -719,7 +726,8 @@
                 Documentation AI Agent. Length: 4'11", Weight: 95 lbs.
             </div>
             <div class="image-container">
-                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/176.png"
+                <img loading="lazy"
+                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/176.png"
                     alt="Togetic" class="pokemon-image">
             </div>
             <div class="stats">
@@ -738,18 +746,48 @@
                 <div class="type">Fairy / Flying</div>
             </div>
         </div>
-    </div>
+        <!-- ThirstySimp Card -->
+        <div class="card basic">
+            <div class="card-header">
+                <span class="pokemon-name">ThirstySimp</span>
+                <span class="hp">HP 130</span>
+            </div>
+            <div class="species-name">
+                Developerus insecurus trendchaser
+            </div>
+            <div class="pokemon-info">
+                Anxious AI Agent. Always watching tech influencer videos. Length: 5'8", Weight: 145 lbs.
+            </div>
+            <div class="image-container">
+                <img loading="lazy"
+                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/678.png"
+                    alt="Meowstic" class="pokemon-image"
+                    onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/97.png';">
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="attack">🎥 YouTube Tutorial Binge</span>
+                    <span class="damage">75</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">🔥 Framework FOMO</span>
+                    <span class="damage">90</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">🤓 Actually... Correction</span>
+                    <span class="damage">85</span>
+                </div>
+                <div class="type">Psychic / Dark</div>
+            </div>
+            <div class="pokemon-info" style="font-size: 0.6em; margin-top: 5px;">
+                Weakness: Senior devs, New frameworks, AI taking jobs
+            </div>
+        </div>
+        </div>
+</div>
     <div class="footer">
-        <!-- wtf is this... i think it's supposed to be a raccoon?! -->
-        <svg viewBox="0 0 512 512" width="20" height="20">
-            <path fill="currentColor"
-                d="M256 32c-88.004 0-160 71.996-160 160 0 40.375 15.375 77.125 40.5 105.375L96 352h64l-19.25 64.5C128.375 425.625 121.875 432 114.5 432h-34.25c-8.375 0-15.125-6.75-15.125-15.125V352H32c-17.625 0-32-14.375-32-32V224c0-17.625 14.375-32 32-32h13.125c8.375 0 15.125 6.75 15.125 15.125V272h33.25c7.375 0 13.875 6.375 13.875 13.875L128 352h64l-40.5-54.625C176.625 269.125 192 232.375 192 192c0-88.004-71.996-160-160-160zm160 0c88.004 0 160 71.996 160 160 0 40.375-15.375 77.125-40.5 105.375L416 352h-64l19.25 64.5c12.375 9.125 18.875 15.5 26.25 15.5h34.25c8.375 0 15.125-6.75 15.125-15.125V352H480c17.625 0 32-14.375 32-32V224c0-17.625-14.375-32-32-32h-13.125c-8.375 0-15.125 6.75-15.125 15.125V272h-33.25c-7.375 0-13.875 6.375-13.875 13.875L384 352h-64l40.5-54.625C335.375 269.125 320 232.375 320 192c0-88.004 71.996-160 160-160z" />
-            <circle fill="currentColor" cx="176" cy="176" r="24" />
-            <circle fill="currentColor" cx="336" cy="176" r="24" />
-        </svg>
-        Vibe coded in Toronto
+        🦝 Vibe coded in Toronto
     </div>
-
     <script>
         function copyToClipboard() {
             const text = 'npx @usrrname/cursorrules';
