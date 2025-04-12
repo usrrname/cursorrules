@@ -153,13 +153,13 @@
 
         .card-container {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
             max-width: 100vw;
             position: relative;
             z-index: 1;
-            padding: 20px;
+            padding: 25px;
             background: rgba(255, 255, 255, .1);
             border-radius: 20px;
             backdrop-filter: blur(5px);
@@ -167,133 +167,193 @@
             contain: layout style paint;
         }
 
-        /* Use more performant box-shadow */
+        /* Pokémon card styling enhancements */
         .card {
-            width: 300px;
-            border-radius: 15px;
-            padding: 15px;
-            transform-style: preserve-3d;
-            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
-            cursor: pointer;
+            width: 245px; /* Standard Pokémon card width */
+            height: 342px; /* Standard Pokémon card height */
+            border-radius: 10px;
+            padding: 12px;
             position: relative;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, .2);
-        }
-        .card {
-            contain: content;
-            will-change: transform;
-        }
-        .card:hover {
-            transform: translateY(-15px) rotateY(10deg);
-        }
-
-        /* Optimize gradients */
-        .kawaii {
-            background: linear-gradient(135deg, #ff1493, #c60077);
-        }
-
-        .basic {
-            background: linear-gradient(135deg, #4a5568, #2d3748);
-        }
-
-        .sage {
-            background: linear-gradient(135deg, #276749, #1a4731);
-        }
-
-        .fairy {
-            background: linear-gradient(135deg, #6b46c1, #44337a);
+            box-shadow: 
+                0 0 0 4px #ffd700,
+                0 0 0 5px #000,
+                5px 5px 15px rgba(0, 0, 0, 0.4);
+            background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%);
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding: 0 5px;
+            margin-bottom: 4px;
         }
 
         .pokemon-name {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             color: #000000;
-            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
         }
 
         .hp {
-            color: #cc0000;
+            font-size: 14px;
             font-weight: bold;
-            font-size: 18px;
-            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+            color: #ff0000;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .species-name {
+            font-style: italic;
+            color: #666;
+            font-size: 11px;
+            margin: 2px 0;
+            text-align: center;
+        }
+
+        .pokemon-info {
+            font-size: 10px;
+            color: #444;
+            margin: 4px 0;
+            text-align: center;
+            font-style: italic;
         }
 
         .image-container {
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: radial-gradient(circle at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 100%);
+            border-radius: 6px;
+            padding: 8px;
+            margin: 8px 0;
+            border: 2px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+            height: 160px; /* Fixed height for image container */
         }
 
         .pokemon-image {
             width: 100%;
-            height: 180px;
-            object-fit: contain;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+            transition: transform 0.3s ease;
         }
 
         .stats {
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 6px;
             padding: 10px;
-            margin-bottom: 10px;
+            margin-top: auto; /* Push to bottom */
+            border: 1px solid #ffd700;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .stat {
             margin-bottom: 8px;
-            padding: 5px;
+            padding: 6px;
             border-radius: 4px;
             background: rgba(255, 255, 255, 0.8);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            font-size: 11px;
+        }
+
+        .stat::before {
+            content: '';
+            position: absolute;
+            left: -3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            background-size: contain;
+            background-repeat: no-repeat;
         }
 
         .attack {
             font-weight: bold;
             color: #000000;
-            font-size: 0.9em;
+            margin-left: 18px;
         }
 
         .damage {
-            color: #000000;
+            background: linear-gradient(45deg, #ffd700, #ffb700);
+            color: #000;
+            padding: 1px 8px;
+            border-radius: 10px;
             font-weight: bold;
-            font-size: 0.9em;
+            font-size: 12px;
         }
 
         .type {
             display: inline-block;
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #ffffff;
+            padding: 3px 10px;
+            margin-top: 6px;
             border-radius: 12px;
-            font-size: 0.8em;
-            margin-top: 5px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: linear-gradient(45deg, #ffd700, #ffb700);
+            color: #000;
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+            border: 1px solid #000;
         }
 
-        .pokemon-info {
-            font-size: 0.7em;
-            color: #000000;
-            margin-bottom: 5px;
-            padding: 0 5px;
-            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+        /* Card type-specific styles */
+        .kawaii {
+            background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 50%, #ff69b4 100%);
         }
 
-        .species-name {
-            font-style: italic;
-            color: #000000;
-            font-size: 0.65em;
-            padding: 0 5px;
-            margin-bottom: 8px;
-            display: block;
-            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+        .basic {
+            background: linear-gradient(135deg, #e0e0e0 0%, #d3d3d3 50%, #a9a9a9 100%);
+        }
+
+        .sage {
+            background: linear-gradient(135deg, #98fb98 0%, #90ee90 50%, #3cb371 100%);
+        }
+
+        .fairy {
+            background: linear-gradient(135deg, #dda0dd 0%, #da70d6 50%, #ba55d3 100%);
+        }
+
+        /* Energy type indicators */
+        .kawaii .stat::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23ff69b4'/%3E%3C/svg%3E");
+        }
+
+        .basic .stat::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23808080'/%3E%3C/svg%3E");
+        }
+
+        .sage .stat::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%233cb371'/%3E%3C/svg%3E");
+        }
+
+        .fairy .stat::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23ee82ee'/%3E%3C/svg%3E");
+        }
+
+        /* Enhanced card hover effects */
+        .card:hover {
+            transform: translateY(-10px) rotate(2deg);
+            box-shadow: 
+                0 0 0 8px #ffd700,
+                0 0 0 9px #000,
+                10px 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover .pokemon-image {
+            transform: scale(1.05);
         }
 
         /* Holographic effect base */
@@ -341,14 +401,6 @@
         .card:hover::before,
         .card:hover::after {
             opacity: 1;
-        }
-
-        /* Enhanced hover effect */
-        .card:hover {
-            transform: translateY(-15px) rotateY(10deg);
-            box-shadow:
-                0 15px 30px rgba(0, 0, 0, 0.3),
-                0 0 50px rgba(255, 255, 255, 0.3);
         }
 
         /* Holographic animation */
@@ -494,12 +546,11 @@
 
         /* Footer styles */
         .footer {
-            position: fixed;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: absolute;
+            bottom: 1em;
+            left: 1em;
             display: flex;
-            align-items: center;
+            align-items: end;
             gap: 8px;
             background: linear-gradient(90deg, #ff8eb4, #ffa7c7);
             box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3);
@@ -518,7 +569,7 @@
         /* Copy component styles */
         .copy-container {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             margin-bottom: 30px;
@@ -558,6 +609,13 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(255, 142, 180, 0.4);
         }
+        .copy-button-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
 
         .copy-button.copied {
             background: linear-gradient(45deg, #95e1d3, #a8e6cf);
@@ -574,13 +632,13 @@
         rel="stylesheet">
     <!-- Preload critical images -->
     <link rel="preload" as="image"
-        href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/282.png">
+        href="https://64.media.tumblr.com/93d6985c1e43fc60af8b0b00933fbae5/2e5abd8b6472caf5-e7/s540x810/9bc3765938f78d8ca1edfcb2afb83ddb99fcfffd.gif">
+    <link rel="preload" as="image" href="https://img.wattpad.com/010697b3d2ebd7ece3c4ef45bb8ee45163752439/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f64497736424f626c39415a6f6e513d3d2d313931332e313636653662646361616534303532633933353139303631353531302e676966>
+    <link rel="preload" as="image" href="https://cdn.myanimelist.net/images/characters/8/327520.jpg">
     <link rel="preload" as="image"
-        href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/474.png">
+        href="https://gifdb.com/images/high/anime-elf-frieren-going-to-eat-cake-33rvseyebg1a1wgj.gif">
     <link rel="preload" as="image"
-        href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/365.png">
-    <link rel="preload" as="image"
-        href="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/176.png">
+        href="https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966">
 </head>
 
 <body>
@@ -606,9 +664,10 @@
     <div class="">
         <div class="copy-container">
             <div class="copy-text">
-                <h1>Problematic Cursor Agents from hell</h1>
-                <h2>Get your cursor agents here!</h2>
+                <h1>Cursor Agents from hell</h1>
+                <h2>Coding assistance with personality</h2>
             </div>
+        <div class="copy-button-container">
             <code class="copy-text">npx @usrrname/cursorrules</code>
         <button class="copy-button" aria-label="Copy command to clipboard" onclick="copyToClipboard()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -619,7 +678,42 @@
             Copy
         </button>
         </div>
+    </div>
     <div class="card-container">
+    <!-- ThirstySimp Card -->
+    <div class="card basic">
+        <div class="card-header">
+            <span class="pokemon-name">ThirstySimp</span>
+            <span class="hp">HP 130</span>
+        </div>
+        <div class="species-name">
+            Developerus insecurus trendchaser
+        </div>
+        <div class="image-container">
+            <img loading="lazy"
+                src="https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966"
+                alt="Izumi Miyamura from Horimiya" class="pokemon-image"
+                onerror="this.onerror=null; this.src='https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966'" />
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <span class="attack">🎥 YouTube Tutorial Binge</span>
+                <span class="damage">75</span>
+            </div>
+            <div class="stat">
+                <span class="attack">🔥 Framework FOMO</span>
+                <span class="damage">90</span>
+            </div>
+            <div class="stat">
+                <span class="attack">🤓 Actually... Correction</span>
+                <span class="damage">85</span>
+            </div>
+            <div class="type">Psychic / Dark</div>
+        </div>
+        <div class="pokemon-info" style="font-size: 0.6em; margin-top: 5px;">
+            Weakness: Senior devs, New frameworks, AI taking jobs
+        </div>
+    </div>
         <!-- KawaiiSamurai Card -->
         <div class="card kawaii">
             <div class="card-header">
@@ -634,8 +728,8 @@
             </div>
             <div class="image-container">
                 <img loading="lazy"
-                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/282.png"
-                    alt="Gardevoir" class="pokemon-image">
+                    src="https://64.media.tumblr.com/93d6985c1e43fc60af8b0b00933fbae5/2e5abd8b6472caf5-e7/s540x810/9bc3765938f78d8ca1edfcb2afb83ddb99fcfffd.gif"
+                    alt="Senshi from Dungeon Meshi transformed into an elf" class="pokemon-image">
             </div>
             <div class="stats">
                 <div class="stat">
@@ -665,8 +759,8 @@
             </div>
             <div class="image-container">
                 <img loading="lazy"
-                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/474.png"
-                    alt="Porygon-Z" class="pokemon-image">
+                    src="https://img.wattpad.com/010697b3d2ebd7ece3c4ef45bb8ee45163752439/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f64497736424f626c39415a6f6e513d3d2d313931332e313636653662646361616534303532633933353139303631353531302e676966"
+                    alt="Tanaka from Haikyuu" class="pokemon-image">
             </div>
             <div class="stats">
                 <div class="stat">
@@ -696,8 +790,8 @@
             </div>
             <div class="image-container">
                 <img loading="lazy"
-                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/365.png"
-                    alt="Walrein" class="pokemon-image">
+                    src="https://gifdb.com/images/high/hunter-x-hunter-big-biscuit-krueger-zu59nfjv9z23o0js.webp"
+                    alt="Kakashi Hatake from Naruto" class="pokemon-image">
             </div>
             <div class="stats">
                 <div class="stat">
@@ -727,8 +821,8 @@
             </div>
             <div class="image-container">
                 <img loading="lazy"
-                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/176.png"
-                    alt="Togetic" class="pokemon-image">
+                    src="https://gifdb.com/images/high/anime-elf-frieren-going-to-eat-cake-33rvseyebg1a1wgj.gif"
+                    alt="Elf Frieren" class="pokemon-image">
             </div>
             <div class="stats">
                 <div class="stat">
@@ -744,43 +838,6 @@
                     <span class="damage">95</span>
                 </div>
                 <div class="type">Fairy / Flying</div>
-            </div>
-        </div>
-        <!-- ThirstySimp Card -->
-        <div class="card basic">
-            <div class="card-header">
-                <span class="pokemon-name">ThirstySimp</span>
-                <span class="hp">HP 130</span>
-            </div>
-            <div class="species-name">
-                Developerus insecurus trendchaser
-            </div>
-            <div class="pokemon-info">
-                Anxious AI Agent. Always watching tech influencer videos. Length: 5'8", Weight: 145 lbs.
-            </div>
-            <div class="image-container">
-                <img loading="lazy"
-                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/678.png"
-                    alt="Meowstic" class="pokemon-image"
-                    onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/97.png';">
-            </div>
-            <div class="stats">
-                <div class="stat">
-                    <span class="attack">🎥 YouTube Tutorial Binge</span>
-                    <span class="damage">75</span>
-                </div>
-                <div class="stat">
-                    <span class="attack">🔥 Framework FOMO</span>
-                    <span class="damage">90</span>
-                </div>
-                <div class="stat">
-                    <span class="attack">🤓 Actually... Correction</span>
-                    <span class="damage">85</span>
-                </div>
-                <div class="type">Psychic / Dark</div>
-            </div>
-            <div class="pokemon-info" style="font-size: 0.6em; margin-top: 5px;">
-                Weakness: Senior devs, New frameworks, AI taking jobs
             </div>
         </div>
         </div>
