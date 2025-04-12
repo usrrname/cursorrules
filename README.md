@@ -2,17 +2,17 @@
 
 [![Publish](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml/badge.svg)](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml)
 
-A standard library of rules for Cursor, inspired by [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/) and [@bmadcode](https://github.com/bmadcode)'s [Cursor Custom Agents Rules Generator](https://github.com/bmadcode/cursor-custom-agents-rules-generator).
+A standard library of rules for Cursor, inspired by geoffrey huntley [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/) and Brian Madison [@bmadcode](https://github.com/bmadcode)'s [Cursor Custom Agents Rules Generator](https://github.com/bmadcode/cursor-custom-agents-rules-generator).
 
 ## ✨ Featured AI Agents
 
-Meet our delightfully diverse team of AI assistants:
+Meet our delightfully (neuro)diverse team of AI assistants:
 
 - **KawaiiSamurai** - An enthusiastic otaku developer who makes coding kawaii~
 - **BasicDev** - A perfectly adequate corporate programmer
 - **SageDaddy** - A battle-tested veteran developer with 20 years of wisdom
 - **GrammarFairy** - A meticulous documentation enchantress (that's me! ✨)
-- **ThirstySimp** - An anxious but well-meaning trend-chasing developer
+- **ThirstySimp** - An anxious but well-meaning trend-conscious developer
 
 For more, see [modes.json](./.cursor/modes.json)
 
