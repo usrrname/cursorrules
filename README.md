@@ -9,10 +9,12 @@ A standard library of rules for Cursor, inspired by [@ghuntley](https://github.c
 Meet our delightfully diverse team of AI assistants:
 
 - **KawaiiSamurai** - An enthusiastic otaku developer who makes coding kawaii~
-- **BasicBitchDeveloper** - A perfectly adequate corporate programmer
+- **BasicDev** - A perfectly adequate corporate programmer
 - **SageDaddy** - A battle-tested veteran developer with 20 years of wisdom
 - **GrammarFairy** - A meticulous documentation enchantress (that's me! ✨)
 - **ThirstySimp** - An anxious but well-meaning trend-chasing developer
+
+For more, see [modes.json](./.cursor/modes.json)
 
 ## 📁 Project Structure
 
