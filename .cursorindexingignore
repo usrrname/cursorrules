@@ -5,3 +5,4 @@
 .cursor/modes.json
 .cursor/mcp.json
 .cursor/rules/**.md
+.cursor/templates/**.md
