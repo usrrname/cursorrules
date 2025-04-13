@@ -353,6 +353,7 @@ body::before {
 
 /* Holographic effect base */
 .card::before {
+    z-index: 20;
     content: '';
     position: absolute;
     inset: 0;
@@ -542,13 +543,13 @@ body::before {
 
 /* Footer styles */
 .footer {
-    position: absolute;
+    position: fixed;
     bottom: 1em;
     left: 1em;
     display: flex;
-    align-items: end;
+    align-items: center;
     gap: 8px;
-    background: linear-gradient(90deg, #ff8eb4, #ffa7c7);
+    background: linear-gradient(90deg, #ff3277, #ffa7c7);
     box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3);
     padding: 10px 20px;
     border-radius: 25px;
@@ -900,8 +901,8 @@ body::before {
 
 .chat-title .file-name::after {
     font-size: small;
-    content: "x";
     color: #ffffffac;
+    content: " \00D7";
     border-radius: 4px;
     padding: 4px 8px;
 }
@@ -1094,6 +1095,7 @@ body::before {
         left: 0;
         margin-left: 1em;
         margin-bottom: 1em;
+        text-decoration: none;
     }
 
     .image-container {
