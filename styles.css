@@ -96,6 +96,20 @@ body {
     left: 80%;
 }
 
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    justify-content: center;
+    gap: 1em;
+    width: 100vw;
+    padding: 25px;
+    background: rgba(255, 255, 255, .1);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
+    contain: layout style paint;
+}
 /* Pixel art corner decorations */
 .card-container::before,
 .card-container::after {
@@ -140,20 +154,6 @@ body::before {
     pointer-events: none;
 }
 
-.card-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 1em;
-    width: 100vw;
-    z-index: 1;
-    padding: 25px;
-    background: rgba(255, 255, 255, .1);
-    border-radius: 8px;
-    backdrop-filter: blur(5px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
-    contain: layout style paint;
-}
 
 /* Pokémon card styling enhancements */
 .card {
@@ -296,7 +296,7 @@ body::before {
     border: 1px solid #000;
 }
 
-/* Card type-specific styles */
+/* Card background styles */
 .kawaii {
     background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 50%, #ff69b4 100%);
 }
@@ -513,10 +513,6 @@ body::before {
     top: 0;
 }
 
-.ticker-bottom {
-    bottom: 0;
-}
-
 .ticker {
     white-space: nowrap;
     padding-right: 100%;
@@ -723,7 +719,6 @@ body::before {
 }
 
 .success {
-    font-size: initial;
     color: #27c93f;
     margin-right: 8px;
 }
@@ -1045,13 +1040,6 @@ body::before {
     padding: 1rem 1.5rem;
 }
 
-/* Make card container responsive */
-.card-container {
-    display: flex;
-    justify-content: center;
-    margin: 0 auto;
-    width: 100%;
-}
 
 /* Make hero section responsive */
 .hero-section {
@@ -1133,6 +1121,7 @@ body::before {
     }
 
     .card-container {
+        flex-direction: column;
         width: 100vw;
         gap: 1em;
     }
@@ -1187,4 +1176,172 @@ body::before {
         width: calc(var(--card-width) * 0.85);
         height: calc(var(--card-height) * 0.85);
     }
+}
+/* Sailor Moon Card Styles */
+.sailor {
+    background: linear-gradient(135deg, #ffd700 0%, #ffb14f 50%, #ff69b4 100%);
+    z-index: 10;
+    box-shadow:
+        0 0 15px #ffd700,
+        0 0 0 4px #ffd700,
+        0 0 0 5px #000,
+        5px 5px 15px rgba(0, 0, 0, 0.4);
+    order: 1;
+}
+
+.sailor .card-header {
+    background: linear-gradient(90deg, #ffd700, #ff69b4);
+    border-radius: 8px;
+    padding: 5px;
+    margin: -5px -5px 5px -5px;
+}
+
+.sailor .pokemon-name {
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+    font-size: 18px;
+}
+
+.sailor .hp {
+    color: #fff;
+    background: rgba(255, 0, 0, 0.7);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.sailor .species-name {
+    color: #333;
+    font-weight: bold;
+}
+
+.sailor .image-container {
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.sailor .stats {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid #ffd700;
+}
+
+.sailor .stat {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 182, 193, 0.2));
+    border-left: 3px solid #ffd700;
+}
+
+.sailor .type {
+    background: linear-gradient(45deg, #ff69b4, #ffd700);
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    padding: 5px 12px;
+}
+
+.sailor .damage {
+    background: linear-gradient(45deg, #ff69b4, #ffd700);
+    color: white;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Sailor Moon specific holographic effects */
+.sailor::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    background: linear-gradient(45deg,
+            rgba(255, 215, 0, 0.6),
+            rgba(255, 192, 203, 0.6),
+            rgba(255, 215, 0, 0.6));
+    border-radius: 15px;
+    z-index: -1;
+    animation: leaderGlow 3s infinite alternate;
+    filter: blur(8px);
+    opacity: 0.7;
+}
+
+.sailor::after {
+    opacity: 0.3;
+}
+
+.sailor:hover::before,
+.sailor:hover::after {
+    opacity: 0.7;
+}
+
+/* Crown decoration for Sailor Moon card */
+.sailor .crown-decoration {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    z-index: 100;
+    text-shadow: 0 0 5px #ffd700;
+    animation: floating 3s ease-in-out infinite;
+}
+
+/* Leadership ribbon for Sailor */
+.leader-ribbon {
+    position: absolute;
+    top: 20px;
+    right: -30px;
+    background: linear-gradient(45deg, #ff69b4, #ffd700);
+    color: white;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 20;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+}
+
+@keyframes floating {
+
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+@keyframes leaderGlow {
+    0% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+/* Sailor hover effects */
+.sailor:hover {
+    transform: translateY(-15px) scale(1.07);
+    box-shadow:
+        0 0 20px #ffd700,
+        0 0 0 4px #ffd700,
+        0 0 0 5px #000,
+        10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.sailor:hover::before {
+    filter: blur(12px);
+    opacity: 0.9;
+}
+
+.sailor:hover .image-container {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+}
+
+.sailor .image-container {
+    transition: all 0.3s ease;
 }

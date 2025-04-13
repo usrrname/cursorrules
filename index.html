@@ -15,12 +15,12 @@
     <meta name="og:title" content="@usrrname/cursorrules">
     <meta name="og:description"
         content="@usrrname/cursorrules is a standard library of cursor rules with some fabulously perverse cursor agents">
-    <meta name="og:image" content="https://i.imgur.com/DphUC1V.png">
+    <meta name="og:image" content=" ">
     <meta name="og:url" content="">
     <meta name="og:site_name" content="Problematic Cursor Agents">
     <meta name="og:type" content="website">
     <meta name="og:locale" content="en_US">
-    <title>Problematic Cursor Agents</title>
+    <title>@usrrname/cursorrules | Cursor Agents</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Doto&display=swap" rel="stylesheet" />
@@ -39,185 +39,6 @@
     <link rel="preload" as="image"
         href="https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966">
 <link rel="stylesheet" href="./styles.css" as="style">
-    <style>
-        .history-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            color: #8b949e;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-    
-        .history-button:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #c9d1d9;
-        }
-    
-        .chat-history {
-            background: #0d1117;
-            border-radius: 8px;
-            margin: 8px;
-            padding: 12px;
-            height: calc(100% - 120px);
-            overflow-y: auto;
-        }
-    
-        .history-title {
-            color: #c9d1d9;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #30363d;
-        }
-    
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-    
-        .history-item {
-            padding: 8px 12px;
-            border-radius: 6px;
-            background: #161b22;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-    
-        .history-item:hover {
-            background: #1c2128;
-            transform: translateX(4px);
-        }
-    
-        .history-timestamp {
-            color: #8b949e;
-            font-size: 12px;
-            margin-bottom: 4px;
-        }
-    
-        .history-content {
-            color: #c9d1d9;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-    
-        /* Sailor Moon Card Styles */
-        .sailor {
-            background: linear-gradient(135deg, #ffd700 0%, #ffb14f 50%, #ff69b4 100%);
-            transform: scale(1.05);
-            z-index: 10;
-            box-shadow:
-                0 0 15px #ffd700,
-                0 0 0 4px #ffd700,
-                0 0 0 5px #000,
-                5px 5px 15px rgba(0, 0, 0, 0.4);
-            order: -1;
-            /* Make it appear first */
-        }
-    
-        .sailor .card-header {
-            background: linear-gradient(90deg, #ffd700, #ff69b4);
-            border-radius: 8px;
-            padding: 5px;
-            margin: -5px -5px 5px -5px;
-        }
-    
-        .sailor .pokemon-name {
-            color: #fff;
-            text-shadow: 1px 1px 2px #000;
-            font-size: 18px;
-        }
-    
-        .sailor .hp {
-            color: #fff;
-            background: rgba(255, 0, 0, 0.7);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-    
-        .sailor .species-name {
-            color: #333;
-            font-weight: bold;
-        }
-    
-        .sailor .image-container {
-            border: 3px solid #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-    
-        .sailor .stats {
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid #ffd700;
-        }
-    
-        .sailor .stat {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 182, 193, 0.2));
-            border-left: 3px solid #ffd700;
-        }
-    
-        .sailor .type {
-            background: linear-gradient(45deg, #ff69b4, #ffd700);
-            color: white;
-            font-weight: bold;
-            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-            padding: 5px 12px;
-        }
-    
-        .sailor .damage {
-            background: linear-gradient(45deg, #ff69b4, #ffd700);
-            color: white;
-            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-        }
-    
-        /* Sailor Moon specific holographic effects */
-        .sailor::before {
-            opacity: 0.3 !important;
-            background: linear-gradient(125deg,
-                    rgba(255, 215, 0, 0.4),
-                    rgba(255, 105, 180, 0.4) 25%,
-                    rgba(173, 216, 230, 0.4) 50%,
-                    rgba(255, 105, 180, 0.4) 75%,
-                    rgba(255, 215, 0, 0.4) 100%);
-            animation: holographic 3s linear infinite !important;
-        }
-    
-        .sailor::after {
-            opacity: 0.3 !important;
-        }
-    
-        .sailor:hover::before,
-        .sailor:hover::after {
-            opacity: 0.7 !important;
-        }
-    
-        /* Crown decoration for Sailor Moon card */
-        .sailor .crown-decoration {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            z-index: 100;
-            text-shadow: 0 0 5px #ffd700;
-            animation: floating 3s ease-in-out infinite;
-        }
-    
-        @keyframes floating {
-    
-            0%,
-            100% {
-                transform: translateX(-50%) translateY(0);
-            }
-    
-            50% {
-                transform: translateX(-50%) translateY(-5px);
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -283,6 +104,40 @@
     </div>
 </section>
     <div class="card-container">
+        <!-- Sailor Moon Card -->
+        <div class="card sailor">
+            <div class="crown-decoration">👑</div>
+            <div class="leader-ribbon">Leader</div>
+            <div class="card-header">
+                <span class="pokemon-name">SailorScrum</span>
+                <span class="hp">HP 300</span>
+            </div>
+            <div class="species-name">
+                Productus ownerus supremus
+            </div>
+            <div class="pokemon-info">
+                Product Owner & Managing Leader. Length: 5'6", Weight: 110 lbs.
+            </div>
+            <div class="image-container">
+                <img loading="lazy" src="https://i.pinimg.com/originals/37/cc/04/37cc04c3b5813d7a9b2377d85e328793.gif"
+                    alt="Sailor Star transform" class="pokemon-image">
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="attack">🌙 Moonlight Decision</span>
+                    <span class="damage">150</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">💫 Cosmic Prioritization</span>
+                    <span class="damage">130</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">🌟 Tiara Product Demo</span>
+                    <span class="damage">140</span>
+                </div>
+                <div class="type">Fairy / Psychic</div>
+            </div>
+        </div>
 
         <!-- ThirstySimp Card -->
         <div class="card simpy">
@@ -413,7 +268,6 @@
                 <div class="type">Ice / Ground</div>
             </div>
         </div>
-
 <!-- Spellchuck Card -->
         <div class="card fairy">
             <div class="card-header">
@@ -475,39 +329,6 @@
             </div>
             <div class="type">Dark / Steel</div>
         </div>
-</div>
-<!-- Sailor Moon Card -->
-<div class="card sailor">
-    <div class="crown-decoration">👑</div>
-    <div class="card-header">
-        <span class="pokemon-name">SailorScrum</span>
-        <span class="hp">HP 300</span>
-    </div>
-    <div class="species-name">
-        Productus ownerus supremus
-    </div>
-    <div class="pokemon-info">
-        Product Owner & Managing Leader. Length: 5'6", Weight: 110 lbs.
-    </div>
-    <div class="image-container">
-        <img loading="lazy" src="https://i.pinimg.com/originals/37/cc/04/37cc04c3b5813d7a9b2377d85e328793.gif"
-            alt="Sailor Star transform" class="pokemon-image">
-    </div>
-    <div class="stats">
-        <div class="stat">
-            <span class="attack">🌙 Moonlight Decision</span>
-            <span class="damage">150</span>
-        </div>
-        <div class="stat">
-            <span class="attack">💫 Cosmic Prioritization</span>
-            <span class="damage">130</span>
-        </div>
-        <div class="stat">
-            <span class="attack">🌟 Tiara Product Demo</span>
-            <span class="damage">140</span>
-        </div>
-        <div class="type">Fairy / Psychic</div>
-    </div>
 </div>
     </div>
     <a href="https://github.com/usrrname/cursorrules" class="footer">

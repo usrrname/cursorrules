@@ -26,6 +26,8 @@ For more, see [modes.json](./.cursor/modes.json)
 
 ## 📁 Project Structure
 
+On the meta level, the project is structured as follows:
+
 ```
 .cursor/
 ├── rules/
@@ -33,6 +35,17 @@ For more, see [modes.json](./.cursor/modes.json)
 │   ├── templates/   # Document templates for project context 
 │   └── utils/       # Rules for tooling and developer experience
 └── modes.json       # Custom agent configurations
+```
+See [docs](./docs/custom-agents.md) for more information on the custom agents.
+
+On the project level, a project that uses these cursor rules and agents will have its own structure, which is as follows:
+
+```
+.ai/
+├── pbi/
+│   ├── ###-pbi.md
+│   ├── ###-user-story.md
+│   └── ###-architecture.md
 ```
 
 ## 🚀 Installation
@@ -94,3 +107,13 @@ By default, the package saves files to the `output/` directory in your current l
    ```bash
    npm unpublish @usrrname:registry http://localhost:4873/ @usrrname/cursorrules
    ```
+<hr/>
+
+
+🚧 Under construction 🚧
+
+### MCP Setup
+
+[About Model Context Protocol](https://github.com/modelcontextprotocol)
+
+
