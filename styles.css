@@ -1,0 +1,1134 @@
+/* Optimize performance with CSS containment */
+.card {
+    contain: content;
+}
+
+/* Use hardware acceleration for animations */
+.card {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* Reduce repaints by using transform instead of top/left */
+@keyframes sparkle {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(100px, 100px);
+    }
+}
+
+/* Optimize the background gradient */
+body {
+    background: #e2b8ff;
+    font-family: 'M PLUS Rounded 1c', system-ui, -apple-system, BlinkMacSystemFont, 'Segue UI', Roboto, sans-serif;
+}
+
+/* Sakura petals background animation */
+@keyframes fall {
+    0% {
+        transform: translate(0, -10px) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(100px, 1000px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sakura,
+    .card::before,
+    .card::after {
+        animation: none;
+    }
+}
+
+.sakura {
+    position: fixed;
+    width: 15px;
+    height: 15px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23ffd7e5' d='M10 0C7 0 5 2 5 5s2 5 5 5 5-2 5-5zm0 10C7 10 5 12 5 15s2 5 5 5 5-2 5-5z'/%3E%3C/svg%3E") no-repeat;
+    pointer-events: none;
+}
+
+.sakura:nth-child(1) {
+    animation: fall 10s linear infinite;
+    left: 10%;
+}
+
+.sakura:nth-child(2) {
+    animation: fall 12s linear infinite 2s;
+    left: 20%;
+}
+
+.sakura:nth-child(3) {
+    animation: fall 9s linear infinite 1s;
+    left: 30%;
+}
+
+.sakura:nth-child(4) {
+    animation: fall 11s linear infinite 3s;
+    left: 40%;
+}
+
+.sakura:nth-child(5) {
+    animation: fall 10s linear infinite 4s;
+    left: 50%;
+}
+
+.sakura:nth-child(6) {
+    animation: fall 12s linear infinite 5s;
+    left: 60%;
+}
+
+.sakura:nth-child(7) {
+    animation: fall 9s linear infinite 6s;
+    left: 70%;
+}
+
+.sakura:nth-child(8) {
+    animation: fall 11s linear infinite 7s;
+    left: 80%;
+}
+
+/* Pixel art corner decorations */
+.card-container::before,
+.card-container::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23ffd7e5' d='M0 0h2v2H0zM2 2h2v2H2zM4 4h2v2H4zM6 6h2v2H6z'/%3E%3C/svg%3E") no-repeat;
+    background-size: contain;
+}
+
+.card-container::before {
+    top: -20px;
+    left: -20px;
+    transform: rotate(0deg);
+}
+
+.card-container::after {
+    bottom: -20px;
+    right: -20px;
+    transform: rotate(180deg);
+}
+
+/* Optimize SVG data URLs */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, .1) 2%, transparent 2.1%),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .1) 1%, transparent 1.1%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, .1) 1.5%, transparent 1.6%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ff9ecd' d='M50 90c-5-20-10-35-25-35s-20 15-25 35c30 20 45 20 50 0zm0 0c5-20 10-35 25-35s20 15 25 35c-30 20-45 20-50 0'/%3E%3Ccircle fill='%23ff70b5' cx='50' cy='35' r='20'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-position: 0 0, 50px 50px, -30px -30px, 0 0;
+    animation: sparkle 20s linear infinite;
+    opacity: 0.3;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.card-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1em;
+    width: 100vw;
+    z-index: 1;
+    padding: 25px;
+    background: rgba(255, 255, 255, .1);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
+    contain: layout style paint;
+}
+
+/* Pokémon card styling enhancements */
+.card {
+    min-width: var(--card-width);
+    min-height: var(--card-height);
+    border-radius: 10px;
+    padding: 12px;
+    position: relative;
+    box-shadow:
+        0 0 0 4px #ffd700,
+        0 0 0 5px #000,
+        5px 5px 15px rgba(0, 0, 0, 0.4);
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 100%);
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.pokemon-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.hp {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ff0000;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.species-name {
+    font-style: italic;
+    color: #666;
+    margin: 2px 0;
+    text-align: center;
+}
+
+.pokemon-info {
+    color: #444;
+    margin: 4px 0;
+    text-align: center;
+    font-style: italic;
+}
+
+.image-container {
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.5) 100%);
+    border-radius: 6px;
+    padding: 8px;
+    margin: 8px 0;
+    border: 2px solid #ffd700;
+    position: relative;
+    overflow: hidden;
+    height: 160px;
+    /* Fixed height for image container */
+}
+
+.pokemon-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+}
+
+.stats {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: auto;
+    /* Push to bottom */
+    border: 1px solid #ffd700;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat {
+    margin-bottom: 8px;
+    padding: 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.stat::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.attack {
+    font-weight: bold;
+    color: #000000;
+    margin-left: 18px;
+}
+
+.damage {
+    background: linear-gradient(45deg, #ffd700, #ffb700);
+    color: #000;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: small;
+}
+
+.type {
+    display: inline-block;
+    padding: 3px 10px;
+    margin-top: 6px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(45deg, #ffd700, #ffb700);
+    color: #000;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+    border: 1px solid #000;
+}
+
+/* Card type-specific styles */
+.kawaii {
+    background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 50%, #ff69b4 100%);
+}
+
+.basic {
+    background: linear-gradient(135deg, #e0e0e0 0%, #d3d3d3 50%, #a9a9a9 100%);
+}
+
+.sage {
+    background: linear-gradient(135deg, #98fb98 0%, #90ee90 50%, #3cb371 100%);
+}
+
+.fairy {
+    background: linear-gradient(135deg, #dda0dd 0%, #da70d6 50%, #ba55d3 100%);
+}
+
+.simpy {
+    background: linear-gradient(135deg, #ffd700 0%, #ffb700 50%, #ff69b4 100%);
+}
+
+.qwoofy {
+    background: linear-gradient(135deg, #00c8ff 0%, #00ddff 50%, #6969ff 100%);
+}
+
+/* Energy type indicators */
+.kawaii .stat::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23ff69b4'/%3E%3C/svg%3E");
+}
+
+.basic .stat::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23808080'/%3E%3C/svg%3E");
+}
+
+.sage .stat::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%233cb371'/%3E%3C/svg%3E");
+}
+
+.fairy .stat::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23ee82ee'/%3E%3C/svg%3E");
+}
+
+/* Enhanced card hover effects */
+.card:hover {
+    transform: translateY(-10px) rotate(2deg);
+    box-shadow:
+        0 0 0 8px #ffd700,
+        0 0 0 9px #000,
+        10px 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover .pokemon-image {
+    transform: scale(1.05);
+}
+
+/* Holographic effect base */
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(125deg,
+            rgba(255, 0, 0, 0.1),
+            rgba(255, 165, 0, 0.1) 10%,
+            rgba(255, 255, 0, 0.1) 20%,
+            rgba(0, 255, 0, 0.1) 30%,
+            rgba(0, 255, 255, 0.1) 40%,
+            rgba(0, 0, 255, 0.1) 50%,
+            rgba(238, 130, 238, 0.1) 60%,
+            rgba(255, 0, 0, 0.1) 70%);
+    background-size: 200% 200%;
+    animation: holographic 6s linear infinite;
+    border-radius: 15px;
+    opacity: 0;
+    mix-blend-mode: color-dodge;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* Holographic sparkles */
+.card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-conic-gradient(from 45deg,
+            rgba(255, 255, 255, 0) 0deg,
+            rgba(255, 255, 255, 0.1) 10deg,
+            rgba(255, 255, 255, 0) 20deg);
+    background-size: 20px 20px;
+    border-radius: 15px;
+    opacity: 0;
+    mix-blend-mode: overlay;
+    animation: sparkle 10s linear infinite;
+    pointer-events: none;
+}
+
+/* Show holographic effects on hover */
+.card:hover::before,
+.card:hover::after {
+    opacity: 1;
+}
+
+/* Holographic animation */
+@keyframes holographic {
+    0% {
+        background-position: 0% 50%;
+        filter: hue-rotate(0deg);
+    }
+
+    50% {
+        background-position: 100% 50%;
+        filter: hue-rotate(180deg);
+    }
+
+    100% {
+        background-position: 0% 50%;
+        filter: hue-rotate(360deg);
+    }
+}
+
+@keyframes sparkle {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    100% {
+        transform: translateY(-100%) rotate(360deg);
+    }
+}
+
+/* Card type-specific holographic effects */
+.kawaii:hover::before {
+    background: linear-gradient(125deg,
+            rgba(255, 192, 203, 0.2),
+            rgba(255, 105, 180, 0.2) 25%,
+            rgba(255, 20, 147, 0.2) 50%,
+            rgba(255, 105, 180, 0.2) 75%,
+            rgba(255, 192, 203, 0.2) 100%);
+    animation: holographic 4s linear infinite;
+}
+
+.basic:hover::before {
+    background: linear-gradient(125deg,
+            rgba(169, 169, 169, 0.2),
+            rgba(128, 128, 128, 0.2) 25%,
+            rgba(105, 105, 105, 0.2) 50%,
+            rgba(128, 128, 128, 0.2) 75%,
+            rgba(169, 169, 169, 0.2) 100%);
+    animation: holographic 5s linear infinite;
+}
+
+.sage:hover::before {
+    background: linear-gradient(125deg,
+            rgba(46, 139, 87, 0.2),
+            rgba(60, 179, 113, 0.2) 25%,
+            rgba(32, 178, 170, 0.2) 50%,
+            rgba(60, 179, 113, 0.2) 75%,
+            rgba(46, 139, 87, 0.2) 100%);
+    animation: holographic 6s linear infinite;
+}
+
+.fairy:hover::before {
+    background: linear-gradient(125deg,
+            rgba(238, 130, 238, 0.2),
+            rgba(218, 112, 214, 0.2) 25%,
+            rgba(199, 21, 133, 0.2) 50%,
+            rgba(218, 112, 214, 0.2) 75%,
+            rgba(238, 130, 238, 0.2) 100%);
+    animation: holographic 4.5s linear infinite;
+}
+
+/* Enhance image container for holographic effect */
+.image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.image-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.1) 45%,
+            rgba(255, 255, 255, 0.5) 50%,
+            rgba(255, 255, 255, 0.1) 55%,
+            transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    pointer-events: none;
+}
+
+.card:hover .image-container::before {
+    transform: translateX(100%);
+    transition: transform 1s ease;
+}
+
+/* Ticker styles */
+.ticker-container {
+    max-width: 650px;
+    width: auto;
+    height: 40px;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.8), rgba(255, 142, 180, 0.8), rgba(0, 0, 0, 0.8));
+    backdrop-filter: blur(5px);
+    overflow: hidden;
+    position: relative;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ticker-top {
+    top: 0;
+}
+
+.ticker-bottom {
+    bottom: 0;
+}
+
+.ticker {
+    white-space: nowrap;
+    padding-right: 100%;
+    display: inline-block;
+    animation: ticker 60s linear infinite;
+    color: #fff;
+    font-family: 'Doto';
+    font-size: 16px;
+}
+
+.ticker-reverse {
+    animation-direction: reverse;
+}
+
+@keyframes ticker {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(-100%, 0, 0);
+    }
+}
+
+/* Footer styles */
+.footer {
+    position: absolute;
+    bottom: 1em;
+    left: 1em;
+    display: flex;
+    align-items: end;
+    gap: 8px;
+    background: linear-gradient(90deg, #ff8eb4, #ffa7c7);
+    box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3);
+    padding: 10px 20px;
+    border-radius: 25px;
+    color: white;
+    font-size: 14px;
+    z-index: 999;
+}
+
+.footer svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Copy component styles */
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2.5em;
+    gap: 10px;
+}
+
+.copy-text {
+    background: transparent;
+    color: #ff8eb4;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-family: monospace;
+    font-size: 16px;
+    user-select: all;
+    border: 1px dashed #ffd7e5;
+}
+
+.copy-button {
+    background: linear-gradient(45deg, #ff8eb4, #ffa7c7);
+    color: darkslategray;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3);
+    font-weight: 500;
+}
+
+.copy-button:hover {
+    background: linear-gradient(45deg, #ffa7c7, #ff8eb4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 142, 180, 0.4);
+}
+
+.copy-button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.copy-button.copied {
+    background: linear-gradient(45deg, #95e1d3, #a8e6cf);
+    box-shadow: 0 4px 15px rgba(149, 225, 211, 0.3);
+}
+
+.copy-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.terminal-container {
+    background: #2d2d2d;
+    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    font-family: 'Monaco', 'Consolas', monospace;
+    margin: 20px auto;
+    max-width: 600px;
+    overflow: hidden;
+}
+
+.terminal-header {
+    background: #1a1a1a;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.terminal-buttons {
+    display: flex;
+    gap: 8px;
+    margin-right: 15px;
+}
+
+.terminal-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.close {
+    background: #ff5f56;
+}
+
+.minimize {
+    background: #ffbd2e;
+}
+
+.maximize {
+    background: #27c93f;
+}
+
+.terminal-title {
+    color: #ffffffac;
+    font-size: small;
+    font-weight: 550;
+    flex-grow: 1;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    background-color: #232323;
+    border-radius: 4px;
+    padding: 4px 8px;
+
+    &:hover::after {
+        font-size: inherit;
+        color: inherit;
+        vertical-align: middle;
+        content: " \00D7";
+        /* Unicode for multiplication sign × */
+    }
+}
+
+.terminal-content {
+    padding: 20px;
+    color: #fff;
+}
+
+.command-line {
+    margin: 10px 0;
+    color: #fff;
+}
+
+.prompt {
+    color: #27c93f;
+    margin-right: 10px;
+}
+
+.features-list {
+    margin-top: 20px;
+}
+
+.features-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.features-list li {
+    margin: 8px 0;
+    color: #b4b4b4;
+    font-size: 14px;
+}
+
+.success {
+    font-size: initial;
+    color: #27c93f;
+    margin-right: 8px;
+}
+
+[INFO] {
+    color: #5fafff;
+    margin: 10px 0;
+    display: block;
+}
+
+/* Add scrollbar styles in the style section */
+/* Custom scrollbar styles */
+.scrollable-content {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.scrollable-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* For Firefox */
+.scrollable-content {
+    scrollbar-width: thin;
+    scrollbar-color: #666 rgba(0, 0, 0, 0.2);
+}
+
+.editor-container {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: 'Arial', 'Apple Sans', sans-serif;
+    margin: 20px auto;
+    width: auto;
+    max-width: 800px;
+}
+
+.editor-content {
+    width: auto;
+    display: flex;
+    padding: 1em;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.line-numbers {
+    user-select: none;
+    text-align: right;
+    padding-right: 1em;
+    color: #858585;
+    border-right: 1px solid #404040;
+    margin-right: 1em;
+    height: 100%;
+}
+
+.line-numbers span {
+    display: block;
+    font-family: 'Monaco', 'Consolas', monospace;
+    padding: 0 0.5em;
+}
+
+.code-content {
+    flex: 1;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.code-content pre {
+    margin: 0;
+    padding: 0;
+}
+
+.file-indicator {
+    color: #569cd6;
+    display: block;
+    margin-bottom: 1em;
+}
+
+.emoji {
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+/* Enhanced scrollbar styles for editor */
+.editor-content::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+}
+
+.editor-content::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-left: 1px solid #333;
+}
+
+.editor-content::-webkit-scrollbar-thumb {
+    background: #424242;
+    border: 3px solid #1e1e1e;
+    border-radius: 7px;
+}
+
+.editor-content::-webkit-scrollbar-thumb:hover {
+    background: #4f4f4f;
+}
+
+/* Firefox scrollbar styles */
+.editor-content {
+    scrollbar-width: thin;
+    scrollbar-color: #424242 #1e1e1e;
+}
+
+/* Add Cursor Chat styles */
+.cursor-chat {
+    background: #1e1e1e;
+    border-radius: 8px;
+    margin: 1em 0;
+    font-family: 'Monaco', 'Consolas', monospace;
+    color: #d4d4d4;
+}
+
+.chat-header {
+    border-radius: 8px 8px 0 0;
+    background: #1a1a1a;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.chat-title {
+    display: flex;
+    align-items: center;
+    justify-content: baseline;
+    font-family: 'Arial', 'Apple Sans', sans-serif;
+    gap: 8px;
+    margin-left: 15px;
+}
+
+.chat-title .file-name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Arial', 'Apple Sans', sans-serif;
+    font-size: small;
+    color: #ffffffac;
+    font-size: small;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover::after {
+        font-size: inherit;
+        color: inherit;
+        content: " \00D7";
+        background-color: #232323;
+    }
+}
+
+.chat-title .file-name::after {
+    font-size: small;
+    content: "x";
+    color: #ffffffac;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+.chat-messages {
+    font-family: 'Arial', 'Apple Sans', sans-serif;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: scroll;
+    font-size: small;
+}
+
+.message {
+    margin-bottom: 20px;
+    font-size: small;
+    line-height: 1.5;
+}
+
+.user-message {
+    color: #d4d4d4;
+}
+
+.generating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #858585;
+    font-size: small;
+    text-overflow: ellipsis;
+}
+
+.stop-button {
+    background: #333;
+    color: #d4d4d4;
+    border: 1px solid #484848;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: small;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 10px;
+}
+
+.stop-button:hover {
+    background: #404040;
+}
+
+.stop-button svg {
+    width: 12px;
+    height: 12px;
+}
+
+/* Enhance scrollbar for chat */
+.chat-messages::-webkit-scrollbar {
+    width: 14px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-left: 1px solid #333;
+    border-bottom-right-radius: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #424242;
+    border: 3px solid #1e1e1e;
+    border-radius: 7px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #4f4f4f;
+}
+
+/* Base responsive styles */
+:root {
+    --card-width: 342px;
+    --card-height: 480px;
+    --card-padding: 12px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+}
+
+/* Make card container responsive */
+.card-container {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Make hero section responsive */
+.hero-section {
+    width: 100%;
+    margin: 0 auto 40px;
+}
+
+.terminal-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 365px;
+    max-width: 800px;
+}
+
+/* Make cursor chat responsive */
+.cursor-chat {
+    max-width: 90%;
+    width: 800px;
+    margin: 40px auto;
+}
+
+/* Responsive breakpoints */
+@media screen and (min-width: 769px) {
+    .card-container {
+        gap: 1.5em;
+        width: auto;
+    }
+
+    .card {
+        width: calc(var(--card-width) * 0.9);
+        height: calc(var(--card-height) * 0.9);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .card-container {
+        gap: 10px;
+    }
+
+    .card {
+        width: calc(var(--card-width) * 0.8);
+        height: calc(var(--card-height) * 0.8);
+    }
+
+    .pokemon-name {
+        font-size: 14px;
+    }
+
+    .hp {
+        font-size: 14px;
+    }
+
+    .species-name {
+        font-size: 13px;
+    }
+
+    .pokemon-info {
+        font-size: 12px;
+    }
+
+    .image-container {
+        height: 140px;
+    }
+
+    .cursor-chat {
+        width: 95%;
+    }
+
+    .chat-messages {
+        max-height: 300px;
+    }
+
+}
+
+@media screen and (max-width: 480px) {
+    .container {
+        margin: auto 0px;
+    }
+
+    .card-container {
+        width: 100vw;
+        gap: 1em;
+    }
+
+    .card {
+        width: calc(var(--card-width) * 0.7);
+        height: calc(var(--card-height) * 0.7);
+        padding: 8px;
+    }
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        margin-left: 1em;
+        margin-bottom: 1em;
+    }
+
+    .image-container {
+        height: 120px;
+    }
+
+    .stats {
+        padding: 8px;
+    }
+
+    .features-list ul {
+        padding-left: 0.875em;
+    }
+
+    .ticker {
+        font-size: 16px;
+    }
+}
+
+/* Adjust ticker for smaller screens */
+@media screen and (max-width: 600px) {
+    .ticker-container {
+        height: 40px;
+    }
+}
+
+
+/* Optimize for tablets in portrait mode */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+    .card-container {
+        gap: 20px;
+    }
+
+    .card {
+        width: calc(var(--card-width) * 0.85);
+        height: calc(var(--card-height) * 0.85);
+    }
+}

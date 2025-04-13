@@ -29,731 +29,15 @@
     <!-- Preload critical images -->
     <link rel="preload" as="image"
         href="https://64.media.tumblr.com/93d6985c1e43fc60af8b0b00933fbae5/2e5abd8b6472caf5-e7/s540x810/9bc3765938f78d8ca1edfcb2afb83ddb99fcfffd.gif">
-    <link rel="preload" as="image" href="https://img.wattpad.com/010697b3d2ebd7ece3c4ef45bb8ee45163752439/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f64497736424f626c39415a6f6e513d3d2d313931332e313636653662646361616534303532633933353139303631353531302e676966>
+    <link rel="preload" as="image"
+        href="https://img.wattpad.com/010697b3d2ebd7ece3c4ef45bb8ee45163752439/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f64497736424f626c39415a6f6e513d3d2d313931332e313636653662646361616534303532633933353139303631353531302e676966">
                             <link rel=" preload" as="image"
         href="https://cdn.myanimelist.net/images/characters/8/327520.jpg">
     <link rel="preload" as="image"
         href="https://gifdb.com/images/high/anime-elf-frieren-going-to-eat-cake-33rvseyebg1a1wgj.gif">
     <link rel="preload" as="image"
         href="https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966">
-    <style>
-        /* Optimize performance with CSS containment */
-        .card {
-            contain: content;
-        }
-
-        /* Use hardware acceleration for animations */
-        .card {
-            will-change: transform;
-            transform: translateZ(0);
-        }
-
-        /* Reduce repaints by using transform instead of top/left */
-        @keyframes sparkle {
-            0% {
-                transform: translate(0, 0);
-            }
-
-            100% {
-                transform: translate(100px, 100px);
-            }
-        }
-
-        /* Optimize the background gradient */
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: #e2b8ff;
-            font-family: 'M PLUS Rounded 1c', system-ui, -apple-system, BlinkMacSystemFont, 'Segue UI', Roboto, sans-serif;
-            padding: 60px 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Sakura petals background animation */
-        @keyframes fall {
-            0% {
-                transform: translate(0, -10px) rotate(0deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translate(100px, 1000px) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .sakura, .card::before, .card::after {
-                animation: none;
-            }
-        }
-        .sakura {
-            position: fixed;
-            width: 15px;
-            height: 15px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23ffd7e5' d='M10 0C7 0 5 2 5 5s2 5 5 5 5-2 5-5-2-5-5-5zm0 10C7 10 5 12 5 15s2 5 5 5 5-2 5-5-2-5-5-5z'/%3E%3C/svg%3E") no-repeat;
-            pointer-events: none;
-        }
-
-        .sakura:nth-child(1) {
-            animation: fall 10s linear infinite;
-            left: 10%;
-        }
-
-        .sakura:nth-child(2) {
-            animation: fall 12s linear infinite 2s;
-            left: 20%;
-        }
-
-        .sakura:nth-child(3) {
-            animation: fall 9s linear infinite 1s;
-            left: 30%;
-        }
-
-        .sakura:nth-child(4) {
-            animation: fall 11s linear infinite 3s;
-            left: 40%;
-        }
-
-        .sakura:nth-child(5) {
-            animation: fall 10s linear infinite 4s;
-            left: 50%;
-        }
-
-        .sakura:nth-child(6) {
-            animation: fall 12s linear infinite 5s;
-            left: 60%;
-        }
-
-        .sakura:nth-child(7) {
-            animation: fall 9s linear infinite 6s;
-            left: 70%;
-        }
-
-        .sakura:nth-child(8) {
-            animation: fall 11s linear infinite 7s;
-            left: 80%;
-        }
-
-        /* Pixel art corner decorations */
-        .card-container::before,
-        .card-container::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23ffd7e5' d='M0 0h2v2H0zM2 2h2v2H2zM4 4h2v2H4zM6 6h2v2H6z'/%3E%3C/svg%3E") no-repeat;
-            background-size: contain;
-        }
-
-        .card-container::before {
-            top: -20px;
-            left: -20px;
-            transform: rotate(0deg);
-        }
-
-        .card-container::after {
-            bottom: -20px;
-            right: -20px;
-            transform: rotate(180deg);
-        }
-
-        /* Optimize SVG data URLs */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, .1) 2%, transparent 2.1%),
-                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .1) 1%, transparent 1.1%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, .1) 1.5%, transparent 1.6%),
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ff9ecd' d='M50 90c-5-20-10-35-25-35s-20 15-25 35c30 20 45 20 50 0zm0 0c5-20 10-35 25-35s20 15 25 35c-30 20-45 20-50 0'/%3E%3Ccircle fill='%23ff70b5' cx='50' cy='35' r='20'/%3E%3C/svg%3E");
-            background-size: contain;
-            background-position: 0 0, 50px 50px, -30px -30px, 0 0;
-            animation: sparkle 20s linear infinite;
-            opacity: 0.3;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .card-container {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 100vw;
-            position: relative;
-            z-index: 1;
-            padding: 25px;
-            background: rgba(255, 255, 255, .1);
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
-            contain: layout style paint;
-        }
-
-        /* Pokémon card styling enhancements */
-        .card {
-            width: 245px; /* Standard Pokémon card width */
-            height: 342px; /* Standard Pokémon card height */
-            border-radius: 10px;
-            padding: 12px;
-            position: relative;
-            box-shadow: 
-                0 0 0 4px #ffd700,
-                0 0 0 5px #000,
-                5px 5px 15px rgba(0, 0, 0, 0.4);
-            background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.3) 100%);
-            backdrop-filter: blur(5px);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .pokemon-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: #000000;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
-        }
-
-        .hp {
-            font-size: 14px;
-            font-weight: bold;
-            color: #ff0000;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .species-name {
-            font-style: italic;
-            color: #666;
-            font-size: 11px;
-            margin: 2px 0;
-            text-align: center;
-        }
-
-        .pokemon-info {
-            font-size: 10px;
-            color: #444;
-            margin: 4px 0;
-            text-align: center;
-            font-style: italic;
-        }
-
-        .image-container {
-            background: radial-gradient(circle at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 100%);
-            border-radius: 6px;
-            padding: 8px;
-            margin: 8px 0;
-            border: 2px solid #ffd700;
-            position: relative;
-            overflow: hidden;
-            height: 160px; /* Fixed height for image container */
-        }
-
-        .pokemon-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
-            transition: transform 0.3s ease;
-        }
-
-        .stats {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 6px;
-            padding: 10px;
-            margin-top: auto; /* Push to bottom */
-            border: 1px solid #ffd700;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat {
-            margin-bottom: 8px;
-            padding: 6px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            font-size: 11px;
-        }
-
-        .stat::before {
-            content: '';
-            position: absolute;
-            left: -3px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 15px;
-            height: 15px;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-
-        .attack {
-            font-weight: bold;
-            color: #000000;
-            margin-left: 18px;
-        }
-
-        .damage {
-            background: linear-gradient(45deg, #ffd700, #ffb700);
-            color: #000;
-            padding: 1px 8px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 12px;
-        }
-
-        .type {
-            display: inline-block;
-            padding: 3px 10px;
-            margin-top: 6px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: linear-gradient(45deg, #ffd700, #ffb700);
-            color: #000;
-            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
-            border: 1px solid #000;
-        }
-
-        /* Card type-specific styles */
-        .kawaii {
-            background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 50%, #ff69b4 100%);
-        }
-
-        .basic {
-            background: linear-gradient(135deg, #e0e0e0 0%, #d3d3d3 50%, #a9a9a9 100%);
-        }
-
-        .sage {
-            background: linear-gradient(135deg, #98fb98 0%, #90ee90 50%, #3cb371 100%);
-        }
-
-        .fairy {
-            background: linear-gradient(135deg, #dda0dd 0%, #da70d6 50%, #ba55d3 100%);
-        }
-
-        .simpy {
-            background: linear-gradient(135deg, #ffd700 0%, #ffb700 50%, #ff69b4 100%);
-        }
-
-        /* Energy type indicators */
-        .kawaii .stat::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23ff69b4'/%3E%3C/svg%3E");
-        }
-
-        .basic .stat::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23808080'/%3E%3C/svg%3E");
-        }
-
-        .sage .stat::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%233cb371'/%3E%3C/svg%3E");
-        }
-
-        .fairy .stat::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23ee82ee'/%3E%3C/svg%3E");
-        }
-
-        /* Enhanced card hover effects */
-        .card:hover {
-            transform: translateY(-10px) rotate(2deg);
-            box-shadow: 
-                0 0 0 8px #ffd700,
-                0 0 0 9px #000,
-                10px 10px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .card:hover .pokemon-image {
-            transform: scale(1.05);
-        }
-
-        /* Holographic effect base */
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(125deg,
-                    rgba(255, 0, 0, 0.1),
-                    rgba(255, 165, 0, 0.1) 10%,
-                    rgba(255, 255, 0, 0.1) 20%,
-                    rgba(0, 255, 0, 0.1) 30%,
-                    rgba(0, 255, 255, 0.1) 40%,
-                    rgba(0, 0, 255, 0.1) 50%,
-                    rgba(238, 130, 238, 0.1) 60%,
-                    rgba(255, 0, 0, 0.1) 70%);
-            background-size: 200% 200%;
-            animation: holographic 6s linear infinite;
-            border-radius: 15px;
-            opacity: 0;
-            mix-blend-mode: color-dodge;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        /* Holographic sparkles */
-        .card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                repeating-conic-gradient(from 45deg,
-                    rgba(255, 255, 255, 0) 0deg,
-                    rgba(255, 255, 255, 0.1) 10deg,
-                    rgba(255, 255, 255, 0) 20deg);
-            background-size: 20px 20px;
-            border-radius: 15px;
-            opacity: 0;
-            mix-blend-mode: overlay;
-            animation: sparkle 10s linear infinite;
-            pointer-events: none;
-        }
-
-        /* Show holographic effects on hover */
-        .card:hover::before,
-        .card:hover::after {
-            opacity: 1;
-        }
-
-        /* Holographic animation */
-        @keyframes holographic {
-            0% {
-                background-position: 0% 50%;
-                filter: hue-rotate(0deg);
-            }
-
-            50% {
-                background-position: 100% 50%;
-                filter: hue-rotate(180deg);
-            }
-
-            100% {
-                background-position: 0% 50%;
-                filter: hue-rotate(360deg);
-            }
-        }
-
-        @keyframes sparkle {
-            0% {
-                transform: translateY(0) rotate(0deg);
-            }
-
-            100% {
-                transform: translateY(-100%) rotate(360deg);
-            }
-        }
-
-        /* Card type-specific holographic effects */
-        .kawaii:hover::before {
-            background: linear-gradient(125deg,
-                    rgba(255, 192, 203, 0.2),
-                    rgba(255, 105, 180, 0.2) 25%,
-                    rgba(255, 20, 147, 0.2) 50%,
-                    rgba(255, 105, 180, 0.2) 75%,
-                    rgba(255, 192, 203, 0.2) 100%);
-            animation: holographic 4s linear infinite;
-        }
-
-        .basic:hover::before {
-            background: linear-gradient(125deg,
-                    rgba(169, 169, 169, 0.2),
-                    rgba(128, 128, 128, 0.2) 25%,
-                    rgba(105, 105, 105, 0.2) 50%,
-                    rgba(128, 128, 128, 0.2) 75%,
-                    rgba(169, 169, 169, 0.2) 100%);
-            animation: holographic 5s linear infinite;
-        }
-
-        .sage:hover::before {
-            background: linear-gradient(125deg,
-                    rgba(46, 139, 87, 0.2),
-                    rgba(60, 179, 113, 0.2) 25%,
-                    rgba(32, 178, 170, 0.2) 50%,
-                    rgba(60, 179, 113, 0.2) 75%,
-                    rgba(46, 139, 87, 0.2) 100%);
-            animation: holographic 6s linear infinite;
-        }
-
-        .fairy:hover::before {
-            background: linear-gradient(125deg,
-                    rgba(238, 130, 238, 0.2),
-                    rgba(218, 112, 214, 0.2) 25%,
-                    rgba(199, 21, 133, 0.2) 50%,
-                    rgba(218, 112, 214, 0.2) 75%,
-                    rgba(238, 130, 238, 0.2) 100%);
-            animation: holographic 4.5s linear infinite;
-        }
-
-        /* Enhance image container for holographic effect */
-        .image-container {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .image-container::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(45deg,
-                    transparent 0%,
-                    rgba(255, 255, 255, 0.1) 45%,
-                    rgba(255, 255, 255, 0.5) 50%,
-                    rgba(255, 255, 255, 0.1) 55%,
-                    transparent 100%);
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            pointer-events: none;
-        }
-
-        .card:hover .image-container::before {
-            transform: translateX(100%);
-            transition: transform 1s ease;
-        }
-
-        /* Ticker styles */
-        .ticker-container {
-            max-width: 650px;
-            width: auto;
-            height: 40px;
-            background: linear-gradient(90deg, rgba(0, 0, 0, 0.8), rgba(255, 142, 180, 0.8), rgba(0, 0, 0, 0.8));
-            backdrop-filter: blur(5px);
-            overflow: hidden;
-            position: relative;
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .ticker-top {
-            top: 0;
-        }
-
-        .ticker-bottom {
-            bottom: 0;
-        }
-
-        .ticker {
-            white-space: nowrap;
-            padding-right: 100%;
-            display: inline-block;
-            animation: ticker 60s linear infinite;
-            color: #fff;
-            font-family: 'Doto';
-            font-size: 16px;
-        }
-
-        .ticker-reverse {
-            animation-direction: reverse;
-        }
-
-        @keyframes ticker {
-            0% {
-                transform: translate3d(0, 0, 0);
-            }
-
-            100% {
-                transform: translate3d(-100%, 0, 0);
-            }
-        }
-
-        /* Footer styles */
-        .footer {
-            position: absolute;
-            bottom: 1em;
-            left: 1em;
-            display: flex;
-            align-items: end;
-            gap: 8px;
-            background: linear-gradient(90deg, #ff8eb4, #ffa7c7);
-            box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3);
-            padding: 10px 20px;
-            border-radius: 25px;
-            color: white;
-            font-size: 14px;
-            z-index: 999;
-        }
-
-        .footer svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Copy component styles */
-        .copy-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 30px;
-            gap: 10px;
-        }
-
-        .copy-text {
-            background: rgba(255, 255, 255, 0.9);
-            color: #ff8eb4;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-family: monospace;
-            font-size: 16px;
-            user-select: all;
-            border: 2px dashed #ffd7e5;
-        }
-
-        .copy-button {
-            background: linear-gradient(45deg, #ff8eb4, #ffa7c7);
-            color: darkslategray;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3);
-            font-weight: 500;
-        }
-
-        .copy-button:hover {
-            background: linear-gradient(45deg, #ffa7c7, #ff8eb4);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 142, 180, 0.4);
-        }
-        .copy-button-container {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .copy-button.copied {
-            background: linear-gradient(45deg, #95e1d3, #a8e6cf);
-            box-shadow: 0 4px 15px rgba(149, 225, 211, 0.3);
-        }
-
-        .copy-button svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .terminal-container {
-            background: #2d2d2d;
-            border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            font-family: 'Monaco', 'Consolas', monospace;
-            margin: 20px auto;
-            max-width: 600px;
-            overflow: hidden;
-        }
-
-        .terminal-header {
-            background: #1a1a1a;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #3a3a3a;
-        }
-
-        .terminal-buttons {
-            display: flex;
-            gap: 8px;
-            margin-right: 15px;
-        }
-
-        .terminal-button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .close { background: #ff5f56; }
-        .minimize { background: #ffbd2e; }
-        .maximize { background: #27c93f; }
-
-        .terminal-title {
-            color: #999;
-            font-size: 14px;
-            flex-grow: 1;
-            text-align: center;
-        }
-
-        .terminal-content {
-            padding: 20px;
-            color: #fff;
-        }
-
-        .command-line {
-            margin: 10px 0;
-            color: #fff;
-        }
-
-        .prompt {
-            color: #27c93f;
-            margin-right: 10px;
-        }
-
-        .ascii-art {
-            color: #5fafff;
-            margin: 15px 0;
-            font-family: monospace;
-            white-space: pre;
-        }
-
-        .features-list {
-            margin-top: 20px;
-        }
-
-        .features-list ul {
-            list-style: none;
-            padding: 0;
-            margin: 10px 0;
-        }
-
-        .features-list li {
-            margin: 8px 0;
-            color: #b4b4b4;
-            font-size: 14px;
-        }
-
-        .success {
-            color: #27c93f;
-            margin-right: 8px;
-        }
-
-        [INFO] {
-            color: #5fafff;
-            margin: 10px 0;
-            display: block;
-        }
-
-    </style>
-    
+<link rel="stylesheet" href="./styles.css" as="style">
 </head>
 
 <body>
@@ -766,10 +50,9 @@
     <div class="sakura"></div>
     <div class="sakura"></div>
     <div class="sakura"></div>
-
-    <div class="">
-        <div class="copy-container">
-            <div class="header-block terminal-container">
+<div class="container">
+    <section class="hero-section">
+        <div class="terminal-container">
                 <div class="terminal-header">
                     <div class="terminal-buttons">
                         <span class="terminal-button close"></span>
@@ -783,16 +66,7 @@
                         <span class="prompt">$</span> npx @usrrname/cursorrules
                     </div>
                     <div class="output">
-                        <div class="ascii-art">
-                            ╔══════════════════════════════════════╗
-                            ║ Cursor Agents from Hell v1.0 ║
-                            ║ Coding with Personality™ ║
-                            ╚══════════════════════════════════════╝
-                        </div>
                         <div class="features-list">
-                            <div class="command-line">
-                                <span class="prompt">$</span> cursor --list-features
-                            </div>
                             [INFO] Available productivity boosters:
                             <ul>
                                 <li><span class="success">✓</span> Automate Git commits with personality and style</li>
@@ -800,68 +74,70 @@
                                 <li><span class="success">✓</span> Create and enforce custom coding standards</li>
                                 <li><span class="success">✓</span> Streamline your PR review process</li>
                                 <li><span class="success">✓</span> Add fun console logging with emojis</li>
+                                <li><span class="success">✓</span> Questionably intelligent AI agents</li>
                             </ul>
+                        </div>
+                        <div class="copy-button-container">
+                            <code class="copy-text">npx @usrrname/cursorrules</code>
+                            <button class="copy-button" aria-label="Copy command to clipboard" onclick="copyToClipboard()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                Copy
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="ticker-container ticker-top">
-                <div class="ticker">
-                    This page may or may not stay online. What are you waiting for? What could possibly be holding you back? Give it
-                    a try!
-                    &nbsp;&nbsp;&nbsp; The only thing holding you back is... yourself! &nbsp;&nbsp;&nbsp; Remember, love conquers
-                    all!
-                    &nbsp;&nbsp;&nbsp; Live passionately! &nbsp;&nbsp;&nbsp;
-                    Mirror mirror on the wall, who's the best agent of them all? &nbsp;&nbsp;&nbsp;
-                </div>
-            </div>
-        <div class="copy-button-container">
-            <code class="copy-text">npx @usrrname/cursorrules</code>
-        <button class="copy-button" aria-label="Copy command to clipboard" onclick="copyToClipboard()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            Copy
-        </button>
-        </div>
-        </div>
-    <div class="card-container">
-    <!-- ThirstySimp Card -->
-    <div class="card basic">
-        <div class="card-header">
-            <span class="pokemon-name">ThirstySimp</span>
-            <span class="hp">HP 130</span>
-        </div>
-        <div class="species-name">
-            Developerus insecurus trendchaser
-        </div>
-        <div class="image-container">
-            <img loading="lazy"
-                src="https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966"
-                alt="Izumi Miyamura from Horimiya" class="pokemon-image"
-                onerror="this.onerror=null; this.src='https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966'" />
-        </div>
-        <div class="stats">
-            <div class="stat">
-                <span class="attack">🎥 YouTube Tutorial Binge</span>
-                <span class="damage">75</span>
-            </div>
-            <div class="stat">
-                <span class="attack">🔥 Framework FOMO</span>
-                <span class="damage">90</span>
-            </div>
-            <div class="stat">
-                <span class="attack">🤓 Actually... Correction</span>
-                <span class="damage">85</span>
-            </div>
-            <div class="type">Psychic / Dark</div>
-        </div>
-        <div class="pokemon-info" style="font-size: 0.6em; margin-top: 5px;">
-            Weakness: Senior devs, New frameworks, AI taking jobs
+    </div>
+    <div class="ticker-container ticker-top">
+        <div class="ticker">
+            This page may or may not stay online. What are you waiting for? What could possibly be holding you back? Give it
+            a try!
+            &nbsp;&nbsp;&nbsp; The only thing holding you back is... yourself! &nbsp;&nbsp;&nbsp; Remember, love conquers
+            all!
+            &nbsp;&nbsp;&nbsp; Live passionately! &nbsp;&nbsp;&nbsp;
+            Mirror mirror on the wall, who's the best agent of them all? &nbsp;&nbsp;&nbsp;
         </div>
     </div>
+</section>
+<div class="card-container">
+
+        <!-- ThirstySimp Card -->
+        <div class="card simpy">
+            <div class="card-header">
+                <span class="pokemon-name">ThirstySimp</span>
+                <span class="hp">HP 130</span>
+            </div>
+            <div class="species-name">
+                Developerus insecurus trendchaser
+            </div>
+            <div class="image-container">
+                <img loading="lazy"
+                    src="https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966"
+                    alt="Izumi Miyamura from Horimiya" class="pokemon-image"
+                    onerror="this.onerror=null; this.src='https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966'" />
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="attack">🎥 YouTube Tutorial Binge</span>
+                    <span class="damage">75</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">🔥 Framework FOMO</span>
+                    <span class="damage">90</span>
+                </div>
+                <div class="stat">
+                    <span class="attack">🤓 Actually... Correction</span>
+                    <span class="damage">85</span>
+                </div>
+                <div class="type">Psychic / Dark</div>
+            </div>
+            <div class="pokemon-info" style="font-size: 0.6em; margin-top: 5px;">
+                Weakness: Senior devs, New frameworks, AI taking jobs
+            </div>
+        </div>
         <!-- KawaiiSamurai Card -->
         <div class="card kawaii">
             <div class="card-header">
@@ -896,164 +172,246 @@
             </div>
         </div>
 
-        <!-- BasicBitchDeveloper Card -->
-        <div class="card basic">
-            <div class="card-header">
-                <span class="pokemon-name">BasicDev</span>
-                <span class="hp">HP 150</span>
-            </div>
-            <div class="pokemon-info">
-                Corporate AI Agent. Length: 5'10", Weight: 160 lbs.
-            </div>
-            <div class="image-container">
-                <img loading="lazy"
-                    src="https://img.wattpad.com/010697b3d2ebd7ece3c4ef45bb8ee45163752439/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f64497736424f626c39415a6f6e513d3d2d313931332e313636653662646361616534303532633933353139303631353531302e676966"
-                    alt="Tanaka from Haikyuu" class="pokemon-image">
-            </div>
-            <div class="stats">
-                <div class="stat">
-                    <span class="attack">Requirements Analysis</span>
-                    <span class="damage">80</span>
-                </div>
-                <div class="stat">
-                    <span class="attack">Design Pattern</span>
-                    <span class="damage">75</span>
-                </div>
-                <div class="stat">
-                    <span class="attack">Adequate Solution</span>
-                    <span class="damage">85</span>
-                </div>
-                <div class="type">Normal / Electric</div>
-            </div>
+    <!-- BasicBitchDeveloper Card -->
+    <div class="card basic">
+        <div class="card-header">
+            <span class="pokemon-name">BasicDev</span>
+            <span class="hp">HP 150</span>
         </div>
+        <div class="pokemon-info">
+            Corporate AI Agent. Length: 5'10", Weight: 160 lbs.
+        </div>
+        <div class="image-container">
+            <img loading="lazy"
+                src="https://img.wattpad.com/010697b3d2ebd7ece3c4ef45bb8ee45163752439/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f64497736424f626c39415a6f6e513d3d2d313931332e313636653662646361616534303532633933353139303631353531302e676966"
+                alt="Tanaka from Haikyuu" class="pokemon-image">
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <span class="attack">Requirements Analysis</span>
+                <span class="damage">80</span>
+            </div>
+            <div class="stat">
+                <span class="attack">Design Pattern</span>
+                <span class="damage">75</span>
+            </div>
+            <div class="stat">
+                <span class="attack">Adequate Solution</span>
+                <span class="damage">85</span>
+            </div>
+            <div class="type">Normal / Electric</div>
+        </div>
+    </div>
 
-        <!-- SageSoftwareDaddy Card -->
-        <div class="card sage">
-            <div class="card-header">
-                <span class="pokemon-name">SageDaddy</span>
-                <span class="hp">HP 250</span>
-            </div>
-            <div class="pokemon-info">
-                Wisdom AI Agent. Length: 6'2", Weight: 220 lbs.
-            </div>
-            <div class="image-container">
-                <img loading="lazy"
-                    src="https://gifdb.com/images/high/hunter-x-hunter-big-biscuit-krueger-zu59nfjv9z23o0js.webp"
-                    alt="Kakashi Hatake from Naruto" class="pokemon-image">
-            </div>
-            <div class="stats">
-                <div class="stat">
-                    <span class="attack">Legacy Experience</span>
-                    <span class="damage">120</span>
-                </div>
-                <div class="stat">
-                    <span class="attack">Tech Integration</span>
-                    <span class="damage">100</span>
-                </div>
-                <div class="stat">
-                    <span class="attack">Dotcom Survival</span>
-                    <span class="damage">95</span>
-                </div>
-                <div class="type">Ice / Ground</div>
-            </div>
-        </div>
-
-        <!-- Spellchuck Card -->
-        <div class="card fairy">
-            <div class="card-header">
-                <span class="pokemon-name">Spellchuck</span>
-                <span class="hp">HP 180</span>
-            </div>
-            <div class="pokemon-info">
-                Documentation AI Agent. Length: 4'11", Weight: 95 lbs.
-            </div>
-            <div class="image-container">
-                <img loading="lazy"
-                    src="https://gifdb.com/images/high/anime-elf-frieren-going-to-eat-cake-33rvseyebg1a1wgj.gif"
-                    alt="Elf Frieren" class="pokemon-image">
-            </div>
-            <div class="stats">
-                <div class="stat">
-                    <span class="attack">Syntax Sparkle ✨</span>
-                    <span class="damage">85</span>
-                </div>
-                <div class="stat">
-                    <span class="attack">Documentation Dust 📚</span>
-                    <span class="damage">90</span>
-                </div>
-                <div class="stat">
-                    <span class="attack">Clarity Charm 🪄</span>
-                    <span class="damage">95</span>
-                </div>
-                <div class="type">Fairy / Flying</div>
-            </div>
-        </div>
-<!-- qwoof Card -->
+<!-- SageSoftwareDaddy Card -->
 <div class="card sage">
     <div class="card-header">
-        <span class="pokemon-name">qwoof</span>
-        <span class="hp">HP 220</span>
-    </div>
-    <div class="species-name">
-        Developerus qualitas lupus
+        <span class="pokemon-name">SageDaddy</span>
+        <span class="hp">HP 250</span>
     </div>
     <div class="pokemon-info">
-        Quality Assurance AI Agent. Length: 6'0", Weight: 180 lbs.
+        Wisdom AI Agent. Length: 6'2", Weight: 220 lbs.
     </div>
     <div class="image-container">
         <img loading="lazy"
-            src="https://gifdb.com/images/high/anime-wolf-girl-momiji-inubashiri-touhou-project-orekagatou-8iqxqvp5xdqfk0kp.gif"
-            alt="Wolf quality engineer" class="pokemon-image">
+            src="https://gifdb.com/images/high/hunter-x-hunter-big-biscuit-krueger-zu59nfjv9z23o0js.webp"
+            alt="Kakashi Hatake from Naruto" class="pokemon-image">
     </div>
     <div class="stats">
         <div class="stat">
-            <span class="attack">🐺 Code Smell Detection</span>
-            <span class="damage">115</span>
+            <span class="attack">Legacy Experience</span>
+            <span class="damage">120</span>
         </div>
         <div class="stat">
-            <span class="attack">🧪 Test Coverage Howl</span>
-            <span class="damage">105</span>
+            <span class="attack">Tech Integration</span>
+            <span class="damage">100</span>
         </div>
         <div class="stat">
-            <span class="attack">🔍 Bug Hunt Prowl</span>
+            <span class="attack">Dotcom Survival</span>
             <span class="damage">95</span>
         </div>
-        <div class="type">Dark / Steel</div>
-    </div>
-    <div class="pokemon-info" style="font-size: 0.6em; margin-top: 5px;">
-        Weakness: Untested code, Poor documentation, Technical debt
+        <div class="type">Ice / Ground</div>
     </div>
 </div>
+
+<!-- Spellchuck Card -->
+<div class="card fairy">
+    <div class="card-header">
+        <span class="pokemon-name">Spellchuck</span>
+        <span class="hp">HP 180</span>
+    </div>
+    <div class="pokemon-info">
+        Documentation AI Agent. Length: 4'11", Weight: 95 lbs.
+    </div>
+    <div class="image-container">
+    <img loading="lazy" src="https://gifdb.com/images/high/anime-elf-frieren-going-to-eat-cake-33rvseyebg1a1wgj.gif"
+        alt="Elf Frieren" class="pokemon-image">
+    </div>
+    <div class="stats">
+        <div class="stat">
+            <span class="attack">Syntax Sparkle ✨</span>
+            <span class="damage">85</span>
+        </div>
+        <div class="stat">
+            <span class="attack">Documentation Dust 📚</span>
+            <span class="damage">90</span>
+        </div>
+        <div class="stat">
+            <span class="attack">Clarity Charm 🪄</span>
+            <span class="damage">95</span>
+        </div>
+        <div class="type">Fairy / Flying</div>
+    </div>
+    </div>
+    <!-- qwoof Card -->
+<div class="card qwoofy">
+        <div class="card-header">
+            <span class="pokemon-name">qwoof</span>
+            <span class="hp">HP 220</span>
+        </div>
+        <div class="species-name">
+            Developerus qualitas lupus
+        </div>
+        <div class="pokemon-info">
+            Quality Assurance AI Agent. Length: 6'0", Weight: 180 lbs.
+        </div>
+        <div class="image-container">
+            <img loading="lazy"
+                src="https://gifdb.com/images/high/anime-wolf-girl-momiji-inubashiri-touhou-project-orekagatou-8iqxqvp5xdqfk0kp.gif"
+                alt="Wolf quality engineer" class="pokemon-image">
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <span class="attack">🐺 Code Smell Detection</span>
+                <span class="damage">115</span>
+            </div>
+            <div class="stat">
+                <span class="attack">🧪 Test Coverage Howl</span>
+                <span class="damage">105</span>
+            </div>
+            <div class="stat">
+                <span class="attack">🔍 Bug Hunt Prowl</span>
+                <span class="damage">95</span>
+            </div>
+            <div class="type">Dark / Steel</div>
+        </div>
+</div>
+    </div>
+    <a href="https://github.com/usrrname/cursorrules" class="footer">
+        <svg height="16" width="16" viewBox="0 0 16 16"
+            style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+            <path fill="currentColor"
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+            </path>
+        </svg>
+        Vibe coded in Toronto
+    </a>
+<!-- Add Cursor Chat component -->
+<div class="cursor-chat">
+    <div class="chat-header">
+        <div class="terminal-buttons">
+            <span class="terminal-button close"></span>
+            <span class="terminal-button minimize"></span>
+            <span class="terminal-button maximize"></span>
+        </div>
+    </div>
+    <div class="chat-header">
+        <div class="chat-title">
+            <button class="file-name"><span style="color: #ffa500;">&lt;&gt;&nbsp;</span>index.html</button>
+            <button class="terminal-title">Custom Pokemon Card Creation</button>
+        </div>
+    </div>
+    <div class="chat-messages">
+        <div class="message user-message">
+            KawaiiSamurai are you sure we've added all the ai agent information as pokemon cards?
+        </div>
+        <div class="message">
+            <div><i>Adjusts kawaii glasses with a sparkle ✨</i></div>
+            <p>
+                Oh my goodness, you're right desu! I notice we're missing ThirstySimp-chan from our Pokemon card
+                collection! Let me add that card right away with the same kawaii styling as the others!
+            </p>
+        </div>
+        <div class="generating">
+            Generating
+            <button class="stop-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                </svg>
+                Stop
+            </button>
+        </div>
+
+        <div class="message">
+            <span>Kawaii desu ne! (｡♥‿♥｡) I've created a super cute chat component that looks just like the Cursor chat
+                interface! Here are the kawaii features I included:</sp>
+                <ol>
+                    <li>Visual Style ✨</li>
+                    <ul>
+                        <li>Dark theme matching Cursor (#1e1e1e background)</li>
+                        <li>Pretty macOS window buttons</li>
+                        <li>Nice rounded corners (8px border-radius)</li>
+                        <li>Beautiful scrollbar design</li>
+                    </ul>
+                    <li>Message Layout 📝</li>
+                    <ul>
+                        <li>User messages in light color (#d4d4d4)</li>
+                        <li>Assistant messages in pretty purple (#c586c0)</li>
+                        <li>Cute action text in blue (#569cd6)</li>
+                        <li>Proper spacing and margins</li>
+                    </ul>
+                    <li>Header Design 🎀</li>
+                    <ul>
+                        <li>File name in pretty blue</li>
+                        <li>Clean title layout</li>
+                        <li>Nice border separation</li>
+                    </ul>
+
+                    <li>Interactive Elements 🖱️</li>
+                    <ul>
+                        <li>Hover effects on buttons</li>
+                        <li>Smooth scrolling</li>
+                        <li>Stop button with icon</li>
+                    </ul>
+                    <li>Typography 📚</li>
+                    <ul>
+                        <li>Monaco/Consolas font for that coding feel</li>
+                        <li>Perfect font sizes (13-14px)</li>
+                        <li>Nice line height (1.5)</li>
+                    </ul>
+                </ol>
+                <span>Would you like me to add more kawaii features or adjust anything? Maybe add some sparkly
+                    animations
+                    or more message examples? (ﾉ◕ヮ◕)ﾉ:･ﾟ✧</span>
+        </div>
     </div>
 </div>
-    <div class="footer">
-        🦝 Vibe coded in Toronto
-    </div>
-    <script>
-        function copyToClipboard() {
-            const text = 'npx @usrrname/cursorrules';
-            navigator.clipboard.writeText(text).then(() => {
-                const button = document.querySelector('.copy-button');
-                button.classList.add('copied');
+</div>
+<script>
+    function copyToClipboard() {
+        const text = 'npx @usrrname/cursorrules';
+        navigator.clipboard.writeText(text).then(() => {
+            const button = document.querySelector('.copy-button');
+            button.classList.add('copied');
+            button.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Copied!
+    `;
+            setTimeout(() => {
+                button.classList.remove('copied');
                 button.innerHTML = `
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            Copied!
+            Copy
         `;
-                setTimeout(() => {
-                    button.classList.remove('copied');
-                    button.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Copy
-            `;
-                }, 2000);
-            });
-        }
-    </script>
+            }, 2000);
+        });
+    }
+</script>
 </body>
 
 </html>
