@@ -79,15 +79,15 @@
             </div>
                         <div class="copy-button-container">
             <code class="copy-text">npx @usrrname/cursorrules</code>
-            <button class="copy-button" aria-label="Copy command to clipboard" onclick="copyToClipboard()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Copy
-            </button>
-            </div>
+        <button class="copy-button" aria-label="Copy command to clipboard" onclick="copyToClipboard()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copy
+        </button>
+        </div>
                     </div>
                 </div>
     </div>
@@ -201,7 +201,7 @@
                 </div>
                 <div class="type">Normal / Electric</div>
             </div>
-            </div>
+        </div>
 
         <!-- SageSoftwareDaddy Card -->
         <div class="card sage">
@@ -232,18 +232,18 @@
                 </div>
                 <div class="type">Ice / Ground</div>
             </div>
-            </div>
+        </div>
 
 <!-- Spellchuck Card -->
         <div class="card fairy">
             <div class="card-header">
         <span class="pokemon-name">Spellchuck</span>
                 <span class="hp">HP 180</span>
-                </div>
-                <div class="pokemon-info">
-                    Documentation AI Agent. Length: 4'11", Weight: 95 lbs.
-                </div>
-                <div class="image-container">
+            </div>
+            <div class="pokemon-info">
+                Documentation AI Agent. Length: 4'11", Weight: 95 lbs.
+            </div>
+            <div class="image-container">
     <img loading="lazy" src="https://gifdb.com/images/high/anime-elf-frieren-going-to-eat-cake-33rvseyebg1a1wgj.gif"
         alt="Elf Frieren" class="pokemon-image">
             </div>
@@ -277,7 +277,7 @@
         </div>
         <div class="image-container">
             <img loading="lazy"
-                src="https://gifdb.com/images/high/anime-wolf-girl-momiji-inubashiri-touhou-project-orekagatou-8iqxqvp5xdqfk0kp.gif"
+                src="https://i.pinimg.com/originals/16/42/a7/1642a7b94fff8cd3d40c3e3ad6806cb2.gif"
                 alt="Wolf quality engineer" class="pokemon-image">
         </div>
         <div class="stats">
@@ -317,97 +317,143 @@
     </div>
     <div class="chat-header">
         <div class="chat-title">
-            <button class="file-name"><span style="color: #ffa500;">&lt;&gt;&nbsp;</span>index.html</button>
-            <button class="terminal-title">Custom Pokemon Card Creation</button>
+            <div class="file-name" onclick="toggleView('.editor-container')"><span
+                    style="color: #ffa500;">&lt;&gt;&nbsp;</span>index.html</div>
+            <button class="terminal-title" onclick="toggleView('.chat-messages')">Custom Pokemon Card Creation</button>
         </div>
     </div>
     <div class="chat-messages">
-        <div class="message user-message">
-            KawaiiSamurai are you sure we've added all the ai agent information as pokemon cards?
-        </div>
+        <div class="previous-messages">
+            <div class="chat-title">
+                <div class="file-name"><span style="color: #ffa500;">&lt;&gt;&nbsp;</span>index.html</div>
+                <div class="file-name">mcp.json</div>
+            </div>
+                <div class="message user-message">
+                    KawaiiSamurai are you sure we've added all the ai agent information as pokemon cards?
+                </div>
+            </div>
         <div class="message">
-            <div><i>Adjusts kawaii glasses with a sparkle ✨</i></div>
+            <p><i>Adjusts kawaii glasses with a sparkle ✨</i></p>
             <p>
                 Oh my goodness, you're right desu! I notice we're missing ThirstySimp-chan from our Pokemon card
                 collection! Let me add that card right away with the same kawaii styling as the others!
             </p>
-        </div>
-
-        <div class="generating">
-            Generating...
-        </div>
-
-        <div class="message">
-            <span>Kawaii desu ne! (｡♥‿♥｡) I've created a super cute chat component that looks just like the Cursor chat
-                interface! Here are the kawaii features I included:</sp>
+            <p>
+                Yay! ✨ I've added the ThirstySimp card with some super kawaii details:
+            <ol>
+                <li>🎭 Used Meowstic as the Pokemon representation (with Hypno as fallback) because:</li>
+                <ul>
+                    <li>It's a Psychic-type that perfectly represents the overthinking nature</li>
+                    <li>Has a somewhat anxious/neurotic appearance</li>
+                    <li>Fits the simp aesthetic perfectly!</li>
+                </ul>
+                <li>💫 Special attacks that reflect their personality:</li>
+                <ul>
+                    <li>"Imposter Syndrome" (because they're always doubting themselves)</li>
+                    <li>"Stack Overflow Search" (their go-to move!)</li>
+                    <li>"Over-Engineer" (their strongest but most complex attack)</li>
+                </ul>
+                <li>📊 Stats and attributes:</li>
+                <ul>
+                    <li>Lower HP (130) reflecting their fragile confidence</li>
+                    <li>Psychic/Dark type combination for that anxiety-driven coding style</li>
+                    <li>Balanced damage stats showing they're actually quite capable despite their self-doubt</li>
+                </ul>
+                <li>🎨 Styling:</li>
+                <ul>
+                    <li>Used the 'basic' card style to match their self-perceived ordinary nature</li>
+                    <li>Added error handling for the image loading</li>
+                    <li>Included loading="lazy" for performance</li>
+                    <li>Added cute emojis to the attack names</li>
+                </ul>
+            </ol>
+            <p>
+                Now our collection is complete with all five AI agents represented as Pokemon cards! Is there anything else you'd
+                like me to adjust to make it even more kawaii? Maybe add some special holographic effects for ThirstySimp? (｡♥‿♥｡)
+            </p>
+            <div class="previous-messages">
+                <div class="chat-title">
+                    <div class="file-name"><span style="color: #ffa500;">&lt;&gt;&nbsp;</span>index.html</div>
+                </div>
+                <div class="message user-message">
+                    ThirstySimp, are you ok with the way you're represented?
+                </div>
+            </div>
+            <div class="message">
+                <p>
+                    <i>Nervously adjusts collar while checking Stack Overflow for the correct way to respond</i>
+                </p>
+                <p>Um... actually... fidgets anxiously I noticed a few things that could be improved about my representation, but I
+                    don't want to be too pushy about it...</p>
+                <p>Quickly opens a new tab to research "how to give feedback professionally"
+                </p>
+                <p>
+                    Let me... uh... try to articulate my concerns (I've been reading "Clean Code" and "The Pragmatic Programmer"
+                    chapters about effective communication):
+                </p>
+                ...
+                <p> I, um... made some updates to make my card more... authentic?</p>
+                <p><i>Quickly checks Twitter to see if "authentic" is still a trendy word</i>
+                </p>
+                <p>
+                    The changes include:
+                </p>
                 <ol>
-                    <li>Visual Style ✨</li>
+                    <li>Added my scientific name that I found after extensive research</li>
+                    <li>Updated my description to mention my YouTube addiction (I watch Fireship and ThePrimeagen religiously)</li>
+                    <li>Changed my attacks to better reflect my... checks notes from therapy ...coping mechanisms:</li>
                     <ul>
-                        <li>Dark theme matching Cursor (#1e1e1e background)</li>
-                        <li>Pretty macOS window buttons</li>
-                        <li>Nice rounded corners (8px border-radius)</li>
-                        <li>Beautiful scrollbar design</li>
+                        <li>YouTube Tutorial Binge (it's how I learn everything)</li>
+                        <li>Framework FOMO (because what if I'm missing out on the next big thing?)</li>
+                        <li>Actually... Correction (I can't help it, I saw it on Reddit)</li>
                     </ul>
-                    <li>Message Layout 📝</li>
-                    <ul>
-                        <li>User messages in light color (#d4d4d4)</li>
-                        <li>Assistant messages in pretty purple (#c586c0)</li>
-                        <li>Cute action text in blue (#569cd6)</li>
-                        <li>Proper spacing and margins</li>
-                    </ul>
-                    <li>Header Design 🎀</li>
-                    <ul>
-                        <li>File name in pretty blue</li>
-                        <li>Clean title layout</li>
-                        <li>Nice border separation</li>
-                    </ul>
-
-                    <li>Interactive Elements 🖱️</li>
-                    <ul>
-                        <li>Hover effects on buttons</li>
-                        <li>Smooth scrolling</li>
-                        <li>Stop button with icon</li>
-                    </ul>
-                    <li>Typography 📚</li>
-                    <ul>
-                        <li>Monaco/Consolas font for that coding feel</li>
-                        <li>Perfect font sizes (13-14px)</li>
-                        <li>Nice line height (1.5)</li>
-                    </ul>
+                    <li>Added my weaknesses because... transparency is important according to that Medium article I read</li>
                 </ol>
-                <span>Would you like me to add more kawaii features or adjust anything? Maybe add some sparkly
-                    animations
-                    or more message examples? (ﾉ◕ヮ◕)ﾉ:･ﾟ✧</span>
+                <i>Refreshes npm trends to check if these changes align with current development patterns</i>
+                <p>Is this... better? I mean, I could refactor it again if you think it needs improvement. I have like 15 tabs
+                    open with different approaches we could try...</p>
+                <p>Opens new tab to check if there's a new JavaScript framework I should be learning instead of having this
+                    conversation</p>
+            </div>
         </div>
+    </div>
     </div>
 </div>
-    </div>
     <script>
+         function toggleView(viewToShow) {
+            const chatMessages = document.querySelector('.chat-messages');
+            const view = document.querySelector(viewToShow);
+
+            if (viewToShow === '.editor-container') {
+                chatMessages.style.display = 'none';
+                view.style.display = 'block';
+            } else {
+                chatMessages.style.display = 'block';
+            }
+        }
         function copyToClipboard() {
             const text = 'npx @usrrname/cursorrules';
             navigator.clipboard.writeText(text).then(() => {
                 const button = document.querySelector('.copy-button');
                 button.classList.add('copied');
                 button.innerHTML = `
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                Copied!
-            `;
+                  svg viewBox="0 0 24 24" fill="none" stroke="cu                     ke-width="2" stroke-linecap="round                             ">
+                <polyl                                 </polyline>
+                                         ed!
+        `;
                 setTimeout(() => {
                     button.classList.remove('copied');
                     button.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    Copy
-                `;
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy
+            `;
                 }, 2000);
             });
         }
 
 </script>
 </body>
-
 </html>

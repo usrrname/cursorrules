@@ -785,11 +785,12 @@ body::before {
     overflow-x: hidden;
     overflow-y: auto;
     max-height: 400px;
+    border-radius: 0 0 8px 8px;
 }
 
 .line-numbers {
     user-select: none;
-    text-align: right;
+    text-align: left;
     padding-right: 1em;
     color: #858585;
     border-right: 1px solid #404040;
@@ -880,6 +881,7 @@ body::before {
 }
 
 .chat-title .file-name {
+    width: fit-content;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -890,6 +892,10 @@ body::before {
     background: none;
     border: none;
     cursor: pointer;
+    border-radius: 4px;
+        border: 1px solid #3a3a3a;
+        padding: 0px;
+        padding-left: 5px;
 
     &:hover::after {
         font-size: inherit;
@@ -915,12 +921,58 @@ body::before {
     font-size: small;
 }
 
+.previous-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(45, 45, 45, 0.5);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid #3a3a3a;
+}
+
+
+.timestamp {
+    color: #858585;
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
 .message {
     margin-bottom: 20px;
     font-size: small;
     line-height: 1.5;
 }
 
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.agent-name {
+    color: #ff8eb4;
+    font-weight: 600;
+}
+
+.user-name {
+    color: #27c93f;
+    font-weight: 600;
+}
+
+.message-time {
+    color: #858585;
+    font-size: 11px;
+}
+
+.message p {
+    margin: 0;
+    padding: 0;
+    color: #d4d4d4;
+}
 .user-message {
     color: #d4d4d4;
 }
