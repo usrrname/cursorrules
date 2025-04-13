@@ -604,6 +604,7 @@ body::before {
     background: linear-gradient(45deg, #ffa7c7, #ff8eb4);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(255, 142, 180, 0.4);
+    cursor: pointer;
 }
 
 .copy-button-container {
@@ -613,6 +614,7 @@ body::before {
     justify-content: center;
     gap: 10px;
     margin-top: 24px;
+    cursor: pointer;
 }
 
 .copy-button.copied {

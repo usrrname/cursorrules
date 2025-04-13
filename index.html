@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Cursor Agents from hell">
+    <meta name="description" content="a standard library of cursor rules that ended up with perverse cursor agents">
     <meta name="keywords" content="Cursor Agents, Problematic, Hell, Coding, Assistance">
     <meta name="author" content="Problematic Cursor Agents">
     <meta name="robots" content="index, follow">
@@ -12,9 +12,10 @@
     <meta name="bingbot" content="index, follow">
     <meta name="alexa" content="index, follow">
     <meta name="og:author" content="Jen Chan <6406037+usrrname@users.noreply.github.com>">
-    <meta name="og:title" content="Problematic Cursor Agents">
-    <meta name="og:description" content="Problematic Cursor Agents">
-    <meta name="og:image" content="">
+    <meta name="og:title" content="@usrrname/cursorrules">
+    <meta name="og:description"
+        content="@usrrname/cursorrules is a standard library of cursor rules with some fabulously perverse cursor agents">
+    <meta name="og:image" content="https://i.imgur.com/DphUC1V.png">
     <meta name="og:url" content="">
     <meta name="og:site_name" content="Problematic Cursor Agents">
     <meta name="og:type" content="website">
@@ -38,6 +39,185 @@
     <link rel="preload" as="image"
         href="https://img.wattpad.com/7bb66ef9e6d07c0b459d8631e3026b13174667bb/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f6b4f624b695074717237437471773d3d2d313032373638323333362e313636343863376263376464386634643434303934303038303237362e676966">
 <link rel="stylesheet" href="./styles.css" as="style">
+    <style>
+        .history-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: #8b949e;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+    
+        .history-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #c9d1d9;
+        }
+    
+        .chat-history {
+            background: #0d1117;
+            border-radius: 8px;
+            margin: 8px;
+            padding: 12px;
+            height: calc(100% - 120px);
+            overflow-y: auto;
+        }
+    
+        .history-title {
+            color: #c9d1d9;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #30363d;
+        }
+    
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+    
+        .history-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #161b22;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+    
+        .history-item:hover {
+            background: #1c2128;
+            transform: translateX(4px);
+        }
+    
+        .history-timestamp {
+            color: #8b949e;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+    
+        .history-content {
+            color: #c9d1d9;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    
+        /* Sailor Moon Card Styles */
+        .sailor {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb14f 50%, #ff69b4 100%);
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow:
+                0 0 15px #ffd700,
+                0 0 0 4px #ffd700,
+                0 0 0 5px #000,
+                5px 5px 15px rgba(0, 0, 0, 0.4);
+            order: -1;
+            /* Make it appear first */
+        }
+    
+        .sailor .card-header {
+            background: linear-gradient(90deg, #ffd700, #ff69b4);
+            border-radius: 8px;
+            padding: 5px;
+            margin: -5px -5px 5px -5px;
+        }
+    
+        .sailor .pokemon-name {
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            font-size: 18px;
+        }
+    
+        .sailor .hp {
+            color: #fff;
+            background: rgba(255, 0, 0, 0.7);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+    
+        .sailor .species-name {
+            color: #333;
+            font-weight: bold;
+        }
+    
+        .sailor .image-container {
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+    
+        .sailor .stats {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #ffd700;
+        }
+    
+        .sailor .stat {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 182, 193, 0.2));
+            border-left: 3px solid #ffd700;
+        }
+    
+        .sailor .type {
+            background: linear-gradient(45deg, #ff69b4, #ffd700);
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+            padding: 5px 12px;
+        }
+    
+        .sailor .damage {
+            background: linear-gradient(45deg, #ff69b4, #ffd700);
+            color: white;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+    
+        /* Sailor Moon specific holographic effects */
+        .sailor::before {
+            opacity: 0.3 !important;
+            background: linear-gradient(125deg,
+                    rgba(255, 215, 0, 0.4),
+                    rgba(255, 105, 180, 0.4) 25%,
+                    rgba(173, 216, 230, 0.4) 50%,
+                    rgba(255, 105, 180, 0.4) 75%,
+                    rgba(255, 215, 0, 0.4) 100%);
+            animation: holographic 3s linear infinite !important;
+        }
+    
+        .sailor::after {
+            opacity: 0.3 !important;
+        }
+    
+        .sailor:hover::before,
+        .sailor:hover::after {
+            opacity: 0.7 !important;
+        }
+    
+        /* Crown decoration for Sailor Moon card */
+        .sailor .crown-decoration {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            z-index: 100;
+            text-shadow: 0 0 5px #ffd700;
+            animation: floating 3s ease-in-out infinite;
+        }
+    
+        @keyframes floating {
+    
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+    
+            50% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -59,7 +239,7 @@
                         <span class="terminal-button minimize"></span>
                         <span class="terminal-button maximize"></span>
                     </div>
-                    <div class="terminal-title">da-boss ~/</div>
+                    <div class="terminal-title">im-da-boss ~/</div>
         </div>
                 <div class="terminal-content">
                     <div class="command-line">
@@ -77,7 +257,7 @@
                                 <li><span class="success">✓</span> Questionably intelligent AI agents</li>
                             </ul>
             </div>
-                        <div class="copy-button-container">
+                        <div class="copy-button-container" onclick="copyToClipboard()">
             <code class="copy-text">npx @usrrname/cursorrules</code>
         <button class="copy-button" aria-label="Copy command to clipboard" onclick="copyToClipboard()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -262,7 +442,7 @@
                 </div>
                 <div class="type">Fairy / Flying</div>
             </div>
-    </div>
+        </div>
     <!-- qwoof Card -->
 <div class="card qwoofy">
         <div class="card-header">
@@ -277,7 +457,7 @@
         </div>
         <div class="image-container">
             <img loading="lazy"
-                src="https://i.pinimg.com/originals/16/42/a7/1642a7b94fff8cd3d40c3e3ad6806cb2.gif"
+                src="https://media1.tenor.com/m/aRDPDfkKEZIAAAAC/wolf.gif"
                 alt="Wolf quality engineer" class="pokemon-image">
         </div>
         <div class="stats">
@@ -296,6 +476,39 @@
             <div class="type">Dark / Steel</div>
         </div>
 </div>
+<!-- Sailor Moon Card -->
+<div class="card sailor">
+    <div class="crown-decoration">👑</div>
+    <div class="card-header">
+        <span class="pokemon-name">SailorScrum</span>
+        <span class="hp">HP 300</span>
+    </div>
+    <div class="species-name">
+        Productus ownerus supremus
+    </div>
+    <div class="pokemon-info">
+        Product Owner & Managing Leader. Length: 5'6", Weight: 110 lbs.
+    </div>
+    <div class="image-container">
+        <img loading="lazy" src="https://i.pinimg.com/originals/37/cc/04/37cc04c3b5813d7a9b2377d85e328793.gif"
+            alt="Sailor Star transform" class="pokemon-image">
+    </div>
+    <div class="stats">
+        <div class="stat">
+            <span class="attack">🌙 Moonlight Decision</span>
+            <span class="damage">150</span>
+        </div>
+        <div class="stat">
+            <span class="attack">💫 Cosmic Prioritization</span>
+            <span class="damage">130</span>
+        </div>
+        <div class="stat">
+            <span class="attack">🌟 Tiara Product Demo</span>
+            <span class="damage">140</span>
+        </div>
+        <div class="type">Fairy / Psychic</div>
+    </div>
+</div>
     </div>
     <a href="https://github.com/usrrname/cursorrules" class="footer">
         <svg height="16" width="16" viewBox="0 0 16 16"
@@ -304,7 +517,7 @@
                 d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
             </path>
         </svg>
-        Vibe coded in Toronto
+    vibe coded in Toronto
     </a>
 <!-- Add Cursor Chat component -->
 <div class="cursor-chat">
@@ -314,6 +527,7 @@
             <span class="terminal-button minimize"></span>
             <span class="terminal-button maximize"></span>
         </div>
+        <div class="terminal-title">Just invoke the agent by name in Agent Mode!</div>
     </div>
     <div class="chat-header">
         <div class="chat-title">
@@ -418,7 +632,7 @@
         </div>
     </div>
     </div>
-</div>
+    </div>
     <script>
          function toggleView(viewToShow) {
             const chatMessages = document.querySelector('.chat-messages');
@@ -436,11 +650,7 @@
             navigator.clipboard.writeText(text).then(() => {
                 const button = document.querySelector('.copy-button');
                 button.classList.add('copied');
-                button.innerHTML = `
-                  svg viewBox="0 0 24 24" fill="none" stroke="cu                     ke-width="2" stroke-linecap="round                             ">
-                <polyl                                 </polyline>
-                                         ed!
-        `;
+                                                                                                                                         HTML = `Copied!`;
                 setTimeout(() => {
                     button.classList.remove('copied');
                     button.innerHTML = `
