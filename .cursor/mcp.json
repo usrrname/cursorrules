@@ -1,0 +1,21 @@
+{
+    "mcpServers": {
+        "TAV2": {
+            "command": "env",
+            "args": [
+                "TAVILY_API_KEY=YOUR_FREE_API_KEY",
+                "npx",
+                "-y",
+                "tavily-mcp@0.1.3"
+            ]
+        },
+        "browser-tools": {
+            "command": "env",
+            "args": [
+                "npx",
+                "-y",
+                "@agentdeskai/browser-tools-mcp@latest"
+            ]
+        }
+    }
+}
