@@ -46,10 +46,8 @@ On the project level, a project that uses these cursor rules and agents will hav
 ├── architecture/
 │   ├── ###-architecture.md
 │   └── decision-records/
-├── pbi/
-│   ├── ###-pbi.md
-│   ├── ###-user-story.md
-│   └── ###-architecture.md
+├── backlog/
+│   └── ###-user-story.md
 ```
 
 ## 🚀 Installation
