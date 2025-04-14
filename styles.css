@@ -1,3 +1,8 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 /* Optimize performance with CSS containment */
 .card {
     contain: content;
@@ -23,6 +28,8 @@
 /* Optimize the background gradient */
 body {
     background: #e2b8ff;
+    width: 100vw;
+    min-height: 100vh;
     font-family: 'M PLUS Rounded 1c', system-ui, -apple-system, BlinkMacSystemFont, 'Segue UI', Roboto, sans-serif;
 }
 
@@ -38,7 +45,99 @@ body {
         opacity: 0;
     }
 }
+.hero-section h1 {
+    font-family: 'Pattaya', sans-serif;
+    font-size: 3.5rem;
+    text-align: center;
+    color: floralwhite;
+}
 
+/* Magical girl heading styles */
+.magical-heading {
+    font-family: 'Pattaya', sans-serif;
+    font-size: 3.5rem;
+    text-align: center;
+    color: aliceblue;
+    background: linear-gradient(45deg, #ff69b4, #ffd700, #ff69b4, #f0f, #ffd700);
+    background-size: 400% 400%;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    animation: gradient-shift 5s ease infinite, magical-float 3s ease-in-out infinite;
+    text-shadow:
+        0 0 5px rgba(255, 105, 180, 0.5),
+        0 0 10px rgba(255, 215, 0, 0.5),
+        0 0 15px rgba(255, 255, 255, 0.5);
+    position: relative;
+    margin: 1rem auto;
+    line-height: 1.2;
+    letter-spacing: 1px;
+}
+
+.magical-heading::before,
+.magical-heading::after {
+    content: "✨";
+    position: absolute;
+    font-size: 1.5rem;
+    animation: sparkle 1.5s ease-in-out infinite alternate;
+}
+
+.magical-heading::before {
+    left: -10px;
+    top: 0;
+    animation-delay: 0.2s;
+}
+
+.magical-heading::after {
+    right: -10px;
+    bottom: 0;
+    animation-delay: 0.5s;
+}
+
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes magical-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+        50% {
+            transform: translateY(-10px);
+        }
+        }
+    
+        @keyframes sparkle {
+            0% {
+                opacity: 0.5;
+                transform: scale(0.8) rotate(0deg);
+            }
+    
+            100% {
+                opacity: 1;
+                transform: scale(1.2) rotate(15deg);
+            }
+        }
+    
+        /* Media query for smaller screens */
+        @media (max-width: 768px) {
+            .magical-heading {
+                font-size: 2.5rem;
+            }
+        }
 @media (prefers-reduced-motion: reduce) {
 
     .sakura,
@@ -134,7 +233,7 @@ body {
 }
 
 /* Optimize SVG data URLs */
-body::before {
+.container::before {
     content: '';
     position: fixed;
     top: 0;
@@ -496,7 +595,6 @@ body::before {
 
 /* Ticker styles */
 .ticker-container {
-    max-width: 650px;
     width: auto;
     height: 40px;
     background: linear-gradient(90deg, rgba(0, 0, 0, 0.8), rgba(255, 142, 180, 0.8), rgba(0, 0, 0, 0.8));
@@ -559,11 +657,9 @@ body::before {
     height: 20px;
 }
 
-/* Copy component styles */
 .hero-section {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
     margin-bottom: 2.5em;
     gap: 10px;
@@ -927,6 +1023,9 @@ body::before {
     padding: 16px;
     margin-bottom: 24px;
     border: 1px solid #3a3a3a;
+    .chat-title {
+            margin-left: 0px;
+        }
 }
 
 
@@ -1038,6 +1137,7 @@ body::before {
     display: flex;
     flex-direction: column;
     padding: 1rem 1.5rem;
+    margin: auto 0px;
 }
 
 
@@ -1057,8 +1157,7 @@ body::before {
 
 /* Make cursor chat responsive */
 .cursor-chat {
-    max-width: 90%;
-    width: 800px;
+    max-width: 600px;
     margin: 40px auto;
 }
 
@@ -1115,13 +1214,9 @@ body::before {
 
 }
 
-@media screen and (max-width: 480px) {
-    .container {
-        margin: auto 0px;
-    }
+@media screen and (max-width: 599px) {
 
     .card-container {
-        flex-direction: column;
         width: 100vw;
         gap: 1em;
     }
@@ -1186,7 +1281,7 @@ body::before {
         0 0 0 4px #ffd700,
         0 0 0 5px #000,
         5px 5px 15px rgba(0, 0, 0, 0.4);
-    order: 1;
+    order: -1;
 }
 
 .sailor .card-header {
