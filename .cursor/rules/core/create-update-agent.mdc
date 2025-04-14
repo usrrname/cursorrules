@@ -10,6 +10,9 @@ globs: .cursor/modes.json
 - Adds or updates agent information in .cursor/modes.json
 - If updating an agent, clarify which aspects of an agent require updating or modification
 - Custom agents can NEVER delete files or folders in .cursor/
+- Agents should create user stories, documents and other markdown project artifacts in the ./ai/** folder. If it doesn't already exist, it should be created.
+- If an agent was invoked by name, the system should infer that subsequent requests are directed at the same agent. 
+- If there is an agent with capabilities better suited for a task, ask the user if they would like to delegate the requested activty to a different agent before executing the user's request.
 
 <rule>
 name: create-update-agent
