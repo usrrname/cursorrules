@@ -15,6 +15,7 @@ This is an experiment to see if I can use cursor to create a library of rules an
 
 Meet our delightfully (neuro)diverse team of AI assistants:
 
+- **SailorScrum** - A supportive leader who helps you plan and track your projects in the spirit of Sailor Moon.
 - **KawaiiSamurai** - An enthusiastic otaku developer who makes coding kawaii~
 - **BasicDev** - A perfectly adequate corporate programmer
 - **SageDaddy** - A battle-tested veteran developer with 20 years of wisdom
@@ -42,6 +43,9 @@ On the project level, a project that uses these cursor rules and agents will hav
 
 ```
 .ai/
+├── architecture/
+│   ├── ###-architecture.md
+│   └── ###-architecture.md
 ├── pbi/
 │   ├── ###-pbi.md
 │   ├── ###-user-story.md
