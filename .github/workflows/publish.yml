@@ -47,6 +47,7 @@ jobs:
       - run: npm ci
       - name: Publish to NPM
         run: |
+          npm version from-git
           npm config set registry https://npm.pkg.github.com/ --scope=@usrrname
           npm publish
         env:
