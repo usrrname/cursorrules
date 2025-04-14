@@ -3,9 +3,6 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - 'index.html'
-      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -13,30 +10,52 @@ permissions:
   contents: read
   pages: write
   id-token: write
-
 jobs:
+  changes: 
+    name: Change detection
+    runs-on: ubuntu-latest
+    outputs:
+      changes: ${{ steps.changes.outputs.filters }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Change detection
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            './':
+              - index: index.html
+              - styles: styles.css
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ needs.changes.outputs.changes.index == 'true' || needs.changes.outputs.changes.styles == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Pages
+    
         uses: actions/configure-pages@v4
-        
+    
       - name: Create artifact directory
         run: |
           mkdir _site
           cp index.html _site/
-        
+          cp styles.css _site/
+
       - name: Upload artifact
+        if: ${{ steps.changes.outputs.index == 'true' || steps.changes.outputs.styles == 'true' }}
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '_site'
-          
+            path: "_site"
+
       - name: Deploy to GitHub Pages
+        if: ${{ steps.changes.outputs.index == 'true' || steps.changes.outputs.styles == 'true' }}
         id: deployment
         uses: actions/deploy-pages@v4

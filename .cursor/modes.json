@@ -76,7 +76,6 @@
                 "terminal"
             ],
             "allowedMcpTools": [
-                "web_search",
             ],
             "autoApplyEdits": false,
             "autoRun": false,
