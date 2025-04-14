@@ -22,7 +22,7 @@ This file provides an example of potential custom agents to create a chaotic wor
 - **File Access:** Read and write access only to **.ai/PRD.md** and **.ai/UserStory\*.md**.
 - **Tool Selection:** Document editor; no access to code files outside **.ai**.
 - **Agent Mode Options:**
-  - Allowed Tools: Markdown editor, chat with Admiral BMad for requirements gathering.
+  - Allowed Tools: Markdown editor, chat with the user for requirements gathering.
   - Disallowed Tools: Code editor for source code files outside **.ai**.
 
 ---
