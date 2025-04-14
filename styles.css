@@ -52,6 +52,13 @@ body {
     color: floralwhite;
 }
 
+section.content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
 /* Magical girl heading styles */
 .magical-heading {
     font-family: 'Pattaya', sans-serif;
@@ -627,7 +634,7 @@ body {
 
 @keyframes ticker {
     0% {
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(50%, 0, 0);
     }
 
     100% {
@@ -636,25 +643,155 @@ body {
 }
 
 /* Footer styles */
-.footer {
-    position: fixed;
-    bottom: 1em;
-    left: 1em;
+.github-link {
     display: flex;
     align-items: center;
     gap: 8px;
     background: linear-gradient(90deg, #ff3277, #ffa7c7);
-    box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3);
-    padding: 10px 20px;
+    box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3),
+            0 0 20px rgba(255, 255, 255, 0.4);
+    padding: 8px 8px;
     border-radius: 25px;
     color: white;
-    font-size: 14px;
-    z-index: 999;
-}
-
-.footer svg {
-    width: 20px;
-    height: 20px;
+    position: relative;
+    transition: all 0.5s ease;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        animation: magical-pulse 3s infinite alternate;
+        text-decoration: none;
+    }
+    
+    .github-link:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 8px 25px rgba(255, 142, 180, 0.5),
+            0 0 30px rgba(255, 255, 255, 0.6);
+        background: linear-gradient(90deg, #ff69b4, #9370db);
+    }
+                /* Sparkle effect for links */
+                .github-link::before,
+                .link::before {
+                    content: "✨";
+                    position: absolute;
+                    top: -5px;
+                    left: -2px;
+                    font-size: 15px;
+                    animation: twinkle 2s infinite alternate;
+                    opacity: 0.8;
+                }
+        
+                .github-link::after,
+                .link::after {
+                    content: "✨";
+                    position: absolute;
+                    bottom: -5px;
+                    right: -2px;
+                    font-size: 15px;
+                    animation: twinkle 2s infinite alternate-reverse;
+                    opacity: 0.8;
+                }
+        
+                .link {
+                    color: white;
+                    position: relative;
+                    text-decoration: none;
+                    padding: 8px 15px;
+                    border-radius: 20px;
+                    background: linear-gradient(90deg, #b19cd9, #ffb6c1);
+                    transition: all 0.4s ease;
+                    box-shadow: 0 2px 10px rgba(177, 156, 217, 0.4);
+                    margin: 0 5px;
+                    font-weight: 500;
+                    letter-spacing: 0.5px;
+                    border: 1px solid rgba(255, 255, 255, 0.5);
+                }
+        
+                .link:hover {
+                    background: linear-gradient(90deg, #ffb6c1, #b19cd9);
+                    transform: translateY(-3px);
+                    box-shadow: 0 5px 15px rgba(177, 156, 217, 0.6),
+                        0 0 20px rgba(255, 255, 255, 0.3);
+                    text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+                }
+        
+                .github-link svg {
+                    width: 20px;
+                    height: 20px;
+        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+            transition: all 0.3s ease;
+        }
+        
+        .github-link:hover svg,
+        .link:hover svg {
+            transform: rotate(10deg) scale(1.1);
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+        }
+        
+        .footer-container {
+            position: fixed;
+            justify-content: space-between;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            align-content: baseline;
+            width: 100%;
+                padding: 1em;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Magic animations for footer elements */
+        @keyframes magical-pulse {
+            0% {
+                box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3),
+                    0 0 5px rgba(255, 255, 255, 0.3);
+            }
+        
+            50% {
+                box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3),
+                    0 0 20px rgba(255, 255, 255, 0.5);
+            }
+        
+            100% {
+                box-shadow: 0 4px 15px rgba(255, 142, 180, 0.3),
+                    0 0 10px rgba(255, 255, 255, 0.4);
+            }
+        }
+        
+        @keyframes twinkle {
+            0% {
+                opacity: 0.3;
+                transform: scale(0.8) rotate(0deg);
+            }
+        
+            50% {
+                opacity: 1;
+                transform: scale(1.2) rotate(15deg);
+            }
+        
+            100% {
+                opacity: 0.6;
+                transform: scale(0.9) rotate(0deg);
+            }
+        }
+        
+        /* Media query adjustments for footer */
+        @media screen and (max-width: 599px) {
+            .footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                margin-left: 1em;
+                margin-bottom: 1em;
+                text-decoration: none;
+            }
+        
+            .link {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        
+            .github-link {
+                padding: 8px 15px;
+            }
 }
 
 .hero-section {
@@ -1040,6 +1177,9 @@ body {
     margin-bottom: 20px;
     font-size: small;
     line-height: 1.5;
+    ol {
+            padding-left: 2em;
+        }
 }
 
 .message-header {
