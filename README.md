@@ -45,7 +45,7 @@ On the project level, a project that uses these cursor rules and agents will hav
 .ai/
 ├── architecture/
 │   ├── ###-architecture.md
-│   └── ###-architecture.md
+│   └── decision-records/
 ├── pbi/
 │   ├── ###-pbi.md
 │   ├── ###-user-story.md
