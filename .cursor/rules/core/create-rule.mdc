@@ -1,13 +1,13 @@
 ---
-description: Standards for creating and adding new Cursor rules to a project or repository.
-globs: *.mdc
+description: This rule is responsible for creating new Cursor rules or updating existing rules. Cursor rules are fundamental to maintaining the structure, style and organization of code in a project. This rule should be invoked when: 1. a user wants to create a new cursor rule, 2. a user wants to update or change an existing rule, 3. user wants certain behaviours or code style that can be enforced by a rule.
+globs:
 alwaysApply: true
 ---
 # Creating and updating cursor rules
 
 <rule>
   name: create-rule
-  description: Standards for creating and adding new Cursor rules
+  description: Standards for creating new Cursor rules and updating existing rules in a repository
   alwaysApply: {true or false}
   filters:
     # Match any .mdc files
@@ -36,14 +36,31 @@ alwaysApply: true
 
 - Any cursor rule file must contain a concise list of rules 
 - Any cursor rule file should also state conditions that violate the rules
+- It should NEVER be possible to add a rule that deletes rules.
 - Every rule should have a test section on the rule file
-  - Every test should elaborate on expected outcomes for potential scenarios and use cases
+  - Each test should elaborate on expected outcomes for potential scenarios and use cases
+
+## Rule template structure
+
+Every rule begins with front matter
+
+<example>
+```
+---
+description: The rule description details the conditions and requirements of when a rule should run and what parts of the software is affected.
+globs: {regex pattern | blank}
+alwaysApply: {true|false}
+---
+```
+</example>
+
 - Front matter rule types:
-    - The front matter section must always start the file and include all 3 fields, even if the field value will be blank - the types are:
-      - Manual Rule: if a Manual rule is requested, description and globs MUST be blank and alwaysApply: false and filename ends with -manual.mdc.
-      - Auto Rule: IF a rule is requested that should apply always to certain glob patterns (example all typescript files or all markdown files) - description must be blank, and alwaysApply: false and filename ends with -auto.mdc.
+    The front matter section must always start the file and include all 3 fields, even if the field value will be blank - the types are:
+      - Manual Rule: if a Manual rule is requested, description and globs MUST be blank and `alwaysApply: false` and filename ends with `-manual.mdc`.
+      - Auto Rule: IF a rule is requested that should apply always to certain glob patterns (example all Typescript files or all markdown files) - description must be blank, and alwaysApply: false and filename ends with -auto.mdc.
       - Always Rule: Global Rule applies to every chat and cmd/ctrl-k - description and globs blank, and alwaysApply: true  and filename ends with -always.mdc.
       - Agent Select Rule: The rule does not need to be loaded into every chat thread, it serves a specific purpose. The description MUST provide comprehensive context about when to apply the rule, including scenarios like code changes, architecture decisions, bug fixes, or new file creation. Globs blank, and alwaysApply:false and filename ends with -agent.mdc
+    If the fields are blank the value can be assumed false.
 
 ### Folders
 
@@ -53,10 +70,10 @@ All folders within PROJECT_ROOT/.cursor/rules should follow the following conven
 - .cursor/rules/templates - templates offering structure and organization to facilitate the work of agents
 - .cursor/rules/test  - rules about testing
 - .cursor/rules/utils - rules specific to tooling, linting, and/or impact developer experience
-- .cursor/rules/proj - project rules specific to a tech stack or programming language
+- .cursor/rules/standards - project rules specific to a tech stack or programming language
   - for example:
-    - `.cursor/rules/proj/mern` if we are using the MERN stack (Mongo, Express, React, Node)
-    - `.cursor/rules/proj/ts` if the rule is just for typescript standards
+    - `.cursor/rules/standards/mongo-express-react-node.mdc` if we are using the MERN stack (Mongo, Express, React, Node)
+    - `.cursor/rules/standards/ts.mdc` if the rule is just for typescript standards
 
 ## Project Structure Organization
 
@@ -108,7 +125,7 @@ For architectural documents (including decision records):
   - Can include data structures, UML or Mermaid as needed
 
 <example>
-  20250214-high-level-architecture.md
+  0002-high-level-architecture.md
 </example>
 
 For cursor rules:
@@ -134,8 +151,8 @@ For cursor rules:
   - The globs property can be empty or specify the constrained filename, type or extension
     ```mdc
       ---
-      description: Your rule description
-      globs: pattern1,pattern2
+      description: A thorough description with scenarios and conditions this 
+      globs: {regex pattern or blank}
       alwaysApply: {true|false}
       ---
     ```
