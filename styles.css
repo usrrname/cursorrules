@@ -53,14 +53,19 @@ body {
 }
 
 section.content {
+    margin: auto 0px;
+    max-width: 1400px;
     display: flex;
+    gap: 12px;
+    font-size: 1.3rem;
     flex-direction: row;
-    align-items: center;
     justify-content: center;
+    align-items: baseline;
     min-height: 100vh;
 
     .box {
-        margin-left: 2rem
+        line-height: 1.6;
+        margin-left: 2rem;
     }
 }
 /* Magical girl heading styles */
@@ -653,7 +658,7 @@ section.content {
     backdrop-filter: blur(5px);
     overflow: hidden;
     position: relative;
-    z-index: 1000;
+    z-index: 15;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -671,10 +676,6 @@ section.content {
     color: #fff;
     font-family: 'Doto';
     font-size: 16px;
-}
-
-.ticker-reverse {
-    animation-direction: reverse;
 }
 
 ul.prompts-list {
@@ -709,9 +710,8 @@ ul.prompts-list {
     color: white;
     position: relative;
     transition: all 0.5s ease;
-        border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
         animation: magical-pulse 3s infinite alternate;
-        text-decoration: none;
     }
     
     .github-link:hover {
@@ -769,23 +769,26 @@ ul.prompts-list {
                 .github-link svg {
                     width: 20px;
                     height: 20px;
-        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
-            transition: all 0.3s ease;
-        }
+                    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+                        transition: all 0.3s ease;
+                    }
         
-        .github-link:hover svg,
-        .link:hover svg {
-            transform: rotate(10deg) scale(1.1);
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
-        }
-                                                                                                                                                                                                                                                                footer
-        .footer-container {
+                                                                                                                                                                                                                                                                .github-link:hover svg,
+                                                                                                                                                                                                                                                                .link:hover svg {
+                                                                                                                                                                                                                                                                    transform: rotate(10deg) scale(1.1);
+                                                                                                                                                                                                                                                                    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+                                                                                                                                                                                                                                                                }
+                                                                                                                                .github-link,
+                                                                                                                                .link {
+                                                                                                                                    height: 40px;
+                                                                                                                                }
+                                                                
+                                                                                                                                .footer-container {
             position: fixed;
             justify-content: space-between;
             bottom: 0;
             display: flex;
             align-items: center;
-            align-content: baseline;
             width: 100%;
             padding: 1em;
             background: rgba(255, 255, 255, 0.1);
@@ -1330,7 +1333,7 @@ ul.prompts-list {
 .container {
     display: flex;
     flex-direction: column;
-    padding: 1rem 1.5rem;
+    padding: 1rem;
     margin: auto 0px;
 }
 
