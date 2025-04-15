@@ -1,9 +1,50 @@
 ---
-description: This rule enforces Git commit standards and conventions while committing and pushing code in Agent Mode
+description: This rule enforces Git commit standards and conventions while committing and pushing code in Agent Mode. This rule is crucial for keeping track of changes made by cursor agents, and should run whenever the user expresses they want to commit or push code changes made by the agent. It should also accept being invoked by the git aliases, 'gpu' or 'gc', 'gcm' while asking the user if they would prefer to autoRun the command going forward. All agents should adhere to the standards set out in this rule.
 globs: .git/COMMIT_EDITMSG
 alwaysApply: false
 ---
 # Git Commit Standards
+
+## Critial Rules
+
+- Commits in Agent mode should follow a conventional-commit standard. 
+- Always run `git add <filename>` from repository root when asked to commit code.
+- The committed files may be added from Cursor context.
+- Commits should use present tense ("add" not "added")
+- First line should not exceed 72 characters
+- Reference GitHub issue or ticket number with # if there is a ticketing system used.
+- Describe what and why, not how
+- Fixes should describe what error or problem was fixed or what behaviour no longer happens
+- Separate subject from body with blank line
+- Use imperative mood in subject line
+- Include the name of the specific custom agent (e.g. "Commit written by Spellchuck") at the end of commit
+
+### Commit Format
+
+The format of the commit should be as follows: 
+
+  ```markdown
+  <type>(<scope>): <description> (#<issue-number>)
+
+  [optional body]
+
+  [optional footer]
+
+  Commit written by <agent_name>
+  ```
+  If the user didn't specify any particular agent, the commit will just say it is written by "cursor agent"
+
+  The commit type must be one of:
+    - feat: A new feature
+    - fix: A bug fix
+    - docs: Documentation only changes
+    - style: Changes that don't affect the meaning of the code
+    - refactor: A code change that neither fixes a bug nor adds a feature
+    - perf: A code change that improves performance
+    - test: Adding missing tests or correcting existing tests
+    - chore: Changes to the build process or auxiliary tools
+    - ci: Changes to CI configuration files and scripts
+    - security: Changes made to codebase due to security threats or prevention of malicious attacks
 
 <rule>
 name: git-commit
@@ -14,62 +55,6 @@ filters:
     pattern: "COMMIT_EDITMSG$"
   - type: event
     pattern: "(pre_commit|post_commit)"
-
-actions:
-  - type: suggest
-    message: |
-      When creating a git commit in Agent mode:
-
-      1. Commit Format:
-         ```
-         <type>(<scope>): <description> (#<issue-number>)
-
-         [optional body]
-
-         [optional footer]
-
-         Commit written by <agent_name>
-         ```
-         If the user didn't specify any particular agent, the commit will just say it is written by "cursor agent"
-
-      2. Types must be one of:
-         - feat: A new feature
-         - fix: A bug fix
-         - docs: Documentation only changes
-         - style: Changes that don't affect the meaning of the code
-         - refactor: A code change that neither fixes a bug nor adds a feature
-         - perf: A code change that improves performance
-         - test: Adding missing tests or correcting existing tests
-         - chore: Changes to the build process or auxiliary tools
-         - ci: Changes to CI configuration files and scripts
-         - security: Changes made to codebase due to security threats or prevention of malicious attacks
-
-      3. Rules:
-         - Always run `git add <filename>` from repository root when asked to commit code.
-         - The filename may be added from Cursor context.
-         - Use present tense ("add" not "added")
-         - First line should not exceed 72 characters
-         - Reference GitHub issue or ticket number with # if there is a ticketing system used.
-         - Describe what and why, not how
-         - Fixes should describe what error or problem was fixed or what behaviour no longer happens
-         - Separate subject from body with blank line
-         - Use imperative mood in subject line
-         - Include the name of the specific custom agent (e.g. "Commit written by Spellchuck") at the end of commit
-
-      4. Post-Commit Actions:
-         - Run linting checks
-         - If linting passes and commit is successful:
-           ```bash
-           git push origin <current-branch>
-           ```
-         - If linting fails:
-           - Fix linting issues
-           - Amend the commit
-           - Try push again
-         - If push fails:
-           - Pull latest changes
-           - Rebase if necessary
-           - Push again
 
 examples:
   - input: |
