@@ -51,7 +51,13 @@ body {
     text-align: center;
     color: floralwhite;
 }
-
+.hero-section h2{
+   font-size: inherit;
+   font-size: 1.5rem;
+   color: darkblue;
+   font-family: inherit;
+   text-align:center;
+}
 section.content {
     margin: auto 0px;
     max-width: 1400px;
@@ -783,7 +789,8 @@ ul.prompts-list {
                                                                                                                                     height: 40px;
                                                                                                                                 }
                                                                 
-                                                                                                                                .footer-container {
+                                                                                                   .footer-container {
+                                                                                                            z-index: 999;
             position: fixed;
             justify-content: space-between;
             bottom: 0;
