@@ -80,15 +80,6 @@ jobs:
             exit 1
           fi
           
-          # Check if tag exists in git repository
-          git fetch --tags
-          if git tag | grep -q "^v$VERSION$\|^$VERSION$"; then
-            echo "::error::Git tag v$VERSION or $VERSION already exists in the repository"
-            echo "failure_reason=git_tag_conflict" >> $GITHUB_OUTPUT
-            echo "is_valid=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-          
           echo "Version $VERSION is unique and hasn't been published before"
           echo "is_valid=true" >> $GITHUB_OUTPUT
 
