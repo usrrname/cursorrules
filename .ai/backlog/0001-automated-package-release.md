@@ -19,13 +19,16 @@
 
 ## Requirements
 1. When a GitHub release with a tag is created and merged to main, trigger an automated workflow
-2. The workflow should extract version information from the GitHub release tag
-3. Update the package.json version to match the release tag version
+2. The workflow should have a job that:
+   1. extract version information from the GitHub release tag
+   2. Updates the package.json version to match the release tag version
+   3. Commits and pushes the updated package.json to main with the tag on a commit message.
+3. A separate job listens for new tags and kicks off the workflows to publish to npm package registry and github packages registry
 4. Publish the package to npm registry under the @usrrname scope
 5. Publish the same version to GitHub Packages registry
 6. Ensure both published packages have identical version numbers
 7. Add appropriate error handling for failed publishing attempts
-8. Include validation to prevent invalid versions from being published
+8. Prevent invalid versions from being published
 
 ## Acceptance Criteria
 - [ ] GitHub workflow is triggered automatically when a new release is created
