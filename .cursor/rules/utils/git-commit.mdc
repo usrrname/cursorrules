@@ -1,12 +1,14 @@
 ---
-description: This rule enforces Git commit standards and conventions while committing and pushing code in Agent Mode. This rule is crucial for keeping track of changes made by cursor agents, and should run whenever the user expresses they want to commit or push code changes made by the agent. It should also accept being invoked by the git aliases, 'gpu' or 'gc', 'gcm' while asking the user if they would prefer to autoRun the command going forward. All agents should adhere to the standards set out in this rule.
+description: This rule enforces Git commit standards and conventions while committing and pushing code in Agent Mode. This rule is crucial for keeping track of changes made by cursor agents, and should run whenever the user expresses they want to commit or push code changes made by the agent. This rule should be followed when: 1. the user wants to commit code, the git aliases, 'gpu' or 'gc', 'gcm' were submitted by the user. This rule will ask the user if they would prefer to autoRun the commit command going forward. All agents should adhere to the standards set out in this rule.
 globs: .git/COMMIT_EDITMSG
 alwaysApply: false
 ---
 # Git Commit Standards
 
 ## Critial Rules
-
+- This rule should use `git status` to check what files are currently modified and/or staged so as not to:
+  - overwrite files
+  - push unintended files or changes to remote repository
 - Commits in Agent mode should follow a conventional-commit standard. 
 - Always run `git add <filename>` from repository root when asked to commit code.
 - The committed files may be added from Cursor context.

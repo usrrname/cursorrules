@@ -1,6 +1,7 @@
 ---
 description: This rule runs whenever a developer wants to create an AI agent or wants to edit an existing one in Cursor.
 globs: .cursor/modes.json
+alwaysApply: false
 ---
 
 # Critical Rules
