@@ -31,14 +31,14 @@
 8. Prevent invalid versions from being published
 
 ## Acceptance Criteria
-- [ ] GitHub workflow is triggered automatically when a new release is created
-- [ ] The workflow correctly extracts the version from the release tag
-- [ ] The package is successfully published to npm registry under @usrrname scope
-- [ ] The same package version is successfully published to GitHub Packages
-- [ ] The published package versions are identical in both registries
-- [ ] The workflow fails gracefully if there are issues with the publishing process
-- [ ] The workflow includes appropriate logging for debugging purposes
-- [ ] Authentication to both registries is handled securely
+- [x] GitHub workflow is triggered automatically when a new release is created
+- [x] The workflow correctly extracts the version from the release tag
+- [x] The package is successfully published to npm registry under @usrrname scope
+- [x] The same package version is successfully published to GitHub Packages
+- [x] The published package versions are identical in both registries
+- [x] The workflow fails gracefully if there are issues with the publishing process
+- [x] The workflow includes appropriate logging for debugging purposes
+- [x] Authentication to both registries is handled securely
 
 ## Technical Details
 - Use GitHub Actions for the workflow implementation

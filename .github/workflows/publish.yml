@@ -1,38 +1,45 @@
-name: Publish
+name: Publish Package
 
 on:
+  push:
+    tags:
+      - 'v*'  # Trigger on tags that start with 'v'
   release:
-    types: [created]
-  workflow_dispatch:
+    types: [created, edited]  # Trigger on release creation or edit
 
 jobs:
-  build:
+  prepare-version:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
+    outputs:
+      version: ${{ steps.extract-version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - name: Run tests
-        run: npm run test:ci
-      - name: Update package version
+      
+      - name: Extract version from tag
+        id: extract-version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+      
+      - name: Update package.json version
         run: | 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          npm version patch git-tag-version
-          git push --follow-tags
+          npm version ${{ steps.extract-version.outputs.version }} --no-git-tag-version
+          git add package.json
+          git commit -m "Update package version to ${{ steps.extract-version.outputs.version }} [skip ci]"
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-npm:
-    needs: build
+    needs: prepare-version
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,42 +47,65 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+      
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
           scope: '@usrrname'
-      - run: npm ci --legacy-peer-deps
+      
+      - run: npm ci
+      
       - name: Publish to NPM
         run: |
-          npm version from-git
+          echo "Publishing version ${{ needs.prepare-version.outputs.version }} to NPM registry"
           npm config set registry https://registry.npmjs.org --scope=@usrrname
-          npm publish
+          npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
   publish-gpr:
-      needs: build
-      runs-on: ubuntu-latest
-      permissions:
-        contents: read
-        packages: write
-      steps:
-        - uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
-            token: ${{ secrets.GITHUB_TOKEN }}
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 20
-            registry-url: https://npm.pkg.github.com/
-            scope: '@usrrname'
-        - run: npm ci
-        - name: Publish to GitHub Packages
-          run: |
-            npm config set registry https://npm.pkg.github.com/ --scope=@usrrname
-            npm publish
-          env:
-            NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}} 
+    needs: prepare-version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://npm.pkg.github.com/
+          scope: '@usrrname'
+      
+      - run: npm ci
+      
+      - name: Publish to GitHub Packages
+        run: |
+          echo "Publishing version ${{ needs.prepare-version.outputs.version }} to GitHub Packages"
+          npm config set registry https://npm.pkg.github.com/ --scope=@usrrname
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify:
+    needs: [publish-npm, publish-gpr]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Log publish status
+        run: |
+          if [[ "${{ needs.publish-npm.result }}" == "success" && "${{ needs.publish-gpr.result }}" == "success" ]]; then
+            echo "✅ Package successfully published to both NPM and GitHub Packages registries"
+          else
+            echo "❌ Failed to publish to one or both registries"
+            echo "NPM publish status: ${{ needs.publish-npm.result }}"
+            echo "GitHub Packages publish status: ${{ needs.publish-gpr.result }}"
+            exit 1
+          fi 
