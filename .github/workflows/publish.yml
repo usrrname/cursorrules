@@ -28,11 +28,11 @@ jobs:
         run: | 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          npm version ${{ steps.extract-version.outputs.version }} --no-git-tag-version
-          git add package.json
-          git commit -m "Update package version to ${{ steps.extract-version.outputs.version }} [skip ci]"
+          npm version ${{ steps.extract-version.outputs.version }}
+          git add package.json 
+          git commit -m "chore: Update package version to ${{ steps.extract-version.outputs.version }} [skip ci]"
           git pull --rebase origin main  # Pull the latest changes to ensure no conflicts
-          git push origin HEAD:main
+          git push --follow-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
