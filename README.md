@@ -71,7 +71,7 @@ By default, the package saves files to the `output/` directory in your current l
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v20 or higher)
 - npm or yarn
 
 ### Setup Steps
