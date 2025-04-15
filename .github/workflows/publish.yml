@@ -16,9 +16,6 @@ jobs:
       version: ${{ steps.extract-version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Extract version from tag
         id: extract-version
@@ -34,7 +31,7 @@ jobs:
           npm version ${{ steps.extract-version.outputs.version }} --no-git-tag-version
           git add package.json
           git commit -m "Update package version to ${{ steps.extract-version.outputs.version }} [skip ci]"
-          git push
+          git push origin HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -93,19 +90,3 @@ jobs:
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  notify:
-    needs: [publish-npm, publish-gpr]
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    steps:
-      - name: Log publish status
-        run: |
-          if [[ "${{ needs.publish-npm.result }}" == "success" && "${{ needs.publish-gpr.result }}" == "success" ]]; then
-            echo "✅ Package successfully published to both NPM and GitHub Packages registries"
-          else
-            echo "❌ Failed to publish to one or both registries"
-            echo "NPM publish status: ${{ needs.publish-npm.result }}"
-            echo "GitHub Packages publish status: ${{ needs.publish-gpr.result }}"
-            exit 1
-          fi 
