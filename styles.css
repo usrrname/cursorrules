@@ -156,8 +156,9 @@ section.content {
 
 /* Magical subtitle styling */
 .magical-subtitle {
+    color: burgundy;
     font-family: 'Pattaya', sans-serif;
-    font-size: 1.75rem;
+    font-size: 2rem;
     text-align: center;
     background: linear-gradient(45deg, #ffc0cb, #ffb6c1, #ff8eb4, #ff69b4, #ffb6c1);
     background-size: 300% 300%;
