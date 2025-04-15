@@ -48,6 +48,7 @@ jobs:
           mkdir _site
           cp index.html _site/
           cp styles.css _site/
+          cp img/* _site/img/
 
       - name: Upload artifact
         if: ${{ steps.changes.outputs.index == 'true' || steps.changes.outputs.styles == 'true' }}
