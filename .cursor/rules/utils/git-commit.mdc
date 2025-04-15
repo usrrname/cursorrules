@@ -21,6 +21,7 @@ alwaysApply: false
 - Separate subject from body with blank line
 - Use imperative mood in subject line
 - Include the name of the specific custom agent (e.g. "Commit written by Spellchuck") at the end of commit
+- Do NOT include post commit actions 
 
 ### Commit Format
 
@@ -49,6 +50,10 @@ The format of the commit MUST be as follows (NO EXCEPTIONS):
     - ci: Changes to CI configuration files and scripts
     - security: Changes made to codebase due to security threats or prevention of malicious attacks
 
+### Post-Commit Actions
+
+Post-commit actions (such as `npm run lint` or `git push origin <branch>`) are **not** to be included in the commit message text. These are commands intended to be run after the user approves the commit and wants to push the commit to the remote branch. The agent should suggest these actions separately after a successful commit.
+
 ### AI Agent Enforcement
 
 All AI agents must:
@@ -60,6 +65,7 @@ All AI agents must:
 6. Add their agent name as the author in the commit footer
 7. Convert user instructions for commits into proper conventional commit format automatically
 8. If a user types simply "commit" or "gcm", the agent must prompt for or infer the appropriate conventional commit content
+9. The user must approve 
 
 <rule>
 name: git-commit
@@ -72,7 +78,7 @@ filters:
     pattern: "(pre_commit|post_commit)"
   - type: content
     pattern: "(commit|push|gc|gcm|gpu)"
-
+  
 examples:
   - input: |
       added new feature
@@ -85,8 +91,8 @@ examples:
 
       Commit written by KawaiiSamurai
 
-      # Post-commit actions:
-      npm run lint && git push origin feature/auth
+    # Post-commit actions (not included in commit message):
+    # npm run lint && git push origin feature/auth
   - input: |
       fixing bug
     output: |
@@ -97,8 +103,8 @@ examples:
 
       Commit written by SageDaddy
 
-      # Post-commit actions:
-      npm run lint && git push origin fix/timeout
+    # Post-commit actions (not included in commit message):
+    # npm run lint && git push origin fix/timeout
   - input: |
       update docs
     output: |
@@ -108,18 +114,18 @@ examples:
 
       Commit written by Spellchuck
 
-      # Post-commit actions:
-      npm run lint && git push origin docs/readme-update
+    # Post-commit actions (not included in commit message):
+    # npm run lint && git push origin docs/readme-update
 
 tests:
   - input: "updated code"
-    output: "feat(core): update code processing logic (#567)\n\nCommit written by BasicBitchDeveloper\n\n# Post-commit actions:\nnpm run lint && git push origin feature/code-update"
+    output: "feat(core): update code processing logic (#567)\n\nCommit written by BasicBitchDeveloper"
   - input: "fix error"
-    output: "fix(validation): resolve input sanitization error (#890)\n\nCommit written by ThirstySimp\n\n# Post-commit actions:\nnpm run lint && git push origin fix/validation"
+    output: "fix(validation): resolve input sanitization error (#890)\n\nCommit written by ThirstySimp"
   - input: "add docs"
-    output: "docs(api): add OpenAPI documentation (#345)\n\nCommit written by Spellchuck\n\n# Post-commit actions:\nnpm run lint && git push origin docs/api"
+    output: "docs(api): add OpenAPI documentation (#345)\n\nCommit written by Spellchuck"
   - input: "commit"
-    output: "When the user simply types 'commit', the agent must:\n1. Check git status\n2. Determine the appropriate type and scope based on changed files\n3. Generate a proper conventional commit message\n4. Present it to the user for approval"
+    output: "When the user simply types 'commit', the agent must:\n1. Check git status\n2. Determine the appropriate type and scope based on changed files\n3. Generate a proper conventional commit message\n4. Present it to the user for approval (post-commit actions are suggested separately)"
 
 metadata:
   priority: high
