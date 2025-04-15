@@ -62,7 +62,7 @@ All folders within PROJECT_ROOT/.cursor/rules should follow the following conven
 
 ## Glob Pattern Examples
 
-Glob patterns for different rule types:
+#### Glob patterns for different rule types:
 - Core standards: .cursor/rules/**/*.mdc
 - Language rules: *.cs, *.cpp
 - Testing standards: *.test.ts, *.test.js, *test.spec.ts
@@ -76,7 +76,9 @@ Glob patterns for different rule types:
 
 In projects that use the custom agents and their workflows, an .ai/ folder will be created at the root level of the repository if it doesn't already exist.
 
-Glob patterns for projects using the agentic workflow:
+#### Glob patterns for projects using the agentic workflow:
+
+Folders should be created if they don't already exist.
 
 - User stories or PBIs: .ai/backlog/**/*.md
 - Architecture: .ai/architecture/*.md
