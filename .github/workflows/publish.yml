@@ -6,197 +6,58 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Add version validation job
-  validate:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.extract-version.outputs.version }}
-      is_valid: ${{ steps.validate-version.outputs.is_valid }}
-    steps:
-      - name: Extract version from tag
-        id: extract-version
-        run: |
-          if [[ "${{ github.event_name }}" == "release" ]]; then
-            VERSION="${{ github.event.release.tag_name }}"
-            # Remove 'v' prefix if present
-            VERSION="${VERSION#v}"
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-          else
-            echo "version=0.0.0-manual" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Validate semver format
-        id: validate-version
-        run: |
-          VERSION="${{ steps.extract-version.outputs.version }}"
-          # Validate semver format (major.minor.patch with optional prerelease)
-          if [[ "$VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)(-[0-9A-Za-z-]+)?(\+[0-9A-Za-z-]+)?$ ]]; then
-            echo "Version $VERSION is valid semver"
-            echo "is_valid=true" >> $GITHUB_OUTPUT
-          elif [[ "$VERSION" == "0.0.0-manual" ]]; then
-            echo "Manual workflow dispatch - skipping version validation"
-            echo "is_valid=true" >> $GITHUB_OUTPUT
-          else
-            echo "::error::Invalid semver format: $VERSION"
-            echo "is_valid=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-      
-      - uses: actions/checkout@v4
-        if: github.event_name == 'release'
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - uses: actions/setup-node@v4
-        if: github.event_name == 'release'
-        with:
-          node-version: 20
-          
-      - name: Check if version already exists
-        if: github.event_name == 'release'
-        id: check-existing-version
-        run: |
-          VERSION="${{ steps.extract-version.outputs.version }}"
-          
-          # Check if version exists in npm registry
-          NPM_VERSION=$(npm view @usrrname/cursorrules versions --json 2>/dev/null || echo "[]")
-          if echo "$NPM_VERSION" | grep -q "\"$VERSION\""; then
-            echo "::error::Version $VERSION already exists in npm registry"
-            echo "failure_reason=npm_registry_conflict" >> $GITHUB_OUTPUT
-            echo "is_valid=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-          
-          # Check if version exists in GitHub Packages
-          npm config set registry https://npm.pkg.github.com/ --scope=@usrrname
-          GITHUB_PKG_VERSION=$(npm view @usrrname/cursorrules versions --json 2>/dev/null || echo "[]")
-          npm config set registry https://registry.npmjs.org/ --scope=@usrrname
-          
-          if echo "$GITHUB_PKG_VERSION" | grep -q "\"$VERSION\""; then
-            echo "::error::Version $VERSION already exists in GitHub Packages registry"
-            echo "failure_reason=github_registry_conflict" >> $GITHUB_OUTPUT
-            echo "is_valid=false" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-          
-          echo "Version $VERSION is unique and hasn't been published before"
-          echo "is_valid=true" >> $GITHUB_OUTPUT
-
   build:
-    needs: validate
-    if: needs.validate.outputs.is_valid == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
-    outputs:
-      version: ${{ needs.validate.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      
-      - name: Install dependencies
-        run: npm ci
-      
+      - run: npm ci
       - name: Run tests
         run: npm run test:ci
-        continue-on-error: false
-      
-      - name: Update package version from release tag
-        if: github.event_name == 'release'
+      - name: Update package version
         run: | 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          # Use the validated version from the tag
-          VERSION="${{ needs.validate.outputs.version }}"
-          echo "Using version: $VERSION"
-          
-          # Update package.json with the exact version from the tag
-          npm version $VERSION --no-git-tag-version
-          
-          # Commit the change to package.json
-          git add package.json
-          git commit -m "chore: update version to $VERSION [skip ci]"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Update package version (workflow dispatch)
-        if: github.event_name == 'workflow_dispatch'
-        run: | 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          npm version patch --no-git-tag-version
-          
-          # Get the version from package.json
-          VERSION=$(node -p "require('./package.json').version")
-          echo "Using version: $VERSION"
-          
-          # Commit the change to package.json
-          git add package.json
-          git commit -m "chore: update version to $VERSION [skip ci]"
-          git push
+          npm version patch git-tag-version
+          git push --follow-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-npm:
-    needs: [validate, build]
+    needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-          # Pull latest changes to get updated package.json
-          ref: main
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
           scope: '@usrrname'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Verify package version
-        id: verify-version
-        run: |
-          PKG_VERSION=$(node -p "require('./package.json').version")
-          echo "Package version: $PKG_VERSION"
-          echo "pkgVersion=$PKG_VERSION" >> $GITHUB_OUTPUT
-      
+      - run: npm ci --legacy-peer-deps
       - name: Publish to NPM
         run: |
-          echo "Publishing version ${{ steps.verify-version.outputs.pkgVersion }} to NPM registry"
+          npm version from-git
           npm config set registry https://registry.npmjs.org --scope=@usrrname
-          npm publish --access public
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-      
-      - name: Verify successful publish
-        run: |
-          # Wait a moment for NPM to register the package
-          sleep 5
-          # Query for the package
-          PUBLISHED_VERSION=$(npm view @usrrname/cursorrules version 2>/dev/null || echo "not_found")
-          if [[ "$PUBLISHED_VERSION" == "${{ steps.verify-version.outputs.pkgVersion }}" ]]; then
-            echo "Successfully published to NPM: $PUBLISHED_VERSION"
-          else
-            echo "::warning::Package may not have been published correctly. NPM shows: $PUBLISHED_VERSION"
-          fi
 
   publish-gpr:
-      needs: [validate, build]
+      needs: build
       runs-on: ubuntu-latest
       permissions:
         contents: read
@@ -206,98 +67,15 @@ jobs:
           with:
             fetch-depth: 0
             token: ${{ secrets.GITHUB_TOKEN }}
-            # Pull latest changes to get updated package.json
-            ref: main
-        
-        - name: Setup Node.js for GitHub Packages
-          uses: actions/setup-node@v4
+        - uses: actions/setup-node@v4
           with:
             node-version: 20
             registry-url: https://npm.pkg.github.com/
             scope: '@usrrname'
-        
-        - name: Install dependencies
-          run: npm ci
-        
-        - name: Verify package version matches NPM
-          id: verify-gpr-version
-          run: |
-            PKG_VERSION=$(node -p "require('./package.json').version")
-            echo "Package version: $PKG_VERSION"
-            echo "pkgVersion=$PKG_VERSION" >> $GITHUB_OUTPUT
-        
+        - run: npm ci
         - name: Publish to GitHub Packages
           run: |
-            echo "Publishing version ${{ steps.verify-gpr-version.outputs.pkgVersion }} to GitHub Packages"
             npm config set registry https://npm.pkg.github.com/ --scope=@usrrname
             npm publish
           env:
-            NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  notify:
-    needs: [validate, publish-npm, publish-gpr]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check workflow status
-        id: status
-        run: |
-          if [[ "${{ needs.validate.result }}" != "success" ]]; then
-            echo "status=failure" >> $GITHUB_OUTPUT
-            
-            # Determine specific validation failure reason
-            FAILURE_REASON="${{ needs.validate.outputs.failure_reason }}"
-            if [[ "$FAILURE_REASON" == "npm_registry_conflict" ]]; then
-              echo "message=❌ Validation failed: Version already exists in NPM registry" >> $GITHUB_OUTPUT
-            elif [[ "$FAILURE_REASON" == "github_registry_conflict" ]]; then
-              echo "message=❌ Validation failed: Version already exists in GitHub Packages registry" >> $GITHUB_OUTPUT
-            elif [[ "$FAILURE_REASON" == "git_tag_conflict" ]]; then
-              echo "message=❌ Validation failed: Git tag already exists for this version" >> $GITHUB_OUTPUT
-            else
-              echo "message=❌ Validation failed: The version may be invalid or have conflicts" >> $GITHUB_OUTPUT
-            fi
-          elif [[ "${{ needs.publish-npm.result }}" == "success" && "${{ needs.publish-gpr.result }}" == "success" ]]; then
-            echo "status=success" >> $GITHUB_OUTPUT
-            echo "message=✅ Package successfully published to both NPM and GitHub Packages" >> $GITHUB_OUTPUT
-          elif [[ "${{ needs.publish-npm.result }}" == "success" ]]; then
-            echo "status=partial" >> $GITHUB_OUTPUT
-            echo "message=⚠️ Package published to NPM only. GitHub Packages publishing failed." >> $GITHUB_OUTPUT
-          elif [[ "${{ needs.publish-gpr.result }}" == "success" ]]; then
-            echo "status=partial" >> $GITHUB_OUTPUT
-            echo "message=⚠️ Package published to GitHub Packages only. NPM publishing failed." >> $GITHUB_OUTPUT
-          else
-            echo "status=failure" >> $GITHUB_OUTPUT
-            echo "message=❌ Failed to publish package to both registries" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Create status issue comment
-        if: github.event_name == 'release'
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const status = '${{ steps.status.outputs.status }}';
-            const message = '${{ steps.status.outputs.message }}';
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## Publish Status: ${status.toUpperCase()}\n\n${message}`
-            })
-      
-      - name: Create commit comment
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const status = '${{ steps.status.outputs.status }}';
-            const message = '${{ steps.status.outputs.message }}';
-            
-            github.rest.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: `## Publish Status: ${status.toUpperCase()}\n\n${message}`
-            }) 
+            NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}} 
