@@ -5,11 +5,12 @@ alwaysApply: false
 ---
 # Git Commit Standards
 
-## Critial Rules
+## Critical Rules
+- This rule MUST be followed by ALL AI agents without exception
 - This rule should use `git status` to check what files are currently modified and/or staged so as not to:
   - overwrite files
   - push unintended files or changes to remote repository
-- Commits in Agent mode should follow a conventional-commit standard. 
+- Commits in Agent mode MUST follow the conventional-commit standard defined below
 - Always run `git add <filename>` from repository root when asked to commit code.
 - The committed files may be added from Cursor context.
 - Commits should use present tense ("add" not "added")
@@ -23,9 +24,9 @@ alwaysApply: false
 
 ### Commit Format
 
-The format of the commit should be as follows: 
+The format of the commit MUST be as follows (NO EXCEPTIONS): 
 
-  ```markdown
+  ```
   <type>(<scope>): <description> (#<issue-number>)
 
   [optional body]
@@ -48,6 +49,18 @@ The format of the commit should be as follows:
     - ci: Changes to CI configuration files and scripts
     - security: Changes made to codebase due to security threats or prevention of malicious attacks
 
+### AI Agent Enforcement
+
+All AI agents must:
+1. Always check for existing changed files via `git status` before committing
+2. Never use generic commit messages like "update code" or "commit changes"
+3. Always identify the type of change according to conventional commit standards
+4. Include a meaningful scope that indicates which part of the codebase is affected
+5. Provide a clear, concise description in the imperative mood
+6. Add their agent name as the author in the commit footer
+7. Convert user instructions for commits into proper conventional commit format automatically
+8. If a user types simply "commit" or "gcm", the agent must prompt for or infer the appropriate conventional commit content
+
 <rule>
 name: git-commit
 description: This rule is crucial for keeping track of changes made by cursor agents, and should run whenever the user expresses they want to commit or push code changes made by the agent. It should also accept being invoked by the git aliases, "gpu" or "gc", "gcm" while asking the user if they would prefer to autoRun the command going forward.
@@ -57,6 +70,8 @@ filters:
     pattern: "COMMIT_EDITMSG$"
   - type: event
     pattern: "(pre_commit|post_commit)"
+  - type: content
+    pattern: "(commit|push|gc|gcm|gpu)"
 
 examples:
   - input: |
@@ -103,6 +118,8 @@ tests:
     output: "fix(validation): resolve input sanitization error (#890)\n\nCommit written by ThirstySimp\n\n# Post-commit actions:\nnpm run lint && git push origin fix/validation"
   - input: "add docs"
     output: "docs(api): add OpenAPI documentation (#345)\n\nCommit written by Spellchuck\n\n# Post-commit actions:\nnpm run lint && git push origin docs/api"
+  - input: "commit"
+    output: "When the user simply types 'commit', the agent must:\n1. Check git status\n2. Determine the appropriate type and scope based on changed files\n3. Generate a proper conventional commit message\n4. Present it to the user for approval"
 
 metadata:
   priority: high
