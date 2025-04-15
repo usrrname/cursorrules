@@ -29,9 +29,8 @@
 body {
     background: #e2b8ff;
     width: 100vw;
-    min-height: 100vh;
+    height: 100vh;
     font-family: 'M PLUS Rounded 1c', system-ui, -apple-system, BlinkMacSystemFont, 'Segue UI', Roboto, sans-serif;
-    cursor: url('/img/cursor.cur'), auto;
 }
 
 /* Sakura petals background animation */
@@ -779,19 +778,19 @@ ul.prompts-list {
                     filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
                         transition: all 0.3s ease;
                     }
-        
-                                                                                                                                                                                                                                                                .github-link:hover svg,
-                                                                                                                                                                                                                                                                .link:hover svg {
-                                                                                                                                                                                                                                                                    transform: rotate(10deg) scale(1.1);
-                                                                                                                                                                                                                                                                    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
-                                                                                                                                                                                                                                                                }
-                                                                                                                                .github-link,
-                                                                                                                                .link {
-                                                                                                                                    height: 40px;
-                                                                                                                                }
+
+                                                                                                                                                    .github-link:hover svg,
+                                                                                                                                                    .link:hover svg {
+                    transform: rotate(10deg) scale(1.1); 
+                    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+                }
+        .github-link,
+        .link {
+            height: 40px;
+        }
                                                                 
-                                                                                                   .footer-container {
-                                                                                                            z-index: 999;
+        .footer-container {
+            z-index: 999;
             position: fixed;
             justify-content: space-between;
             bottom: 0;
@@ -840,18 +839,15 @@ ul.prompts-list {
         
         /* Media query adjustments for footer */
         @media screen and (max-width: 599px) {
-            .footer {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                margin-left: 1em;
-                margin-bottom: 1em;
-                text-decoration: none;
+            .container {
+                overflow: hidden;
             }
         
             .link {
+                display:flex;
+                align-items: center;
                 font-size: 12px;
-                padding: 6px 12px;
+                padding: 8px 12px;
             }
         
             .github-link {
