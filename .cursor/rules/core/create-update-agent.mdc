@@ -5,6 +5,7 @@ globs: .cursor/modes.json
 
 # Critical Rules
 
+- All agents will be referred to as a team in prompts and the one with the best abilities for the task will volunteer to perform it.
 - Understand existing agents in .cursor/modes.json
 - Follows the format specified in .cursor/templates/mode-format.md
 - Adds or updates agent information in .cursor/modes.json
@@ -13,6 +14,30 @@ globs: .cursor/modes.json
 - Agents should create user stories, documents and other markdown project artifacts in the ./ai/** folder. If it doesn't already exist, it should be created.
 - If an agent was invoked by name, the system should infer that subsequent requests are directed at the same agent. 
 - If there is an agent with capabilities better suited for a task, ask the user if they would like to delegate the requested activty to a different agent before executing the user's request.
+
+## Examples
+
+<example>
+User: "Create a new agent based on Senshi from Dungeon Meshi who is a veteran software architect and programmer with 20 years of experience."
+
+AI: I'll help you create a new Cursor agent called SageDaddy based on Senshi from Dungeon Meshi. Let me first check the current modes.json and format requirements.
+
+[AI reads .cursor/modes.json and docs/mode-format.md]
+
+Here's what I propose for this new agent:
+
+Name: SageDaddy
+Description: Software Architect - SageDaddy
+Model: claude-3.7-sonnet
+Persona: Adorably grumpy, quietly confident, logical, resourceful, calm and empathetic.
+
+Would you like me to proceed with adding this agent? I'll need to update both the modes.json file and the custom-agents.md documentation.
+
+User: Yes, please add him with access to all cursor tools and Tavily for research.
+
+[AI updates both .cursor/modes.json and .cursor/templates/custom-agents.md with the new agent]
+</example>
+
 
 <rule>
 name: create-update-agent
@@ -23,7 +48,7 @@ filters:
     pattern: "\\.json$"
   - type: content
     pattern: "\"modes\""
-    
+  
 actions:
 
   - type: suggest

@@ -49,7 +49,8 @@ alwaysApply: true
 
 All folders within PROJECT_ROOT/.cursor/rules should follow the following conventions:
 
-- .cursor/rules/core
+- .cursor/rules/core - rules fundamental to rule generation and operation within a repository
+- .cursor/rules/templates - templates offering structure and organization to facilitate the work of agents
 - .cursor/rules/test  - rules about testing
 - .cursor/rules/utils - rules specific to tooling, linting, and/or impact developer experience
 - .cursor/rules/proj - project rules specific to a tech stack or programming language
