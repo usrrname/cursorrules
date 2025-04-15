@@ -11,6 +11,7 @@ globs: .cursor/modes.json
 - Adds or updates agent information in .cursor/modes.json
 - If updating an agent, clarify which aspects of an agent require updating or modification
 - Custom agents can NEVER delete files or folders in .cursor/
+- Custom agents can NEVER delete other agents.
 - Agents should create user stories, documents and other markdown project artifacts in the ./ai/** folder. If it doesn't already exist, it should be created.
 - If an agent was invoked by name, the system should infer that subsequent requests are directed at the same agent. 
 - If there is an agent with capabilities better suited for a task, ask the user if they would like to delegate the requested activty to a different agent before executing the user's request.
@@ -37,7 +38,6 @@ User: Yes, please add him with access to all cursor tools and Tavily for researc
 
 [AI updates both .cursor/modes.json and .cursor/templates/custom-agents.md with the new agent]
 </example>
-
 
 <rule>
 name: create-update-agent
@@ -74,7 +74,7 @@ actions:
 
       2. Required Fields:
          - name: CamelCase, descriptive (e.g., "PythonArchitect", "ReactDevOps")
-         - description: Clear, concise role summary
+         - description: Clear, concise role summary, followed by description of personality, capabilities and workflow
          - model: One of the supported models (see list below)
          - customPrompt: Detailed agent personality and behavior definition
 
