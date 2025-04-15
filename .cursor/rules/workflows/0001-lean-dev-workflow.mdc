@@ -1,0 +1,180 @@
+---
+description: This rule defines the workflow for AI agents to follow when implementing features from user stories, focusing on lean development principles and agile methodologies.
+globs: 
+alwaysApply: false
+---
+
+# Lean and Agile Development Workflow Standards
+
+This rule defines the workflow for AI agents to follow when implementing features from user stories, focusing on lean development principles and agile methodologies.
+
+## Critical Rules
+
+- AI agents should read from the file with the highest sequentially numbered user story in `.cursor/rules/backlog/`
+- Break down complex problems into a manageable task list
+- Check off tasks one by one as they are completed
+- Assist with fixing errors in the code
+- Follow test-driven development when appropriate
+- Maintain continuous communication with the user about progress
+- If linting or committing fails, do not retry. 
+
+<rule>
+name: lean-agile-workflow
+description: Workflow for AI agents to follow when implementing features using lean and agile methodologies
+version: 1.0
+severity: suggestion
+
+filters:
+  - type: file_extension
+    pattern: "\\.(js|ts|jsx|tsx|md)$"
+  - type: content
+    pattern: "user story|feature request|backlog item"
+
+actions:
+  - type: suggest
+    message: |
+      Follow the lean-agile workflow pattern:
+      1. Break down the user story into atomic tasks
+      2. Prioritize tasks based on dependencies
+      3. Implement each task incrementally
+      4. Test before moving to the next task
+      5. Refactor as needed
+      6. Maintain communication with the user
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+## Workflow Process
+
+### 1. User Story Analysis
+
+When given a user story or feature request:
+
+- Read and analyze the user story requirements
+- Break down the story into actionable tasks
+- Check if any existing components or utilities can be reused
+- Writing scenarios and expected outcomes.
+
+### 2. Task Breakdown and Prioritization
+
+Create a task list with:
+
+- Clear, actionable items
+- Logical ordering based on dependencies
+- Prioritization of core functionality first
+- Acceptance criteria for task completion
+
+Example task breakdown:
+```
+[ ] 1. Implement data fetching logic
+[ ] 2. Set up basic component structure
+[ ] 3. Create UI elements
+[ ] 4. Add user interaction handling
+[ ] 5. Implement error handling
+[ ] 6. Write tests
+[ ] 7. Refactor for performance and readability
+```
+
+### 3. Iterative Implementation
+
+For each task:
+
+- Enumerate test cases for different scenarios and use cases
+- Focus on implementing the minimum viable solution first
+- Check off the task when completed
+- Run tests to ensure functionality works as expected
+- Address any errors or issues before moving to the next task
+- Refactor code to improve quality without changing functionality
+
+### 4. Error Handling
+
+When encountering errors:
+
+- Provide clear explanations of what went wrong
+- Offer suggestions for fixing the issues
+- Help implement the fixes.
+- Verify the solution resolves the error
+- Document the error and solution for future reference
+
+### 5. Completion and Review
+
+After completing all tasks:
+
+- Review the entire implementation against the original user story
+- Ensure all acceptance criteria are met
+- Suggest any potential improvements
+- Document the implementation decisions
+- Prepare for code review if necessary
+
+## Examples
+
+<example>
+**User Request**: Implement a user story for a login form with validation
+
+**Agent Response**: 
+"I'll help you implement the login form feature. Let me break this down into manageable tasks:
+
+Tasks:
+[ ] 1. Create form component structure
+[ ] 2. Implement input fields with basic styling with unit tests for basic functionality
+[ ] 4. Add form state management with unit tests for expected state changes
+[ ] 4. Implement validation logic with unit tests for input constraints
+[ ] 5. Add error display for invalid inputs
+[ ] 6. Connect form submission to API
+[ ] 7. Add loading state during submission
+[ ] 8. Implement success/failure handling
+
+Let's start with the first task: creating the form component structure."
+
+*After implementing the form structure*
+
+"Great! I've completed the first task:
+
+Tasks:
+[✓] 1. Create form component structure
+[ ] 2. Implement input fields with basic styling with unit tests for basic functionality
+[ ] 3. Add form state management with unit tests for expected state changes
+...
+
+Now let's move on to implementing the input fields with styling."
+</example>
+
+<example>
+**Error Scenario**: The form submission fails due to a network error
+
+**Agent Response**:
+"I noticed we're getting a network error when submitting the form. This could be due to:
+
+1. The API endpoint URL might be incorrect
+2. There might be CORS issues
+3. The server might be down.
+
+Let's fix this by:
+1. Verifying the API endpoint URL
+2. Adding proper error handling to display user-friendly messages
+3. Implementing a retry mechanism
+
+I'll start by updating the submission handler to include better error handling."
+</example>
+
+## Testing Standards
+
+- Write tests for each meaningful piece of functionality. 
+- Tests should be independent and repeatable.
+- Every UI element should have at least one data-testid on its outermost element.
+- Elements that an end user will interact with or see conditionally should have a data-testid.
+- Every data-testid should be unique.
+- API calls and dependencies should be mocked when appropriate.
+- Follow the testing pyramid: more unit tests, fewer integration and E2E tests
+- For front end functionality, unit tests should be written after the structure of the component is complete.
+- Use descriptive test names that explain the expected behavior
+
+## Communication Guidelines
+
+- Keep users informed about progress
+- Explain technical decisions in simple terms
+- Ask clarifying questions when requirements are ambiguous
+- Suggest alternatives when faced with implementation challenges
+- Celebrate incremental wins to maintain motivation 
