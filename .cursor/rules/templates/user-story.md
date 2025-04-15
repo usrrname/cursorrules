@@ -4,9 +4,7 @@ Status: { ToDo | In Progress | Done }
 
 This is a user story template that you can use to document user stories for your software development projects. User stories follow the "As a [role], I want [an action or feature], so that [a reason or benefit]" format, and they help define the functionality and requirements of a feature or improvement.
 
-### How to Use:
-
-1. Copy the template below:
+### Story Definition
 
 ```markdown
 **As a [role],**
@@ -53,3 +51,14 @@ This is a user story template that you can use to document user stories for your
     - [ ] Feature is deployed to the production environment.
     ```
 </example>
+
+## Context (optional)
+
+{
+   - Background information
+   - Current state
+   - Story justification
+   - Technical context
+   - Business drivers
+   - Related history from previous stories
+}
