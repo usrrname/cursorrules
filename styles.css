@@ -31,6 +31,7 @@ body {
     width: 100vw;
     min-height: 100vh;
     font-family: 'M PLUS Rounded 1c', system-ui, -apple-system, BlinkMacSystemFont, 'Segue UI', Roboto, sans-serif;
+    cursor: url('/img/cursor.cur'), auto;
 }
 
 /* Sakura petals background animation */
