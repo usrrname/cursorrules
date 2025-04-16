@@ -37,7 +37,8 @@ On the meta level, the project is structured as follows:
 ├── rules/
 │   ├── core/        # Required global rules for agentic codegen
 │   ├── templates/   # Document templates for project context 
-│   └── utils/       # Rules for tooling and developer experience
+│   ├── utils/       # Rules for tooling and developer experience
+│   └── workflows/   # Rules for workflow to be followed by agents
 └── modes.json       # Custom agent configurations
 ```
 See [docs](./docs/custom-agents.md) for more information on the custom agents.
@@ -112,24 +113,6 @@ By default, the package saves files to the `output/` directory in your current l
    ```bash
    npm unpublish @usrrname:registry http://localhost:4873/ @usrrname/cursorrules
    ```
-
-## 🔄 Release Process
-
-This package uses an automated release workflow that publishes to both npm and GitHub Packages registries when a new GitHub release is created.
-
-To create a new release:
-
-1. Ensure all changes are merged to the `main` branch
-2. Create a new GitHub release with a semantic version tag (e.g., `v1.2.3`)
-3. The GitHub Actions workflow will automatically:
-   - Update the package.json version
-   - Publish to npm registry under the `@usrrname` scope
-   - Publish to GitHub Packages registry
-
-For detailed information, see [Release Workflow](./docs/release-workflow.md).
-
-<hr/>
-
 
 🚧 Under construction 🚧
 
