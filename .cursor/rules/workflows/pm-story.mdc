@@ -1,3 +1,8 @@
+---
+description: This workflow guides the process of discovering, drafting and validating user stories which will be written by SailorScrum with input from the rest of the team.
+glob:
+alwaysApply: false
+---
 # User Story Discovery Workflow
 
 In the name of the Moon, this workflow guides the process of discovering and crafting user stories that will power your project's success! 🌙✨

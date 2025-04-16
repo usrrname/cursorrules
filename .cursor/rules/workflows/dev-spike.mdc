@@ -1,3 +1,8 @@
+---
+description: This rule provides the guiding principles that developer and architect agents must follow for time-boxed technical investigations.
+globs:
+alwaysApply: false
+---
 # Technical Spike Workflow
 
 A guide for conducting time-boxed technical investigations (spikes) to reduce uncertainty and risk in development decisions. ⚡
