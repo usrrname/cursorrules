@@ -46,9 +46,11 @@ const help = () => {
     const version = packageJson.version;
     return console.info(`
 ╔══════════════════════════════════════╗
-║ @usrrname/cursorrules v${version}    ║
-║ aka. Coding Agents from Hell         ║
+║  @usrrname/cursorrules v${version}   ║
 ╚══════════════════════════════════════╝
+A standard library of Cursor Rules 
+...with otaku vibes (✿ᴗ͈ˬᴗ͈)⁾⁾
+
 Usage:
 =======================================
 npx @usrrname/cursorrules [options]
