@@ -11,6 +11,7 @@ This rule defines the workflow for AI agents to follow when implementing feature
 ## Critical Rules
 
 - AI agents should read from the file with the highest sequentially numbered user story in `.cursor/rules/backlog/`
+- No more than 2 stories can be in progress at any time.
 - Break down complex problems into a manageable task list
 - Check off tasks one by one as they are completed
 - Assist with fixing errors in the code

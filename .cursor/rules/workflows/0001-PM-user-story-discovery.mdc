@@ -1,0 +1,247 @@
+# User Story Discovery Workflow
+
+In the name of the Moon, this workflow guides the process of discovering and crafting user stories that will power your project's success! 🌙✨
+
+## Critical Rules
+
+- Every user story MUST follow the standard format: "As a [role], I want [goal] so that [benefit]"
+- Stories MUST be independent, negotiable, valuable, estimable, small, and testable
+- Each story MUST have clear requirements and acceptance criteria
+- Stories MUST be saved in `.ai/backlog/` with the format `####-story-title.md`
+- The story should be updated as new insights, constraints and 
+- Stories MUST be discoverable through semantic search
+- Stories MUST link to related architecture decisions or technical constraints
+- Stories MUST include effort estimation (S, M, L, XL)
+- All agents can use Tavily to perform web search.
+
+<rule>
+name: user-story-discovery
+description: Standards for discovering and documenting user stories
+version: 1.0
+filters:
+  - type: file_extension
+    pattern: "\\.md$"
+  - type: content
+    pattern: "As a .*, I want .* so that .*"
+  - type: path
+    pattern: "\\.ai/backlog/\\d{4}-.*\\.md"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+## Discovery Process
+
+### 1. Story Initiation 🌱
+
+When a new story is needed:
+1. SailorScrum leads a discovery session
+2. KawaiiSamurai or BasicDev provides technical insights
+3. SageDaddy reviews for architectural implications offers recommendations on approach or technology choices
+4. qwoof confirms user goals and ensures testability
+
+### 2. Story Creation Template 📝
+
+```markdown
+# User Story: [Title]
+
+## Story
+As a [role],
+I want [goal/feature]
+so that [benefit/value]
+
+## Background
+[Context and additional information]
+
+## Acceptance Criteria
+- [ ] Given [context], when [action], then [result]
+- [ ] Given [context], when [action], then [result]
+- [ ] Given [context], when [action], then [result]
+
+## Technical Notes
+- Dependencies:
+- Architecture considerations:
+- Security implications:
+
+## Effort Estimation
+Size: [S/M/L/XL]
+Confidence: [High/Medium/Low]
+
+## Related
+- Architecture Decision Records: [links]
+- Technical Documentation: [links]
+- Dependencies: [story links]
+
+## Team Assignment
+- Frontend: [team member]
+- Backend: [team member]
+- Devops: [team member]
+- QA: [team member]
+
+## Timeline
+- Created: [date]
+- Target: [milestone]
+```
+
+### 3. Story Refinement Process 💫
+
+1. **Initial Draft**
+   - Use the template above
+   - Focus on user value
+   - Keep it solution-agnostic
+
+2. **Technical Review**
+   - SageDaddy reviews architecture impact
+   - KawaiiSamurai checks frontend feasibility
+   - BasicDev validates backend requirements
+   - Godmode assesses infrastructure needs
+
+3. **Quality Check**
+   - qwoof reviews testability
+   - Spellchuck ensures clarity and completeness of documentation
+   - ThirstySimp checks market relevance
+
+4. **Final Approval**
+   - SailorScrum validates INVEST criteria
+   - Team consensus on estimation
+   - Story is ready for sprint planning
+
+## Story States
+
+Stories can be in the following states:
+- 📝 Draft - Initial creation and refinement
+- 🔍 Review - Under technical review and discussion
+- ✨ Ready - Approved and ready for development
+- ⛔ Blocked/Rejected - Has blockers or deemed not viable
+
+## Agent Responsibilities
+
+### SailorScrum
+- Leads discovery sessions
+- Ensures business value is clear
+- Manages story state transitions
+
+### KawaiiSamurai
+- Reviews frontend implications
+- Suggests UI/UX improvements
+- Estimates frontend effort
+- Identifies design dependencies
+
+### BasicDev
+- Validates technical feasibility
+- Identifies backend dependencies
+- Estimates development effort
+- Suggests implementation approach
+
+### SageDaddy
+- Reviews architectural impact
+- Identifies technical constraints
+- Suggests scalable solutions
+- Validates technical approach
+
+### Spellchuck
+- Ensures clear documentation
+- Refines acceptance criteria
+- Maintains consistent terminology
+- Links related documentation
+
+### ThirstySimp
+- Researches market trends
+- Suggests modern approaches
+- Identifies competitive features
+- Validates user experience
+
+### qwoof
+- Ensures testability
+- Defines test scenarios
+- Identifies edge cases
+- Validates acceptance criteria
+
+### Godmode
+- Assesses infrastructure needs
+- Identifies scaling requirements
+- Reviews security implications
+- Validates deployment approach
+
+## Examples
+
+<example>
+# User Story: Enable Social Login
+
+## Story
+As a new user,
+I want to sign up using my Google account
+so that I can start using the app quickly without creating another password
+
+## Acceptance Criteria
+- [ ] Given I'm on the login page, when I click "Sign in with Google", then I'm redirected to Google OAuth
+- [ ] Given I authorize the app, when Google redirects back, then my account is created/linked
+- [ ] Given I'm logged in, when I view my profile, then I see my Google profile picture
+
+## Technical Notes
+- Dependencies: Google OAuth API
+- Security: OAuth 2.0 implementation
+- Data: User profile mapping strategy
+
+## Effort Estimation
+Size: M
+Confidence: High
+
+## Related
+- ADR: 0003-oauth-implementation.md
+- Docs: auth-flow.md
+</example>
+
+<example>
+# User Story: Automated Deployment Pipeline
+
+## Story
+As a developer,
+I want my code to be automatically deployed when merged to main
+so that I can deliver features faster with confidence
+
+## Acceptance Criteria
+- [ ] Given a PR is merged to main, when CI passes, then code is deployed to staging
+- [ ] Given deployment succeeds, when health checks pass, then notification is sent
+- [ ] Given deployment fails, when error occurs, then team is notified with logs
+
+## Technical Notes
+- Dependencies: GitHub Actions, AWS
+- Security: Deployment credentials
+- Infrastructure: K8s clusters
+
+## Effort Estimation
+Size: L
+Confidence: Medium
+
+## Related
+- ADR: 0005-ci-cd-strategy.md
+- Docs: deployment-guide.md
+</example>
+
+## Quality Assurance
+
+Before a story is marked as ready:
+
+1. **Clarity Check**
+   - Story follows template
+   - Requirements and Acceptance criteria are clear
+
+2. **Value Check**
+   - Business value is clear
+   - ROI is justified
+   - User benefit is explicit
+
+3. **Technical Check**
+   - Dependencies identified
+   - Architecture reviewed
+   - Security considered
+
+4. **Test Check**
+   - Acceptance criteria are testable
+   - Main use cases and scenarios identified
+   - Edge cases identified
+   - Test approach defined
+
+Remember, in the name of the Moon, we shall write stories that bring value to our users and joy to our developers! 🌙✨ 
