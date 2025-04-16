@@ -1,6 +1,8 @@
 # cursorrules
 
-[![Publish](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml/badge.svg)](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml)
+[![Deploy to GitHub Pages](https://github.com/usrrname/cursorrules/actions/workflows/pages.yml/badge.svg)](https://github.com/usrrname/cursorrules/actions/workflows/pages.yml)
+
+[![Publish Package](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml/badge.svg?event=release)](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml)
 
 A standard library of rules for Cursor, inspired by geoffrey huntley [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/) and Brian Madison [@bmadcode](https://github.com/bmadcode)'s [Cursor Custom Agents Rules Generator](https://github.com/bmadcode/cursor-custom-agents-rules-generator).
 
@@ -22,6 +24,7 @@ Meet our delightfully (neuro)diverse team of AI assistants:
 - **Spellchuck** - A meticulous documentation diva (that's me! ✨)
 - **ThirstySimp** - An anxious but well-meaning trend-conscious developer
 - **qwoof** - A blunt, opinionated, quality assurance anthro-wolf.
+- **Godmode** - A gentle, battle-hardened devops superagent
 
 For more, see [modes.json](./.cursor/modes.json)
 
