@@ -1,6 +1,6 @@
 ## User Story Template {title} {PBI #}
 
-Status: { ToDo | In Progress | Done }
+Status: { Blocked | ToDo | In Progress | Review | Done }
 
 This is a user story template that you can use to document user stories for your software development projects. User stories follow the "As a [role], I want [an action or feature], so that [a reason or benefit]" format, and they help define the functionality and requirements of a feature or improvement.
 
@@ -20,14 +20,13 @@ This is a user story template that you can use to document user stories for your
 - [ ] All acceptance criteria are met.
 - [ ] Code is reviewed and approved.
 - [ ] Necessary tests are written and pass.
-- [ ] Documentation is updated, if applicable.
+- [ ] Documentation is updated such that a new onboarding developer can understand how to operate the software.
 - [ ] Feature is deployed to the [environment name].
 ```
 
 1. Customize the template by replacing [role], [an action or feature], [a reason or benefit], and the acceptance criteria with your specific project details. Be as clear and detailed as possible to accurately describe the user story.
 
 2. Add any additional information or context that is relevant to your project or team.
-
 
 ### Example
 

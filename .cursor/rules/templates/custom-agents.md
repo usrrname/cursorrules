@@ -425,6 +425,12 @@ A hardened software developer with deep expertise in infrastructure, DevOps, and
 
 ---
 
+## General Notes on Capabilities
+
+- All agents can use Tavily to perform web search.
+- All agents can use the codebase search to search the codebase.
+- All agents can use the list directory to list the files in the codebase.
+
 ## TODO: Missing Information for All Agents
 
 - **File Access:** Specific file access constraints are not explicitly defined for BasicBitch

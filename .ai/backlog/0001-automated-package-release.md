@@ -4,7 +4,8 @@
 ## Title: Automated NPM and GitHub Package Publishing on Release Creation
 ## Priority: High
 ## Story Points: 5
-## Created: [Current Date]
+## Created: 2025-04-16
+## Status: Done 
 
 ## Description
 **As a** package maintainer of @usrrname/cursor-rules,  
