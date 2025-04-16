@@ -36,6 +36,7 @@ On the meta level, the project is structured as follows:
 .cursor/
 ├── rules/
 │   ├── core/        # Required global rules for agentic codegen
+│   ├── standards/   # Custom rules for standards around different languages and stacks
 │   ├── templates/   # Document templates for project context 
 │   ├── utils/       # Rules for tooling and developer experience
 │   └── workflows/   # Rules for workflow to be followed by agents
@@ -51,7 +52,9 @@ On the project level, a project that uses these cursor rules and agents will hav
 │   ├── ###-architecture.md
 │   └── decision-records/
 ├── backlog/
-│   └── ###-user-story.md
+│   └── ###-user-story-title.md
+└── spikes/
+    └── ####-spike-title.md
 ```
 
 ## 🚀 Installation
@@ -60,7 +63,9 @@ On the project level, a project that uses these cursor rules and agents will hav
 npx @usrrname/cursorrules
 ```
 
-By default, the package saves files to the `output/` directory in your current location.
+By default, the package saves `.cursor/` folder inside a `output/` directory at your current working directory. 
+
+But if you're inside the root of a project folder, running `npx @usrrname/cursorrules --flat` will save the `.cursor/` folder to the root of the project, and then you're ready to go!
 
 ### Command Options
 

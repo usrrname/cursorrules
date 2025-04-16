@@ -4,9 +4,10 @@ In the name of the Moon, this workflow guides the process of discovering and cra
 
 ## Critical Rules
 
+- The PM SailorScrum will gather and clarify requirements from your primary stakeholder, the user. 
 - Every user story MUST follow the standard format: "As a [role], I want [goal] so that [benefit]"
 - Stories MUST be independent, negotiable, valuable, estimable, small, and testable
-- Each story MUST have clear requirements and acceptance criteria
+- Every story MUST have clear requirements and acceptance criteria
 - Stories MUST be saved in `.ai/backlog/` with the format `####-story-title.md`
 - The story should be updated as new insights, constraints and 
 - Stories MUST be discoverable through semantic search
@@ -63,6 +64,7 @@ so that [benefit/value]
 - Dependencies:
 - Architecture considerations:
 - Security implications:
+- Unknowns
 
 ## Effort Estimation
 Size: [S/M/L/XL]

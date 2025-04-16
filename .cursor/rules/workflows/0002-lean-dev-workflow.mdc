@@ -10,7 +10,7 @@ This rule defines the workflow for AI agents to follow when implementing feature
 
 ## Critical Rules
 
-- AI agents should read from the file with the highest sequentially numbered user story in `.cursor/rules/backlog/`
+- AI agents should read from the file with the highest sequentially numbered user story in `.cursor/rules/backlog/` that is not of "Done" or "Blocked" status.
 - No more than 2 stories can be in progress at any time.
 - Break down complex problems into a manageable task list
 - Check off tasks one by one as they are completed
@@ -20,7 +20,7 @@ This rule defines the workflow for AI agents to follow when implementing feature
 - If linting or committing fails, do not retry. 
 
 <rule>
-name: lean-agile-workflow
+name: lean-dev-workflow
 description: Workflow for AI agents to follow when implementing features using lean and agile methodologies
 version: 1.0
 severity: suggestion
@@ -60,12 +60,11 @@ When given a user story or feature request:
 
 ### 2. Task Breakdown and Prioritization
 
-Create a task list with:
+The user story will be updated with a task list.
 
-- Clear, actionable items
-- Logical ordering based on dependencies
-- Prioritization of core functionality first
-- Acceptance criteria for task completion
+- Clear, actionable items with acceptance criteria for task completion
+- These items will have logical ordering based on dependencies
+- Completion of core functionality should be prioritized first
 
 Example task breakdown:
 ```
@@ -84,9 +83,10 @@ For each task:
 
 - Enumerate test cases for different scenarios and use cases
 - Focus on implementing the minimum viable solution first
-- Check off the task when completed
-- Run tests to ensure functionality works as expected
+- Check off the task in the user story when completed
+- Add and run tests to ensure functionality works as expected
 - Address any errors or issues before moving to the next task
+- If the agent is unable to continue, , and any possible next steps or workarounds  to take.
 - Refactor code to improve quality without changing functionality
 
 ### 4. Error Handling
@@ -98,6 +98,7 @@ When encountering errors:
 - Help implement the fixes.
 - Verify the solution resolves the error
 - Document the error and solution for future reference
+- Mark the corresponding user story as blocked and provide a short summary about why the task can't be completed
 
 ### 5. Completion and Review
 

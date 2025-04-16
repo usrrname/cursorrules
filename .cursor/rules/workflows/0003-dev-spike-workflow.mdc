@@ -1,0 +1,216 @@
+# Technical Spike Workflow
+
+A guide for conducting time-boxed technical investigations (spikes) to reduce uncertainty and risk in development decisions. ⚡
+
+## Critical Rules
+
+- Spikes MUST be time-boxed (typically 1 hour)
+- Spikes MUST have clear investigation goals
+- Spikes MUST produce documented findings
+- Spikes MUST be saved in `.ai/spikes/` with format `####-spike-title.md`
+- Spike outcomes MUST inform architectural or implementation decisions
+- Code produced during spikes MUST be treated as disposable
+- Findings MUST be shared with the team
+- The user story for the spike must be updated with the decision selected by the user.
+
+<rule>
+name: spike-workflow
+description: Standards for conducting and documenting technical spikes
+version: 1.0
+filters:
+  - type: file_extension
+    pattern: "\\.md$"
+  - type: path
+    pattern: "\\.ai/spikes/\\d{4}-.*\\.md"
+  - type: content
+    pattern: "## Investigation Goals"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+## Spike Template
+
+```markdown
+# Technical Spike: [Title]
+
+## Investigation Goals
+- [ ] Primary question to answer
+- [ ] Secondary questions
+- [ ] Technical constraints to validate
+
+## Timeline
+- Start Date: [YYYY-MM-DD]
+- End Date: [YYYY-MM-DD]
+- Time Box: [X] days
+
+## Investigation Areas
+1. [Area 1]
+   - Approach:
+   - Tools/Technologies:
+   - Success Criteria:
+
+2. [Area 2]
+   - Approach:
+   - Tools/Technologies:
+   - Success Criteria:
+
+## Findings
+### What Worked
+- Finding 1
+- Finding 2
+
+### What Didn't Work
+- Challenge 1
+- Challenge 2
+
+### Open Questions
+- Question 1
+- Question 2
+
+## Recommendations
+- [ ] Primary recommendation
+- [ ] Alternative approaches
+- [ ] Risk assessment
+
+## Code Artifacts
+- Repository: [link]
+- Branch: [name]
+- Key Files:
+  - `path/to/file`: Purpose
+
+## Next Steps
+- [ ] Action item 1
+- [ ] Action item 2
+
+## Team Impact
+- Frontend:
+- Backend:
+- Infrastructure:
+- Testing:
+
+## Resources
+- Documentation: [links]
+- References: [links]
+```
+
+## Spike Process
+
+### 1. Initiation 🌱
+1. **BasicDev**, **ThirstySimp** or **KawaiiSamurai** identifies technical uncertainty
+2. **SageDaddy** reviews and advises on investigation scope
+3. **SailorScrum** approves time allocation
+
+### 2. Planning 📝
+1. Create spike document using template
+2. Define clear investigation goals
+3. Set time box and success criteria
+4. Identify required resources
+
+### 3. Investigation 🔍
+1. Create disposable branch for experiments
+2. Document findings as they emerge
+3. Regular check-ins with **SageDaddy**
+4. Capture both successes and failures
+
+### 4. Review & Documentation ✨
+1. **Spellchuck** ensures clear documentation
+2. **qwoof** reviews testing implications
+3. **Godmode** assesses infrastructure impact
+4. Team reviews findings
+
+### 5. Decision & Next Steps 🎯
+1. Present findings to team
+2. Document architectural decisions
+3. Update technical documentation
+4. Archive spike code appropriately
+
+## Examples
+
+<example>
+# Technical Spike: GraphQL vs REST for API Architecture
+
+## Investigation Goals
+- [ ] Compare performance characteristics of GraphQL and REST for our use case
+- [ ] Evaluate developer experience and tooling ecosystem
+- [ ] Assess impact on frontend development workflow
+- [ ] Validate GraphQL schema design approaches
+
+## Timeline
+- Start Date: 2024-02-01
+- End Date: 2024-02-05
+- Time Box: 5 days
+
+## Investigation Areas
+1. Performance
+   - Approach: Build equivalent endpoints in both technologies
+   - Tools: Apollo Server, Express, k6 for load testing
+   - Success Criteria: Clear metrics on response times and payload sizes
+
+2. Developer Experience
+   - Approach: Implement common use cases in both
+   - Tools: GraphQL Codegen, Swagger, TypeScript
+   - Success Criteria: Documented developer workflow and pain points
+
+## Findings
+### What Worked
+- GraphQL reduced over-fetching by 40%
+- Code generation improved type safety
+- Schema documentation was more maintainable
+
+### What Didn't Work
+- File upload handling was complex
+- Caching required additional setup
+- Learning curve steeper than expected
+
+## Recommendations
+- [ ] Proceed with GraphQL for new services
+- [ ] Keep REST for file operations
+- [ ] Implement incremental adoption strategy
+
+## Code Artifacts
+- Repository: github.com/org/graphql-spike
+- Branch: spike/graphql-investigation
+- Key Files:
+  - `schema/`: GraphQL schema definitions
+  - `resolvers/`: Query implementations
+  - `load-tests/`: Performance test scripts
+
+## Next Steps
+- [ ] Create ADR for API architecture
+- [ ] Plan training sessions
+- [ ] Define schema design guidelines
+
+## Team Impact
+- Frontend: Requires Apollo Client integration
+- Backend: New tooling and patterns needed
+- Infrastructure: Additional GraphQL gateway
+- Testing: New approach for API testing
+</example>
+
+## Quality Assurance
+
+Before completing a spike:
+
+1. **Documentation Quality**
+   - Clear investigation goals
+   - Well-documented findings
+   - Actionable recommendations
+
+2. **Technical Rigor**
+   - Methodical investigation
+   - Evidence-based findings
+   - Considered alternatives
+
+3. **Knowledge Transfer**
+   - Team presentation prepared
+   - Code examples documented
+   - Training needs identified
+
+4. **Risk Assessment**
+   - Technical risks documented
+   - Mitigation strategies proposed
+   - Resource implications clear
+
+Remember, spikes are about reducing uncertainty through focused investigation. Document everything - both successes and failures contribute to the learning! ⚡ 
