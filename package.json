@@ -6,6 +6,9 @@
   "bin": {
     "cursorrules": "cli.mjs"
   },
+  "files": [
+    ".cursor/**/*"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -13,8 +16,8 @@
     "local:publish": "npm publish --registry http://localhost:4873/",
     "clear": "npm unpublish --registry http://localhost:4873/ @usrrname/cursorrules",
     "lint": "tsc --noEmit --noImplicitAny",
-    "test": "node --test --watch \"cli.test.js\"",
-    "test:ci": "node --test cli.test.js"
+    "test": "node --test --watch \"test/cli.test.js\"",
+    "test:ci": "node --test test/cli.test.js"
   },
   "repository": {
     "type": "git",

@@ -102,16 +102,20 @@ But if you're inside the root of a project folder, running `npx @usrrname/cursor
    
    # Verify registry setting
    npm config get @usrrname:registry
+   # should return http://localhost:4873/
    ```
 
 4. Build and publish:
    ```bash
-   npm publish
+   npm publish --scope=@usrrname
    ```
 
-5. Test the package:
+5. Test the command locally:
    ```bash
-   npx @usrrname/cursorrules
+   ## as a tarball
+   npm pack
+   ## as a folder
+   npx cursorrules
    ```
 
 6. Clean up test versions:

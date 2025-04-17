@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import * as url from 'node:url';
 import { parseArgs } from 'node:util';
 
-const folder = '.cursor/';
+const baseFolder = '.cursor/';
 
 const packageJson = JSON.parse(
     await fs.readFile(
@@ -32,7 +32,7 @@ const config = {
         output: {
             type: 'string',
             short: 'o',
-            default: `${process.cwd()}/.cursor`,
+            default: `${process.cwd()}/output/.cursor`,
         },
         version: {
             type: 'boolean',
@@ -58,7 +58,7 @@ npx @usrrname/cursorrules [options]
 Options:
 -f, --flat: Install without parent directory
 -h, --help: Help instructions <----- You are here
--o, --output: Set output directory (Default: ./cursor)
+-o, --output: Set output directory (Default: ./output)
 -v, --version: Show package version
 
 ${repository}
@@ -82,7 +82,7 @@ const downloadFiles = async (dirname) => {
     try {
         // copy whole folder
         await fs.cp(
-            url.fileURLToPath(url.resolve(import.meta.url, folder)),
+            url.fileURLToPath(url.resolve(import.meta.url, baseFolder)),
             outputDir,
             { recursive: true },
         )
@@ -94,7 +94,7 @@ const downloadFiles = async (dirname) => {
 }
 
 async function main() {
-    console.log("🚀 Loading cursorrules...");
+    console.log("🚀 Loading @usrrname/cursorrules ...");
 
     const { values } = parseArgs(config);
 
@@ -117,7 +117,7 @@ async function main() {
             case 'flat':
             default:
                 console.log(`~~~~ Flattening rules ~~~~`);
-                downloadFiles(path.join(process.cwd()))
+                downloadFiles(path.join(process.cwd(), '.cursor'))
                 break;
         }
     }
