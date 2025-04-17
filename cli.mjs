@@ -32,7 +32,7 @@ const config = {
         output: {
             type: 'string',
             short: 'o',
-            default: `${process.cwd()}/output`,
+            default: `${process.cwd()}/.cursor`,
         },
         version: {
             type: 'boolean',
@@ -58,7 +58,7 @@ npx @usrrname/cursorrules [options]
 Options:
 -f, --flat: Install without parent directory
 -h, --help: Help instructions <----- You are here
--o, --output: Set output directory (Default: ./output)
+-o, --output: Set output directory (Default: ./cursor)
 -v, --version: Show package version
 
 ${repository}

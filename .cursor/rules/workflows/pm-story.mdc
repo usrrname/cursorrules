@@ -21,7 +21,7 @@ In the name of the Moon, this workflow guides the process of discovering and cra
 - All agents can use Tavily to perform web search.
 
 <rule>
-name: user-story-discovery
+name: pm-story
 description: Standards for discovering and documenting user stories
 version: 1.0
 filters:

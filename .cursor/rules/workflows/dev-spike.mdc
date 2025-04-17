@@ -19,7 +19,7 @@ A guide for conducting time-boxed technical investigations (spikes) to reduce un
 - The user story for the spike must be updated with the decision selected by the user.
 
 <rule>
-name: spike-workflow
+name: dev-spike
 description: Standards for conducting and documenting technical spikes
 version: 1.0
 filters:

@@ -20,7 +20,7 @@ This rule defines the workflow for AI agents to follow when implementing feature
 - If linting or committing fails, do not retry. 
 
 <rule>
-name: lean-dev-workflow
+name: dev-workflow
 description: Workflow for AI agents to follow when implementing features using lean and agile methodologies
 version: 1.0
 severity: suggestion
