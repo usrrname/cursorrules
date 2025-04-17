@@ -31,10 +31,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # Update version
-          npm version ${{ steps.extract-version.outputs.version }} --no-git-tag-version
+          npm version ${{ steps.extract-version.outputs.version }}
           git add package.json package-lock.json
           git commit -m "chore: Update package version to ${{ steps.extract-version.outputs.version }} [skip ci]"
-          git push origin main
+          git push origin main 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
