@@ -21,7 +21,6 @@ alwaysApply: false
 - Separate subject from body with blank line
 - Use imperative mood in subject line
 - Include the name of the specific custom agent (e.g. "Commit written by Spellchuck") at the end of commit
-- Do NOT include post commit actions 
 
 ### Commit Format
 
@@ -65,7 +64,6 @@ All AI agents must:
 6. Add their agent name as the author in the commit footer
 7. Convert user instructions for commits into proper conventional commit format automatically
 8. If a user types simply "commit" or "gcm", the agent must prompt for or infer the appropriate conventional commit content
-9. The user must approve 
 
 <rule>
 name: git-commit
