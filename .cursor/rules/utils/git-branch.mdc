@@ -1,0 +1,198 @@
+
+
+---
+description: This rule enforces standards and best practices for branch management operations including checkout, creation, and deletion. This rule should be followed when: 1. creating new branches, 2. switching between branches, 3. deleting branches, or 4. when the git aliases 'gco', 'gcb', or similar branch-related commands are used.
+alwaysApply: false
+---
+
+# Git Branch Management Standards
+
+## Critical Rules
+- Always verify current branch status before switching branches
+- Stash or commit changes if needed before checkout
+- Use descriptive, kebab-case branch names
+- Follow branch naming conventions for different types of work
+- Verify branch existence before checkout
+- Clean up local branches that have been merged
+- Sync with remote before creating new branches
+
+### Branch Naming Convention
+
+Branch names MUST follow this format:
+```
+<type>/[-<ticket-number>]<description>
+```
+
+Where type is one of:
+- feature: New feature development
+- fix: Bug fixes
+- hotfix: Urgent production fixes
+- release: Release preparation
+- docs: Documentation updates
+- refactor: Code refactoring
+- test: Test addition or modification
+- chore: Maintenance tasks
+- experiment: Experimental features
+- spike: technical spike
+
+Examples:
+- feature/#123-user-authentication
+- fix/#345-login-timeout
+- docs/api-documentation
+- refactor/database-queries
+
+### Checkout Operations
+
+Before checkout, agents MUST:
+1. Check current branch status (`git status`)
+2. Handle any uncommitted changes:
+   - Stash changes if needed
+   - Commit changes if appropriate
+   - Get user confirmation for handling changes
+3. Verify target branch exists
+4. Sync with remote if checking out remote branch
+
+### Branch Creation
+
+When creating new branches:
+1. Start from updated main
+2. Use descriptive names following conventions
+3. Include ticket number if applicable
+4. Create from appropriate base branch
+
+### Branch Cleanup
+
+When deleting branches:
+1. Verify branch is fully merged
+2. Ensure you're not on the branch to be deleted
+3. Clean up remote tracking branches
+4. Get confirmation before force deletion
+
+<rule>
+name: git-branch
+description: Standards for git branch operations including checkout, creation, and deletion
+version: 1.0
+severity: warning
+
+filters:
+  - type: event
+    pattern: "(pre_checkout|post_checkout|branch_create|branch_delete)"
+  - type: content
+    pattern: "(checkout|branch|gco|gcb)"
+
+matches: |
+  // Match different types of branch operations
+  git checkout $branch
+  git branch $branch
+  git branch -d $branch
+  gco $branch
+  gcb $branch
+
+transforms: |
+  {{
+    // Transform branch operations to follow standards
+    const operation = context.getOperation();
+    const branchName = context.getBranchName();
+    
+    // Validate branch name format
+    if (!isValidBranchName(branchName)) {
+      return suggestValidBranchName(branchName);
+    }
+    
+    // Add necessary checks before checkout
+    if (operation === 'checkout') {
+      return addPreCheckoutSteps(command);
+    }
+    
+    // Add cleanup steps for deletion
+    if (operation === 'delete') {
+      return addBranchCleanupSteps(command);
+    }
+    
+    return command;
+  }}
+
+examples:
+  - input: |
+      git checkout feature
+    output: |
+      # First check status
+      git status
+      # Then checkout with full name
+      git checkout feature/#123-user-auth
+  
+  - input: |
+      git checkout -b newbranch
+    output: |
+      # Create branch with proper naming
+      git checkout -b feature/#456-descriptive-name
+  
+  - input: |
+      git branch -d oldbranch
+    output: |
+      # Verify merge status
+      git branch --merged | grep oldbranch
+      # Delete if merged
+      git branch -d feature/old-feature-#789
+
+tests:
+  - input: "git checkout main"
+    output: "git status && git checkout main"
+  - input: "git checkout -b feature"
+    output: "git checkout -b feature/descriptive-name"
+  - input: "git branch -d feature/old"
+    output: "git branch --merged | grep feature/old && git branch -d feature/old"
+  - input: "gco development"
+    output: "git status && git checkout development"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+## Usage Examples
+
+### Checking Out Existing Branch
+
+```bash
+# Bad: Direct checkout without checks
+git checkout feature
+
+# Good: Check status and use full branch name
+git status
+# Handle any uncommitted changes
+git checkout feature/user-auth-#123
+```
+
+### Creating New Branch
+
+```bash
+# Bad: Non-descriptive branch name
+git checkout -b fix123
+
+# Good: Descriptive name with type and ticket
+git checkout -b fix/login-timeout-#123
+```
+
+### Deleting Branch
+
+```bash
+# Bad: Force delete without verification
+git branch -D oldbranch
+
+# Good: Verify and clean up properly
+git checkout main
+git branch --merged | grep feature/old-feature
+git branch -d feature/old-feature
+git push origin --delete feature/old-feature
+```
+
+## Key Principles
+
+1. Safety: Never lose work due to branch operations
+2. Clarity: Branch names should be self-documenting
+3. Consistency: Follow naming conventions strictly
+4. Cleanliness: Regular cleanup of merged branches
+5. Synchronization: Stay in sync with remote
+
+Remember to always verify your current branch status and handle any uncommitted changes before switching branches! 🌿✨ 
