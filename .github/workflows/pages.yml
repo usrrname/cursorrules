@@ -51,12 +51,12 @@ jobs:
           cp img/* _site/img/
 
       - name: Upload artifact
-        if: ${{ steps.changes.outputs.index == 'true' || steps.changes.outputs.styles == 'true' }}
+        if: ${{ needs.changes.outputs.changes.index == 'true' || needs.changes.outputs.changes.styles == 'true' }}
         uses: actions/upload-pages-artifact@v3
         with:
             path: "_site"
 
       - name: Deploy to GitHub Pages
-        if: ${{ steps.changes.outputs.index == 'true' || steps.changes.outputs.styles == 'true' }}
+        if: ${{ needs.changes.outputs.changes.index == 'true' || needs.changes.outputs.changes.styles == 'true' }}
         id: deployment
         uses: actions/deploy-pages@v4
