@@ -10,7 +10,7 @@ A standard library of rules for Cursor, inspired by geoffrey huntley [@ghuntley]
 
 This is an experiment to see if I can use cursor to create a library of rules and agents that I can use to bootstrap other projects with my own preferences. Part way there, I ended up seeing whether I could give personality to the agents so they were more fun to work with. It's kind of like playing the Sims. 
 
-- uses Cursor 0.48.8 (latest)
+- uses Cursor latest version
 - _TRY_ to prompt and use the agent/composer to reach goals as much as possible
 
 ## ✨ Featured AI Agents
