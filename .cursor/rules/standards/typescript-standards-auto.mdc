@@ -1,0 +1,278 @@
+---
+name: typescript-standards
+description: 
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# TypeScript Standards and Conventions
+
+## Critical Rules
+
+- Use TypeScript's strict mode with `"strict": true` in tsconfig.json
+- Explicitly declare types for function parameters and return values
+- Avoid using `any` type unless absolutely necessary
+- Use interfaces for object type definitions
+- Use enums for fixed sets of values
+- Use type aliases to simplify complex types
+- Follow consistent naming conventions
+- Document public APIs with JSDoc comments
+- Use async/await over raw promises
+- Maintain proper error handling with typed errors
+
+<rule>
+name: typescript-standards
+description: Standards for TypeScript development and type safety
+filters:
+  - type: file_extension
+    pattern: "\\.(ts|tsx)$"
+  - type: content
+    pattern: "(any|Object|Function)(?!\\s*:.*\\s*=>)"
+  - type: content
+    pattern: "interface\\s+[A-Z][a-zA-Z]*"
+  - type: content
+    pattern: "type\\s+[A-Z][a-zA-Z]*"
+  - type: content
+    pattern: "enum\\s+[A-Z][a-zA-Z]*"
+
+actions:
+  - type: validate
+    message: |
+      TypeScript code must follow these conventions:
+      1. Use strict mode
+      2. Explicit typing
+      3. Proper error handling
+      4. Documentation
+      5. Consistent naming
+
+  - type: lint
+    rules:
+      - pattern: "any"
+        message: "Avoid using 'any' type. Define a specific type or interface instead."
+      - pattern: "Object"
+        message: "Avoid using 'Object' type. Use a specific interface or type instead."
+      - pattern: "Function"
+        message: "Avoid using 'Function' type. Define specific function signature instead."
+      - pattern: "\\b[A-Z][a-z0-9]+([A-Z][a-z0-9]+)*\\b"
+        message: "Use PascalCase for type names, interfaces, and classes."
+      - pattern: "\\b[a-z][a-z0-9]*([A-Z][a-z0-9]+)*\\b"
+        message: "Use camelCase for variable and function names."
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+## Naming Conventions
+
+### Types and Interfaces
+- Use PascalCase for type names
+- Use PascalCase for interface names
+- Prefix interfaces with 'I' only when required by project convention
+```typescript
+interface UserData {
+  id: string;
+  name: string;
+}
+
+type ApiResponse<T> = {
+  data: T;
+  status: number;
+};
+```
+
+### Variables and Functions
+- Use camelCase for variable names
+- Use camelCase for function names
+- Use PascalCase for class names
+```typescript
+const userData: UserData;
+function fetchUserData(): Promise<UserData>;
+class UserService {};
+```
+
+### Constants
+- Use UPPER_SNAKE_CASE for constant values
+```typescript
+const MAX_RETRY_ATTEMPTS = 3;
+const API_BASE_URL = 'https://api.example.com';
+```
+
+## Type Definitions
+
+### Use Specific Types
+```typescript
+// Bad ❌
+const data: any = fetchData();
+const obj: Object = { foo: 'bar' };
+
+// Good ✅
+interface ApiData {
+  id: string;
+  value: number;
+}
+const data: ApiData = fetchData();
+const obj: Record<string, string> = { foo: 'bar' };
+```
+
+### Union and Intersection Types
+```typescript
+// Union types for variables that can be multiple types
+type Status = 'pending' | 'success' | 'error';
+
+// Intersection types for combining types
+type AdminUser = User & {
+  adminPrivileges: string[];
+};
+```
+
+### Generics
+```typescript
+// Use generics for reusable components/functions
+interface Repository<T> {
+  find(id: string): Promise<T>;
+  save(item: T): Promise<void>;
+}
+
+function map<T, U>(array: T[], fn: (item: T) => U): U[] {
+  return array.map(fn);
+}
+```
+
+## Error Handling
+
+### Type-safe Error Handling
+```typescript
+// Define custom error types
+class ApiError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number
+  ) {
+    super(message);
+  }
+}
+
+// Use type guards for error checking
+function isApiError(error: unknown): error is ApiError {
+  return error instanceof ApiError;
+}
+
+// Handle errors with type checking
+try {
+  await api.request();
+} catch (error) {
+  if (isApiError(error)) {
+    console.error(`API Error ${error.statusCode}: ${error.message}`);
+  } else {
+    console.error('Unknown error:', error);
+  }
+}
+```
+
+## Documentation
+
+### JSDoc Comments
+```typescript
+/**
+ * Fetches user data from the API
+ * @param userId - The unique identifier of the user
+ * @returns Promise resolving to user data
+ * @throws {ApiError} When the API request fails
+ */
+async function fetchUser(userId: string): Promise<UserData> {
+  // Implementation
+}
+```
+
+## Async/Await
+
+### Prefer Async/Await Over Raw Promises
+```typescript
+// Bad ❌
+function fetchData() {
+  return promise
+    .then(data => processData(data))
+    .catch(error => handleError(error));
+}
+
+// Good ✅
+async function fetchData() {
+  try {
+    const data = await promise;
+    return processData(data);
+  } catch (error) {
+    handleError(error);
+  }
+}
+```
+
+<examples>
+  - input: |
+      // Bad example with poor typing
+      function processData(data) {
+        return data.map(item => item.value);
+      }
+    output: |
+      // Good example with proper typing
+      interface DataItem {
+        value: number;
+        label: string;
+      }
+      
+      function processData(data: DataItem[]): number[] {
+        return data.map(item => item.value);
+      }
+
+  - input: |
+      // Bad error handling
+      async function fetchUser(id: string) {
+        const response = await fetch(`/api/users/${id}`);
+        return response.json();
+      }
+    output: |
+      // Good error handling with types
+      interface User {
+        id: string;
+        name: string;
+      }
+      
+      async function fetchUser(id: string): Promise<User> {
+        const response = await fetch(`/api/users/${id}`);
+        if (!response.ok) {
+          throw new ApiError('Failed to fetch user', response.status);
+        }
+        return response.json();
+      }
+
+  - input: |
+      // Bad use of any
+      const config: any = {
+        apiKey: 'secret',
+        timeout: 5000
+      };
+    output: |
+      // Good use of interface
+      interface ApiConfig {
+        apiKey: string;
+        timeout: number;
+      }
+      
+      const config: ApiConfig = {
+        apiKey: 'secret',
+        timeout: 5000
+      };
+</examples>
+
+## Testing
+
+### Type Testing
+```typescript
+// Use type assertions in tests
+type Assert<T, Expected> = T extends Expected ? true : false;
+
+type Tests = [
+  Assert<typeof user, User>,
+  Assert<typeof response, ApiResponse<User>>
+];
+```
