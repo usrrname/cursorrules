@@ -1,6 +1,6 @@
 {
   "name": "@usrrname/cursorrules",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Standard lib of .cursor/rules",
   "type": "module",
   "bin": {
