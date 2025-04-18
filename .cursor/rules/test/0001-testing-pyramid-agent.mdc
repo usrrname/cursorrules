@@ -1,0 +1,218 @@
+---
+description: Enforces testing standards based on the testing pyramid principle
+globs: "*.test.{js,ts,jsx,tsx}"
+alwaysApply: false
+---
+<rule>
+name: testing-pyramid
+description: Enforces testing standards based on the testing pyramid principle
+filters:
+  - type: file_extension
+    pattern: "\\.(test|spec)\\.(js|ts|jsx|tsx)$"
+  - type: content
+    pattern: "(describe|it|test)\\s*\\(['\"].*['\"]"
+
+actions:
+  - type: validate
+    message: |
+      Ensure your tests follow the testing pyramid principles:
+      - Unit tests should be the majority (70%)
+      - Integration tests should be moderate (20%)
+      - E2E tests should be minimal (10%)
+      
+      Current test appears to violate these proportions.
+  
+  - type: suggest
+    message: |
+      Consider the following improvements:
+      1. Add more unit tests for individual functions
+      2. Focus integration tests on service boundaries
+      3. Keep E2E tests focused on critical paths only
+
+examples:
+  - description: "Unit Test Example"
+    input: |
+      // Bad: Testing multiple units together
+      test('process user data', () => {
+        const result = processUserData(validateUser(createUser(data)));
+        expect(result).toBe(expected);
+      });
+    output: |
+      // Good: Testing single unit with clear arrangement
+      describe('User Processing', () => {
+        it('should process valid user data correctly', () => {
+          // Arrange
+          const mockUser = createMockUser();
+          
+          // Act
+          const result = processUserData(mockUser);
+          
+          // Assert
+          expect(result).toEqual(expected);
+        });
+      });
+
+  - description: "Integration Test Example"
+    input: |
+      // Bad: Testing everything in one E2E test
+      test('user workflow', async () => {
+        await createUser();
+        await loginUser();
+        await updateProfile();
+        await deleteUser();
+      });
+    output: |
+      // Good: Focused integration test
+      describe('User Authentication Integration', () => {
+        it('should successfully authenticate valid user', async () => {
+          // Arrange
+          const user = await createTestUser();
+          
+          // Act
+          const result = await authService.authenticate(user.credentials);
+          
+          // Assert
+          expect(result.authenticated).toBe(true);
+        });
+      });
+
+  - description: "E2E Test Example"
+    input: |
+      // Bad: Testing minor features end-to-end
+      test('user can change avatar', async () => {
+        await page.goto('/profile');
+        await page.click('#avatar');
+        await page.upload('#file-input', 'test.jpg');
+        await expect(page.locator('#avatar')).toHaveAttribute('src', /test/);
+      });
+    output: |
+      // Good: E2E test for critical user journey
+      describe('Critical User Journey', () => {
+        it('should allow user to complete checkout process', async () => {
+          // Arrange
+          await loginAsTestUser();
+          
+          // Act
+          await navigateToProducts();
+          await addItemToCart();
+          await proceedToCheckout();
+          await fillShippingDetails();
+          await completePayment();
+          
+          // Assert
+          await expect(page.locator('#order-confirmation')).toBeVisible();
+        });
+      });
+
+tests:
+  - input: |
+      // Single test file with no structure
+      test('it works', () => {
+        expect(true).toBe(true);
+      });
+    output: |
+      describe('Feature Module', () => {
+        describe('Unit Tests', () => {
+          it('should handle valid input correctly', () => {
+            // Arrange
+            const input = validTestData();
+            
+            // Act
+            const result = processInput(input);
+            
+            // Assert
+            expect(result).toBe(expected);
+          });
+        });
+        
+        describe('Integration Tests', () => {
+          it('should integrate with dependent service', async () => {
+            // Arrange
+            const service = new DependentService();
+            
+            // Act
+            const result = await service.process();
+            
+            // Assert
+            expect(result).toMatchExpectedIntegration();
+          });
+        });
+      });
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+# Testing Pyramid Standards
+
+This rule defines the standards for maintaining a proper testing pyramid in your codebase, ensuring comprehensive test coverage across all levels while maintaining the right balance between different types of tests.
+
+## Critical Rules
+
+- Follow the testing pyramid ratio: 70% unit tests, 20% integration tests, 10% end-to-end tests
+- Every new feature must include tests at appropriate levels of the pyramid
+- Unit tests must be written for all business logic and utility functions
+- Integration tests must cover all critical paths and service interactions
+- End-to-end tests should focus on critical user journeys only
+- Test files must be co-located with the code they test
+- Mock external dependencies in unit tests, use real dependencies in integration tests
+- Test names must clearly describe the scenario being tested
+- Each test should follow the Arrange-Act-Assert pattern
+- Avoid test interdependence - each test should be able to run independently
+
+## Test File Organization
+
+- Test files should be named with `.test.{js,ts,jsx,tsx}` or `.spec.{js,ts,jsx,tsx}` suffix
+- Test files should mirror the structure of the source code
+- Group related tests using describe blocks
+- Use clear, descriptive test names that explain the scenario and expected outcome
+
+## Test Types and Their Characteristics
+
+### Unit Tests (70%)
+- Test individual functions, methods, or components in isolation
+- Should be fast and deterministic
+- Use mocks for external dependencies
+- Focus on business logic and edge cases
+- Should have high code coverage
+
+### Integration Tests (20%)
+- Test interaction between multiple components or services
+- Use real dependencies when possible
+- Focus on API contracts and data flow
+- Cover main success and error paths
+- Can be slower than unit tests
+
+### End-to-End Tests (10%)
+- Test complete user journeys
+- Run against production-like environment
+- Focus on critical business flows
+- Can be slow and more brittle
+- Should be minimal but crucial
+
+## Common Violations
+
+1. Inverting the pyramid (more E2E tests than unit tests)
+2. Missing integration tests between critical services
+3. Testing implementation details in E2E tests
+4. Excessive mocking in integration tests
+5. Testing multiple units in a single unit test
+6. Writing tests without clear arrange-act-assert structure
+7. Dependent tests that must run in a specific order
+8. Missing error case coverage
+9. Brittle tests that break with minor changes
+10. Insufficient test documentation
+
+## Best Practices
+
+1. Write tests before or while writing code (TDD/BDD)
+2. Keep tests focused and concise
+3. Use meaningful test data
+4. Avoid test code duplication
+5. Maintain test code quality as production code
+6. Regular test maintenance and refactoring
+7. Monitor test execution time
+8. Include both positive and negative test cases
+9. Document test setup and special conditions
+10. Use appropriate testing tools and frameworks
