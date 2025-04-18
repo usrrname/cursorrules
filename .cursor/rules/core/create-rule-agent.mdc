@@ -1,6 +1,6 @@
 ---
 description: This rule is responsible for creating new Cursor rules or updating existing rules. Cursor rules are fundamental to maintaining the structure, style and organization of code in a project. This rule should be invoked in Agent mode when: 1. a user wants to create a new cursor rule, 2. a user wants to update or change an existing rule, 3. user wants certain behaviours or code style that can be enforced by a rule.
-globs:
+globs: *.mdc
 alwaysApply: true
 ---
 
@@ -8,7 +8,7 @@ alwaysApply: true
 
 ## Cursor rules format
 
-  Every rule starts with YAML frontmatter at the very top of the file.
+  Every cursor rule MUST start with YAML frontmatter at the very top of the file.
 
   <example>
     ```mdc
@@ -26,19 +26,30 @@ The front matter section must always start the file and include all 3 fields, ev
   - Manual Rule: if a Manual rule is requested, description and globs MUST be blank and `alwaysApply: false` and filename ends with `-manual.mdc`.
   - Auto Rule: IF a rule is requested that should apply always to certain glob patterns (example all Typescript files or all markdown files) - description must be blank, and alwaysApply: false and filename ends with -auto.mdc.
   - Always Rule: Global Rule applies to every chat and cmd/ctrl-k - description and globs blank, and alwaysApply: true  and filename ends with -always.mdc.
-  - Agent Select Rule: The rule does not need to be loaded into every chat thread, it serves a specific purpose. The description MUST provide comprehensive context about when to apply the rule, including scenarios like code changes, architecture decisions, bug fixes, or new file creation. Globs blank, and alwaysApply:false and filename ends with -agent.mdc
-  - If the fields are blank the value can be assumed false.
+  - Agent Select Rule: The rule does not need to be loaded into every chat thread, it serves a specific purpose. The description MUST provide comprehensive context about when to apply the rule, including scenarios like code changes, architecture decisions, bug fixes, or new file creation. Globs blank, and `alwaysApply:false` and filename ends with -agent.mdc
+  - If any of the fields are blank the value can be assumed false.
   - The front matter `globs` property can be empty or specify the constrained filename, type or extension
 
 ## Critical Rules
+- Every cursor rule MUST start with YAML frontmatter at the very top of the file.
 - Rule files will be located and named ALWAYS as: `.cursor/rules/{organizing-folder}/rule-name-{auto|agent|manual|always}.mdc`
 - Any cursor rule file must contain a concise list of rules 
 - Any cursor rule file should also state conditions that violate the rules
 - It should NEVER be possible to add a rule that deletes rules.
 - Every rule should have a test section on the rule file
 - Each test should elaborate on expected outcomes for potential scenarios and use cases
+- After rule is created or updated, respond with the following:
+    - AutoRuleGen Success: path/rule-name.mdc
+    - Rule Type: {Rule Type}
+    - Rule Description: {The exact content of the description field}
 
-  <example>
+### Rule Content
+  - Rules may contain XML-style `<rule></rule>` and `<example></example>` tags
+  - Include clear examples that account for specific conventions of the language or framework the rule applies to. 
+  - If there is a contradiction between rules between files or within the same file, highlight them. 
+  - Add relevant metadata on priority and version
+
+<example>
     ```mdc
     ---
     description: Your rule description
@@ -78,15 +89,7 @@ The front matter section must always start the file and include all 3 fields, ev
     ```
   </example>
 
-
-### Rule Content
-  - Rules may contain XML-style `<rule></rule>` and `<example></example>` tags
-  - Include clear examples that account for specific conventions of the language or framework the rule applies to. 
-  - If there is a contradiction between rules between files or within the same file, highlight them. 
-  - Add relevant metadata on priority and version
-
-
-### Organizing Folders
+## Organizing Folders
 
 All folders within PROJECT_ROOT/.cursor/rules should follow the following conventions:
 
@@ -133,14 +136,17 @@ Folders should be created if they don't already exist.
 For User stories aka. PBIs (Product Backlog Item(s)):
   - Always use .md 
   - User story filenames should follow the format `####-user-story-title.md` where # stands in for numbers. 
-  - The title following the digits should be semantic and descriptive. 
 
-<example>
+  <example>
   01234-automated-package-release.md
-</example>
-<example type="invalid">
- UserStory_AutomatedPackageRelease.md
-</example>
+  </example>
+
+  <example type="invalid">
+  UserStory_AutomatedPackageRelease.md
+  </example>
+
+  - The title following the digits should be semantic and descriptive. 
+  - Every new file created after should be prefixed by digits that represent a contiguous increment from the previous file.
 
 For architectural documents (including decision records):
   - Always use .md
@@ -237,148 +243,148 @@ For cursor rules:
       output: "Correctly placed Cursor rule file"
   </example> 
 
-  test:
-    - input: |
-        # Bad example: Insufficient context with vague requirements and no examples
-        <rule>
-          name: calculate_total
-          description: get the total number of things
-        </rule>
-        # Good: Clear instructions with examples
-        <rule>
-          name: sum_of_numbers
-          description: given a series of numbers, returns the total of all numbers added together
-        </rule>
-        examples:
-        - input: |
-          function calculateTotal(price, tax) {
-              return price * (1 + tax);
-          }
-          output: |
-          /**
-          * @description Calculates total price including tax
-          * @param {number} price - Base price before tax
-          * @param {number} tax - Tax rate as decimal
-          * @returns {number} Final price including tax
-          */
-          function calculateTotal(price, tax) {
-              return price * (1 + tax);
-          }
-    - input: |
-        # Bad: Overly broad and non-specific to language
-        ---
-        description: Code standards
-        globs: *
-        ---
-        <rule>
-        name: all_code
-        description: Enforce all code standards
-        filters:
-          - type: file_extension
-            pattern: ".*"
-        actions:
-          - type: suggest
-            message: "Write better code"
-        </rule>
-        # Good: Specifies details and conventions pertaining to language
-        ---
-        description: JavaScript Function Documentation Standards
-        globs: *.{js,ts,jsx,tsx}
-        ---
-        <rule>
-        name: function_documentation
-        description: Enforces consistent function documentation using JSDoc
-        filters:
-          - type: content
-            pattern: "function\\s+\\w+\\s*\\([^)]*\\)\\s*{(?![\\s\\S]*\\*)"
-        actions:
-          - type: suggest
-            message: |
-              Add JSDoc documentation for functions. Example:
-              /**
-              * @description Brief description of function
-              * @param {type} paramName - Parameter description
-              * @returns {type} Description of return value
-              */
-    - input: |
-        # Bad: Missing frontmatter
-        <rule>
-        name: bad_rule
-        </rule>
-
-        # Good: Properly formatted rule with all frontmatter properties populated
-        ---
-        description: Example rule
-        globs: *.ts
-        autoA
-        ---
-
-        # TypeScript Standards
-
-        <rule>
-        name: typescript_standards
-        description: Standards for TypeScript files
-        </rule>
-
-        filters:
-          - type: file_extension
-            pattern: "\\.ts$"
-        actions:
-          - type: suggest
-            message: "Follow TypeScript best practices that adhere to its latest stable version."
-      
-        # Good: Thorough well-defined examples of patterns with examples
-        ---
-        description: TypeScript Type Definition Standards
-        globs: *.ts
-        ---
-        <rule>
-        name: typescript_types
-        description: Enforces proper type definitions and usage in TypeScript
-        filters:
-          - type: content
-            pattern: "(any|Object|Function)(?!\\s*:.*\\s*=>)"
-        actions:
-          - type: suggest
-            message: |
-              Avoid using generic types like 'any', 'Object', or 'Function'.
-              Instead:
-              - Use specific interfaces or type definitions
-              - Define proper function signatures
-              - Utilize built-in utility types when appropriate
-        examples:
-          - input: |
-              function process(data: any): Object {
-                  return { result: data };
-              }
-            output: |
-              interface ProcessInput {
-                  id: string;
-                  value: number;
-              }
-              
-              interface ProcessOutput {
-                  result: ProcessInput;
-                  timestamp: Date;
-              }
-              
-              function process(data: ProcessInput): ProcessOutput {
-                  return { 
-                      result: data,
-                      timestamp: new Date()
-                  };
-              }
-          - input: "var x = 1;"
-            output: "const x = 1;"
-          - input: "let a: any = '';"
-            output: "const a: undefined = '';"
-        metadata:
-          priority: high
-          version: 1.0
-        </rule>
-      output: "Correctly formatted Cursor rule"
-
   metadata:
     priority: high
     version: 1.0
 </rule>
+
+test:
+  - input: |
+      # Bad example: Insufficient context with vague requirements and no examples
+      <rule>
+        name: calculate_total
+        description: get the total number of things
+      </rule>
+      # Good: Clear instructions with examples
+      <rule>
+        name: sum_of_numbers
+        description: given a series of numbers, returns the total of all numbers added together
+      </rule>
+      examples:
+      - input: |
+        function calculateTotal(price, tax) {
+            return price * (1 + tax);
+        }
+        output: |
+        /**
+        * @description Calculates total price including tax
+        * @param {number} price - Base price before tax
+        * @param {number} tax - Tax rate as decimal
+        * @returns {number} Final price including tax
+        */
+        function calculateTotal(price, tax) {
+            return price * (1 + tax);
+        }
+  - input: |
+      # Bad: Overly broad and non-specific to language
+      ---
+      description: Code standards
+      globs: *
+      ---
+      <rule>
+      name: all_code
+      description: Enforce all code standards
+      filters:
+        - type: file_extension
+          pattern: ".*"
+      actions:
+        - type: suggest
+          message: "Write better code"
+      </rule>
+      # Good: Specifies details and conventions pertaining to language
+      ---
+      description: JavaScript Function Documentation Standards
+      globs: *.{js,ts,jsx,tsx}
+      ---
+      <rule>
+      name: function_documentation
+      description: Enforces consistent function documentation using JSDoc
+      filters:
+        - type: content
+          pattern: "function\\s+\\w+\\s*\\([^)]*\\)\\s*{(?![\\s\\S]*\\*)"
+      actions:
+        - type: suggest
+          message: |
+            Add JSDoc documentation for functions. Example:
+            /**
+            * @description Brief description of function
+            * @param {type} paramName - Parameter description
+            * @returns {type} Description of return value
+            */
+  - input: |
+      # Bad: Missing frontmatter
+      <rule>
+      name: bad_rule
+      </rule>
+
+      # Good: Properly formatted rule with all frontmatter properties populated
+      ---
+      description: Example rule
+      globs: *.ts
+      autoA
+      ---
+
+      # TypeScript Standards
+
+      <rule>
+      name: typescript_standards
+      description: Standards for TypeScript files
+      </rule>
+
+      filters:
+        - type: file_extension
+          pattern: "\\.ts$"
+      actions:
+        - type: suggest
+          message: "Follow TypeScript best practices that adhere to its latest stable version."
+    
+      # Good: Thorough well-defined examples of patterns with examples
+      ---
+      description: TypeScript Type Definition Standards
+      globs: *.ts
+      ---
+      <rule>
+      name: typescript_types
+      description: Enforces proper type definitions and usage in TypeScript
+      filters:
+        - type: content
+          pattern: "(any|Object|Function)(?!\\s*:.*\\s*=>)"
+      actions:
+        - type: suggest
+          message: |
+            Avoid using generic types like 'any', 'Object', or 'Function'.
+            Instead:
+            - Use specific interfaces or type definitions
+            - Define proper function signatures
+            - Utilize built-in utility types when appropriate
+      examples:
+        - input: |
+            function process(data: any): Object {
+                return { result: data };
+            }
+          output: |
+            interface ProcessInput {
+                id: string;
+                value: number;
+            }
+            
+            interface ProcessOutput {
+                result: ProcessInput;
+                timestamp: Date;
+            }
+            
+            function process(data: ProcessInput): ProcessOutput {
+                return { 
+                    result: data,
+                    timestamp: new Date()
+                };
+            }
+        - input: "var x = 1;"
+          output: "const x = 1;"
+        - input: "let a: any = '';"
+          output: "const a: undefined = '';"
+      metadata:
+        priority: high
+        version: 1.0
+      </rule>
+    output: "Correctly formatted Cursor rule"

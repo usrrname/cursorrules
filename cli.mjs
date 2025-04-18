@@ -73,7 +73,7 @@ const version = () => console.log(`${packageJson.name} v${packageJson.version}`)
 const downloadFiles = async (dirname) => {
     if (!dirname) throw new Error('Output directory is required');
 
-    console.info('Downloading rules...');
+    console.info('📥 Downloading rules...');
 
     if (dirname.startsWith('=')) dirname = dirname.split('=')[1];
 
@@ -86,9 +86,9 @@ const downloadFiles = async (dirname) => {
             outputDir,
             { recursive: true },
         )
-        console.log(`Success! .cursorrules saved to ${outputDir}`);
+        console.log(`✅ Success! .cursorrules saved to ${outputDir}`);
     } catch (err) {
-        console.error(`Error: ${err.message}`);
+        console.error(`❌ Error: ${err.message}`);
         process.exit(1);
     }
 }
@@ -116,7 +116,7 @@ async function main() {
                 break;
             case 'flat':
             default:
-                console.log(`~~~~ Flattening rules ~~~~`);
+                console.log(`~~~~ 📂 Flattening rules ~~~~`);
                 downloadFiles(path.join(process.cwd(), '.cursor'))
                 break;
         }
@@ -127,6 +127,6 @@ async function main() {
 try {
     await main();
 } catch (err) {
-    process.stderr.write('Error: ' + err.message + '\n');
+    process.stderr.write('❌ Error: ' + err.message + '\n');
     process.exit(1);
 }
