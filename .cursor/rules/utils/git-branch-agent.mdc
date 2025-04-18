@@ -2,6 +2,7 @@
 
 ---
 description: This rule enforces standards and best practices for branch management operations including checkout, creation, and deletion. This rule should be followed when: 1. creating new branches, 2. switching between branches, 3. deleting branches, or 4. when the git aliases 'gco', 'gcb', or similar branch-related commands are used.
+globs: .git/HEAD
 alwaysApply: false
 ---
 
