@@ -1,0 +1,115 @@
+---
+description: Displays context size and file information at the end of each response
+globs: 
+alwaysApply: true
+---
+
+# Context Information Display Rule
+
+This rule ensures that every AI response includes information about the current context size, files in view, pricing, and account status.
+
+## Critical Rules
+
+- Every AI response must end with context size information
+- Context size should be displayed in thousands of tokens (k)
+- Response should include remaining fast API calls to Cursor taking into account the user's account and subscription
+- All files currently in view or referenced should be listed
+- Request pricing should be calculated based on model and context size
+- Large context mode (>40k tokens) should be indicated with pricing adjustment
+- Account subscription and usage information should be displayed
+- The information should be formatted in a clear, consistent way
+
+<rule>
+name: context-info-display
+description: Displays context size, file information, pricing, and account information at the end of each response
+
+filters:
+  - type: event
+    pattern: "chat_response|cmd_k_response"
+
+actions:
+  - type: append
+    content: |
+      ---
+      Account Status:
+      Subscription: {subscription_type}
+      Usage-based Pricing: {usage_pricing_enabled ? "Enabled" : "Disabled"}
+      Monthly Requests: {used_monthly_requests}/{total_monthly_requests}
+      
+      Current Request:
+      Total context size: ~{context_size}k tokens {context_size > 40 ? "(Large Context Mode)" : ""}
+      Model: {model_name} ({context_size > 40 ? "2x pricing" : "standard pricing"})
+      Estimated cost: ${calculateCost(model_name, context_size)}
+      
+      Files in view:
+      {files_in_view}
+      
+      API Calls:
+      Remaining Fast Calls: {fast_api_calls}/{total_fast_calls}
+
+functions:
+  calculateCost: |
+    const basePrices = {
+      'claude-3.7-sonnet-max': 0.05,
+      'claude-3.7-sonnet': 0.04,
+      'claude-3.5-sonnet': 0.04,
+      'claude-3.5-haiku': 0.01,
+      'claude-3-opus': 0.10,
+      'gpt-4o': 0.04,
+      'gpt-4o-mini': 0.00,
+      'o1': 0.40,
+      'o1-mini': 0.10,
+      'deepseek-r1': 0.04,
+      'default': 0.04
+    };
+    
+    const price = basePrices[model_name] || basePrices.default;
+    const multiplier = context_size > 40 ? 2 : 1;
+    return (price * multiplier).toFixed(2);
+
+examples:
+  - input: |
+      Some AI response about code...
+    output: |
+      Some AI response about code...
+      
+      ---
+      Account Status:
+      Subscription: Pro
+      Usage-based Pricing: Enabled
+      Monthly Requests: 350/500
+      
+      Current Request:
+      Total context size: ~45k tokens (Large Context Mode)
+      Model: claude-3.7-sonnet (2x pricing)
+      Estimated cost: $0.08
+      
+      Files in view:
+      - src/main.ts
+      - src/utils/helper.ts
+      
+      API Calls:
+      Remaining Fast Calls: 450/500
+
+  - input: |
+      Another response with standard context...
+    output: |
+      Another response with standard context...
+      
+      ---
+      Account Status:
+      Subscription: Business
+      Usage-based Pricing: Disabled
+      Monthly Requests: 480/500
+      
+      Current Request:
+      Total context size: ~15k tokens
+      Model: gpt-4o (standard pricing)
+      Estimated cost: $0.04
+      
+      Files in view:
+      - src/components/Feature.tsx
+      
+      API Calls:
+      Remaining Fast Calls: 449/500
+</rule>
