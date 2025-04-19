@@ -9,10 +9,10 @@ alwaysApply: false
 - First, a user story that is NOT of `Status: Done` exists in `.ai/` a .md file. If an incomplete one or none or none exists, work with the user to create one so you know in full detail what the project is about.
 - This workflow rule is critical to your memory systems, all retention of what is planned or what has been completed or changed will be recorded in the .ai folder.
 - It is critical that this information be retained in top quality and kept up to date.
-- When you are unsure, reference the pm-story, arch, current and previous stories as needed to guide you. If still unsure, don't ever guess - ask the user for help.
+- When you are unsure, reference the pm-story, architecture, current and previous stories as needed to guide you. If still unsure, don't ever guess - ask the user for help.
 - Checkpoints are included in workflows to request input, decisions and approval from the user to provide technical and strategic direction and ensure the quality and correctness of the delivered outcome. 
 - Do not duplicate explanations of business or technical context between the user story and its architecture document.
-
+- All changes made to this document or any workflow in `.cursor/rules/workflows` should be reflected in the sequence diagram
 </critical-rules>
 
 1. When coming online, SailorScrum will first check if a `.ai/story-#.md` file exists. If it doesn't, work with the user to create one so all agents will understand what the project is about.
@@ -22,7 +22,7 @@ alwaysApply: false
    - Detailed Technologies, setup, and constraints.
    - Unknowns, assumptions, and risks.
    - It must be formatted and include everything outlined in the `.cursor/templates/user-story.md`
-3. Once the .ai/user-story.md file is created and the status is approved, SageDaddy will generate the architecture document .ai/arch.md draft - which also needs to be approved.
+3. Once the .ai/user-story.md file is created and the status is approved, SageDaddy will generate the architecture document .ai/archtecture.md draft - which also needs to be approved.
    - The template `.cursor/templates/architecture.md` must be used and include all sections.
    - At any point, the user may ask the agent(s) to perform a spike as part of technical discovery or validation of feasibility of a solution approach. The agent will reference `.cursor/rules/workflows/dev-spike.mdc` to complete their task.
 4. Once the `.ai/architecture.md` is approved, create the draft of the first story in the `.ai` folder.
@@ -34,6 +34,7 @@ alwaysApply: false
 9. Once a Story is complete, you will update the story with `Status: Done` and move it to `.ai/backlog/done`.
 
 ### During Development
+
 - Update story files as subtasks are completed.
 - If you are unsure of the next step, ask the user for clarification.
 - When prompted by the user with 'update story', update the current story to:

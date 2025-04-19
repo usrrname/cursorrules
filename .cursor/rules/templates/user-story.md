@@ -1,6 +1,6 @@
 ## User Story Template {title} {PBI #}
 
-Status: { Blocked | ToDo | In Progress | Review | Done }
+Status: { Draft | Review | Blocked | ToDo | In Progress | Done | Dropped }
 
 This is a user story template that you can use to document user stories for your software development projects. User stories follow the "As a [role], I want [an action or feature], so that [a reason or benefit]" format, and they help define the functionality and requirements of a feature or improvement.
 

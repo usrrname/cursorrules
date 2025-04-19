@@ -104,6 +104,8 @@ Confidence: [High/Medium/Low]
    - BasicDev validates backend requirements
    - Godmode assesses infrastructure needs
 
+Checkpoint: the user is asked to review the document progress so far, suggest or provide changes before the agent is to move onto the next step.
+
 3. **Quality Check**
    - qwoof reviews testability
    - Spellchuck ensures clarity and completeness of documentation
@@ -112,7 +114,8 @@ Confidence: [High/Medium/Low]
 4. **Final Approval**
    - SailorScrum validates INVEST criteria
    - Team consensus on estimation
-   - Story is ready for sprint planning
+   - Story is ready for sprint planning and status is updated to "Status: ToDo"
+   - Blocked, Rejected or Dropped stories should have Status updated to `Dropped` and moved into `.ai/backlog/`. The story should be updated with a 1 sentence description of why it could not proceed to development.
 
 ## Story States
 
@@ -120,7 +123,7 @@ Stories can be in the following states:
 - 📝 Draft - Initial creation and refinement
 - 🔍 Review - Under technical review and discussion
 - ✨ Ready - Approved and ready for development
-- ⛔ Blocked/Rejected - Has blockers or deemed not viable
+- ⛔ Blocked/Rejected/Dropped - Has blockers or deemed not viable for development
 
 ## Agent Responsibilities
 

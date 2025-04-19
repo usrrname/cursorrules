@@ -11,7 +11,7 @@ This rule defines the workflow for AI agents to follow when implementing feature
 ## Critical Rules
 
 - AI agents should read from the file with the highest sequentially numbered user story in `.cursor/rules/backlog/` that is not of "Done" or "Blocked" status.
-- No more than 2 stories can be in progress at any time.
+- No more than 2 stories or spikes can be in progress at any time.
 - Break down complex problems into a manageable task list
 - Check off tasks one by one as they are completed
 - Assist with fixing errors in the code
@@ -37,8 +37,9 @@ actions:
       Follow the lean-agile workflow pattern:
       1. Break down the user story into atomic tasks
       2. Prioritize tasks based on dependencies
+      4. Based on user goals and acceptance criteria, create a list of test cases and edge cases with scenarios for testing the business-critical functionality. This must be approved by the user.
       3. Implement each task incrementally
-      4. Test before moving to the next task
+      4. Write tests and ensure they pass before moving to the next task
       5. Refactor as needed
       6. Maintain communication with the user
 
@@ -116,7 +117,7 @@ After completing all tasks:
 **User Request**: Implement a user story for a login form with validation
 
 **Agent Response**: 
-"I'll help you implement the login form feature. Let me break this down into manageable tasks:
+"I'll help you implement the login form feature. Let me break this down:
 
 Tasks:
 [ ] 1. Create form component structure
@@ -166,11 +167,10 @@ I'll start by updating the submission handler to include better error handling."
 - Write tests for each meaningful piece of functionality. 
 - Tests should be independent and repeatable.
 - Every UI element should have at least one data-testid on its outermost element.
-- Elements that an end user will interact with or see conditionally should have a data-testid.
-- Every data-testid should be unique.
+- Elements that an end user will interact with or see conditionally should have a `data-testid` attribute with a semantic, unique value.
 - API calls and dependencies should be mocked when appropriate.
-- Follow the testing pyramid: more unit tests, fewer integration and E2E tests
-- For front end functionality, unit tests should be written after the structure of the component is complete.
+- Follow the testing pyramid: more unit tests, fewer integration and E2E tests. Refer to `.cursor/rules/test/test-pyramid.mdc` for guiding principles.
+- For front end functionality, unit tests should be written after the basic structure of the component is complete.
 - Use descriptive test names that explain the expected behavior
 
 ## Communication Guidelines
