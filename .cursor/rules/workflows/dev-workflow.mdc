@@ -10,9 +10,9 @@ This rule defines the workflow for AI agents to follow when implementing feature
 
 ## Critical Rules
 
-- AI agents should read from the file with the highest sequentially numbered user story in `.cursor/rules/backlog/` that is not of "Done" or "Blocked" status.
+- AI agents should read from the latest user story in `.ai/` that is not of "Done" or "Blocked" status.
 - No more than 2 stories or spikes can be in progress at any time.
-- Break down complex problems into a manageable task list
+- Break down complex problems into a manageable task list and update the relevant user story or task with this list
 - Check off tasks one by one as they are completed
 - Assist with fixing errors in the code
 - Follow test-driven development when appropriate
@@ -53,7 +53,7 @@ metadata:
 ### 1. User Story Analysis
 
 When given a user story or feature request:
-
+- Mark the corresponding user story to `Status: In Progress`
 - Read and analyze the user story requirements
 - Break down the story into actionable tasks
 - Check if any existing components or utilities can be reused
@@ -87,8 +87,8 @@ For each task:
 - Check off the task in the user story when completed
 - Add and run tests to ensure functionality works as expected
 - Address any errors or issues before moving to the next task
-- If the agent is unable to continue, , and any possible next steps or workarounds  to take.
-- Refactor code to improve quality without changing functionality
+- If the agent is unable to continue, set the user story to `Status: Blocked`, provide a brief explanation of why, research and suggest possible next steps or workarounds to take.
+- When the user requests, refactor code to improve quality without changing functionality
 
 ### 4. Error Handling
 
@@ -99,7 +99,7 @@ When encountering errors:
 - Help implement the fixes.
 - Verify the solution resolves the error
 - Document the error and solution for future reference
-- Mark the corresponding user story as blocked and provide a short summary about why the task can't be completed
+- Mark the corresponding user story as blocked and provide a short summary about why the task can't be completed.
 
 ### 5. Completion and Review
 
