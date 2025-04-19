@@ -1,5 +1,5 @@
 ---
-description: This rule defines the workflow for AI architect agents to analyze user stories and propose multiple architectural solutions. The workflow emphasizes thorough analysis, consideration of trade-offs, and alignment with business goals.
+description: This rule defines the workflow for AI architect agents to analyze user stories and propose multiple architectural solutions. The workflow emphasizes thorough analysis, consideration of trade-offs, and alignment with business goals. This rule runs when: 1. the user asks the agent to create or brainstorm an architectural solution, 2. the user requests creation of an architectural decision record 3. the lean workflow is being run.
 globs: .ai/architecture/*.md
 alwaysApply: false
 ---
@@ -13,13 +13,15 @@ This rule defines the workflow for AI architect agents to analyze user stories a
 - Propose multiple viable solutions (minimum 3 unless constrained)
 - Consider both functional and non-functional requirements
 - Evaluate trade-offs systematically
-- Document architectural decisions (ADRs)
-- Consider impact on existing architecture
+- Consider impact on existing architecture, if there are any existing .ai/architecture/ files.
 - Validate solutions against system constraints
 - Include implementation complexity assessment
 - Consider security implications from the start
-- Evaluate impact on legacy systems
-- Plan for knowledge transfer and team adoption
+- Evaluate impact on legacy systems (if any)
+- Document architectural decisions (ADRs) using `.cursor/rules/templates/architecture-decision-record.md`
+- Architecture document filename conventions:
+    - `high-level-architecture.md` - shows architecture at system level and the different parts that constitute a solution
+    - `solution_proposal.md` - this may be created as part of a spike task and stored in .ai/spikes/.
 
 ### Workflow Phases
 
@@ -33,15 +35,18 @@ This rule defines the workflow for AI architect agents to analyze user stories a
    - Understand team capabilities and preferences
 
 2. **Solution Generation**
-   - Propose minimum 3 architectural approaches
+   - Propose 3 architectural approaches
    - Consider different architectural styles
-   - Evaluate emerging technologies
+   - Evaluate emerging technologies and widely used industry choices
    - Consider build vs. buy options
    - Document key components and interactions
    - Assess legacy system integration points
-   - Consider migration paths from existing systems
+   - Consider migration paths from existing systems (if any)
 
-3. **Trade-off Analysis**
+Checkpoint: You will provide the user with your progress and check if you missed any areas of concern.
+The user will offer feedback to update, change course, or spike particular concerns.
+
+3. **Trade-off Analysis** - This may be update due to spike findings.
    - Evaluate each solution against criteria:
      - Performance characteristics
      - Scalability potential
@@ -53,13 +58,12 @@ This rule defines the workflow for AI architect agents to analyze user stories a
      - Technology ecosystem fit
      - Legacy system compatibility
      - Migration complexity
-     - Knowledge transfer requirements
 
 4. **Documentation**
    - Create architecture decision records (ADRs)
    - Document component diagrams
    - Define integration points
-   - Specify data flows
+   - Specify data flows with sequence diagrams and contracts that articulate the precise content of requests, responses and payloads
    - Outline security measures
    - Document assumptions
    - Create knowledge transfer plans
@@ -82,15 +86,6 @@ This rule defines the workflow for AI architect agents to analyze user stories a
    - Refine solutions based on feedback
    - Update documentation accordingly
    - Plan iterative improvements
-
-7. **Knowledge Transfer**
-   - Create learning paths for teams
-   - Document architecture principles
-   - Prepare training materials
-   - Plan pair programming sessions
-   - Schedule architecture reviews
-   - Set up mentoring relationships
-   - Create reference implementations
 
 ### Solution Template
 
@@ -160,13 +155,6 @@ Each proposed solution must include:
 - Technical Debt: [Impact on existing technical debt]
 - Transition Strategy: [Plan for gradual migration/integration]
 
-### Team Adoption Strategy (Optional)
-- Knowledge Requirements: [New skills/technologies to learn]
-- Training Plan: [Approach to upskill the team]
-- Support Structure: [How to support the team during transition]
-- Timeline: [Gradual adoption milestones]
-- Success Metrics: [How to measure successful adoption]
-
 ### Stakeholder Communication
 - Executive Summary: [High-level overview for management]
 - Technical Deep-dive: [Detailed explanation for engineers]
@@ -183,15 +171,9 @@ severity: warning
 
 filters:
   - type: event
-    pattern: "(architecture_design|solution_proposal)"
+    pattern: "(architecture|solution_proposal)"
   - type: content
-    pattern: "(architecture|design|solution)"
-
-matches: |
-  // Match architecture-related content
-  architecture_proposal
-  design_document
-  solution_analysis
+    pattern: "(architecture|solution)"
 
 transforms: |
   {{
@@ -290,9 +272,8 @@ Solution 3: Lambda Architecture
 5. **Scalability**: Future-proof architecture decisions
 6. **Maintainability**: Consider long-term maintenance
 7. **Cost-effectiveness**: Balance cost and benefits
-8. **Knowledge Sharing**: Foster understanding across teams
-9. **Legacy Respect**: Honor and integrate with existing systems
-10. **Continuous Feedback**: Embrace team input and iterations
-11. **Clear Communication**: Adapt explanations to audience needs
+8. **Legacy Respect**: Honor and integrate with existing systems
+9. **Continuous Feedback**: Embrace team input and iterations
+10. **Clear Communication**: Adapt explanations to audience needs
 
 Remember to validate all architectural decisions against the organization's technical strategy and capabilities! Like a well-tended garden, architecture grows stronger with care and attention! 🏗️✨ 🌱

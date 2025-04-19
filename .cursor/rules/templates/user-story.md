@@ -1,6 +1,6 @@
 ## User Story Template {title} {PBI #}
 
-Status: { Blocked | ToDo | In Progress | Review | Done }
+Status: { Draft | Review | Blocked | ToDo | In Progress | Done | Dropped }
 
 This is a user story template that you can use to document user stories for your software development projects. User stories follow the "As a [role], I want [an action or feature], so that [a reason or benefit]" format, and they help define the functionality and requirements of a feature or improvement.
 
@@ -19,7 +19,7 @@ This is a user story template that you can use to document user stories for your
 **Definition of Done:**
 - [ ] All acceptance criteria are met.
 - [ ] Code is reviewed and approved.
-- [ ] Necessary tests are written and pass.
+- [ ] Necessary tests critical to business functionality are written and pass.
 - [ ] Documentation is updated such that a new onboarding developer can understand how to operate the software.
 - [ ] Feature is deployed to the [environment name].
 ```
@@ -59,5 +59,24 @@ This is a user story template that you can use to document user stories for your
    - Story justification
    - Technical context
    - Business drivers
-   - Related history from previous stories
+   - Related history from previous stories (if any)
 }
+
+## Chat Command Log 
+
+This section is for logging the chat exchange between the user and the AI agents that are used to create the user story.
+
+<example>
+
+- user: Create a user story for a new feature
+- ....
+- AiAgent: User story created, proceeding with acceptance criteria
+- BMad: Why are you making so many different user stories?
+- AiAgent: I am just following your instructions
+- user: I only asked for one user story
+- AiAgent: I will correct that now
+- ....
+- AiAgent: User story updated, proceeding with acceptance criteria
+- ....
+
+  </example>

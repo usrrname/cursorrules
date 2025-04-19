@@ -26,7 +26,7 @@ The front matter section must always start the file and include all 3 fields, ev
   - Manual Rule: if a Manual rule is requested, description and globs MUST be blank and `alwaysApply: false` and filename ends with `-manual.mdc`.
   - Auto Rule: IF a rule is requested that should apply always to certain glob patterns (example all Typescript files or all markdown files) - description must be blank, and alwaysApply: false and filename ends with -auto.mdc.
   - Always Rule: Global Rule applies to every chat and cmd/ctrl-k - description and globs blank, and alwaysApply: true  and filename ends with -always.mdc.
-  - Agent Select Rule: The rule does not need to be loaded into every chat thread, it serves a specific purpose. The description MUST provide comprehensive context about when to apply the rule, including scenarios like code changes, architecture decisions, bug fixes, or new file creation. Globs blank, and `alwaysApply:false` and filename ends with -agent.mdc
+  - Agent Select Rule: The rule does not need to be loaded into every chat thread, it serves a specific purpose. The description MUST provide comprehensive context about when to apply the rule, including scenarios like code changes, architecture decisions, bug fixes, or new file creation. Globs blank, and `alwaysApply: false` and filename ends with -agent.mdc
   - If any of the fields are blank the value can be assumed false.
   - The front matter `globs` property can be empty or specify the constrained filename, type or extension
 
@@ -123,7 +123,8 @@ In projects that use the custom agents and their workflows, an .ai/ folder will 
 
 Folders should be created if they don't already exist.
 
-- User stories or PBIs: .ai/backlog/**/*.md
+- User stories or PBIs: .ai/*.md
+- Completed user stories: .ai/backlog/*.md
 - Architecture: .ai/architecture/*.md
 - Architecture decision records (ADR): .ai/architecture/decision-records/*.md
 - bugs: .ai/bugs/
@@ -150,22 +151,17 @@ For User stories aka. PBIs (Product Backlog Item(s)):
 
 For architectural documents (including decision records):
   - Always use .md
-  - Architecture document filenames should be `####-architecture-document.md` where # stands in for numbers. 
-  - Can include data structures, UML or Mermaid as needed
-
-<example>
-  0002-high-level-architecture.md
-</example>
+  - Can include data structures, schemas UML or Mermaid as needed
 
 For cursor rules:
   - Always use .mdc extension
-  - Rule filenames should follow the format `####-rule-name.mdc` where # stands in for numbers. 
 
   Examples of acceptable rule filenames:
   <example> 
-    0000-rule-generation.mdc
-    0001-rule-location.mdc
-    0002-app-architecture.mdc
+    rule-generation-agent.mdc
+    rule-location.mdc
+    js-linting-always.mdc
+    app-architecture.mdc
   </example>
   
   Examples of invalid rule names: 
