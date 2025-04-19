@@ -1,23 +1,24 @@
 ---
-description: Displays context size and file information at the end of each response
+description: This rule displays context size and file information at the end of each response. It should run when: 1. the user requests information about Cursor context 2. when the user enters 'context dump', 'context length' or 'context size'
 globs: 
 alwaysApply: true
 ---
 
 # Context Information Display Rule
 
-This rule ensures that every AI response includes information about the current context size, files in view, pricing, and account status.
+This rule ensures that every AI response includes information about the account status,  current context size, files in view, pricing.
 
 ## Critical Rules
 
 - Every AI response must end with context size information
 - Context size should be displayed in thousands of tokens (k)
-- Response should include remaining fast API calls to Cursor taking into account the user's account and subscription
-- All files currently in view or referenced should be listed
+- Response should indicate when the number of days until plan renewal
 - Request pricing should be calculated based on model and context size
 - Large context mode (>40k tokens) should be indicated with pricing adjustment
-- Account subscription and usage information should be displayed
-- The information should be formatted in a clear, consistent way
+- Account subscription and usage information should be displayed clearly
+- Display distribution of requests per model
+- use @doc [Cursor Settings](https://docs.cursor.com/settings/models) to lookup the latest request prices
+- End every request with "Total context size: ~nk tokens" and list the files you have in view.
 
 <rule>
 name: context-info-display
@@ -31,85 +32,130 @@ actions:
   - type: append
     content: |
       ---
-      Account Status:
-      Subscription: {subscription_type}
-      Usage-based Pricing: {usage_pricing_enabled ? "Enabled" : "Disabled"}
-      Monthly Requests: {used_monthly_requests}/{total_monthly_requests}
+      Account Status: {getAccountInfo().account_status}
+      Subscription: {getAccountInfo().subscription_type}
+      Usage-based Pricing: {getAccountInfo().usage_pricing_enabled ? "Enabled" : "Disabled"}
+      Monthly Requests: {calculateUsage(user_id).requests}/{calculateUsage(user_id).maxRequests}
       
-      Current Request:
+      Model Usage:
+      {formatModelUsage(calculateUsage(user_id).modelUsage)}
+      
       Total context size: ~{context_size}k tokens {context_size > 40 ? "(Large Context Mode)" : ""}
       Model: {model_name} ({context_size > 40 ? "2x pricing" : "standard pricing"})
-      Estimated cost: ${calculateCost(model_name, context_size)}
       
       Files in view:
       {files_in_view}
       
-      API Calls:
-      Remaining Fast Calls: {fast_api_calls}/{total_fast_calls}
 
 functions:
-  calculateCost: |
-    const basePrices = {
-      'claude-3.7-sonnet-max': 0.05,
-      'claude-3.7-sonnet': 0.04,
-      'claude-3.5-sonnet': 0.04,
-      'claude-3.5-haiku': 0.01,
-      'claude-3-opus': 0.10,
-      'gpt-4o': 0.04,
-      'gpt-4o-mini': 0.00,
-      'o1': 0.40,
-      'o1-mini': 0.10,
-      'deepseek-r1': 0.04,
-      'default': 0.04
-    };
+  getAccountInfo: |
+    try {
+    const subInfo = await fetch('https://www.cursor.com/api/auth/stripe').json()
+      const { subscriptionStatus, membershipType } = subInfo;
+      const hardLimits = await fetch('https://www.cursor.com/api/dashboard/get-hard-limit').json()
+      const { noUsageBasedAllowed } = hardLimits
+      return {
+        subscription_type: membershipType
+        account_status: subscriptionStatus
+        usage_pricing_enabled: !noUsageBasedAllowed ? true : false
+      }
+    } catch (err) {
+      console.error(err)
+    }
+
+  formatModelUsage: |
+    // Format the model usage data for display
+    if (!modelUsage || Object.keys(modelUsage).length === 0) {
+      return "No usage data available";
+    }
     
-    const price = basePrices[model_name] || basePrices.default;
-    const multiplier = context_size > 40 ? 2 : 1;
-    return (price * multiplier).toFixed(2);
+    let result = '';
+    Object.keys(modelUsage).forEach(model => {
+      const usage = modelUsage[model];
+      if (usage.numRequests > 0) {
+        const limit = usage.maxRequestUsage ? `/${usage.maxRequestUsage}` : 'No Limit';
+        result += `- ${model}: ${usage.numRequests}${limit} requests\n`;
+      }
+    });
+    
+    return result.trim();
 
-examples:
-  - input: |
-      Some AI response about code...
-    output: |
-      Some AI response about code...
-      
-      ---
-      Account Status:
-      Subscription: Pro
-      Usage-based Pricing: Enabled
-      Monthly Requests: 350/500
-      
-      Current Request:
-      Total context size: ~45k tokens (Large Context Mode)
-      Model: claude-3.7-sonnet (2x pricing)
-      Estimated cost: $0.08
-      
-      Files in view:
-      - src/main.ts
-      - src/utils/helper.ts
-      
-      API Calls:
-      Remaining Fast Calls: 450/500
+  calculateUsage: |
+    try {
+      const userData =  await fetch('https://www.cursor.com/api/auth/me').json()
+      const {sub: user_id} = userData;
 
-  - input: |
-      Another response with standard context...
-    output: |
-      Another response with standard context...
+      const response = await fetch(`https://www.cursor.com/api/usage?user=user_${user_id}`);
+      const data = await response.json();
       
-      ---
-      Account Status:
-      Subscription: Business
-      Usage-based Pricing: Disabled
-      Monthly Requests: 480/500
+      // Initialize variables for total usage
+      let totalRequests = 0;
+      let maxRequests = 500; // Default max requests for Pro accounts
+      let modelUsage = {};
       
-      Current Request:
-      Total context size: ~15k tokens
-      Model: gpt-4o (standard pricing)
-      Estimated cost: $0.04
+      // Process the data to extract model-specific usage
+      Object.keys(data).forEach(model => {
+        if (model !== 'startOfMonth') {
+          const modelData = data[model];
+          modelUsage[model] = modelData;
+          totalRequests += modelData.numRequests || 0;
+          
+          // If this model has a max request limit, use it
+          if (modelData.maxRequestUsage) {
+            maxRequests = modelData.maxRequestUsage;
+          }
+        }
+      });
       
-      Files in view:
-      - src/components/Feature.tsx
-      
-      API Calls:
-      Remaining Fast Calls: 449/500
+      // Return the calculated values
+      return {
+        requests: totalRequests,
+        maxRequests: maxRequests,
+        startDate: data.startOfMonth,
+        modelUsage: modelUsage
+      };
+    } catch (error) {
+      console.error('Error fetching usage data:', error);
+      // Return default values if the API call fails
+      return {
+        requests: 0,
+        maxRequests: 500,
+        startDate: new Date().toISOString(),
+        modelUsage: {}
+      };
+    }
+
+test: |
+  // Mock fetch responses
+  const mockUserData = { sub: 'test123' };
+  const mockUsageData = {
+    startOfMonth: '2024-01-01',
+    gpt4: { numRequests: 100, maxRequestUsage: 1000 },
+    gpt3: { numRequests: 200 }
+  };
+
+  // Test successful API calls
+  global.fetch = jest.fn()
+    .mockImplementationOnce(() => Promise.resolve({ json: () => mockUserData }))
+    .mockImplementationOnce(() => Promise.resolve({ json: () => mockUsageData }));
+
+  const result = await calculateUsage();
+  expect(result).toEqual({
+    requests: 300,
+    maxRequests: 1000,
+    startDate: '2024-01-01',
+    modelUsage: {
+      gpt4: { numRequests: 100, maxRequestUsage: 1000 },
+      gpt3: { numRequests: 200 }
+    }
+  });
+
+  // Test error handling
+  global.fetch = jest.fn().mockRejectedValue(new Error('API Error'));
+  const errorResult = await calculateUsage();
+  expect(errorResult.requests).toBe(0);
+  expect(errorResult.maxRequests).toBe(500);
+  expect(errorResult.modelUsage).toEqual({});
+
+
 </rule>
