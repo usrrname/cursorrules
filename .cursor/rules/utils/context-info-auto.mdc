@@ -1,0 +1,130 @@
+---
+description: This rule displays context size and file information at the end of each response. It should run when: 1. the user requests information about Cursor context 2. when the user enters 'context dump', 'context length' or 'context size'
+globs: 
+alwaysApply: true
+---
+
+# Context Information Display Rule
+
+This rule ensures that every AI response includes information about the account status, current context size, files in view, and request-based pricing.
+
+## Critical Rules
+
+- Every AI response must end with context size information
+- Account subscription and usage information should be displayed clearly
+- Context size should be displayed in thousands of tokens (k)
+- Request pricing should be calculated based on model and context size
+- Large context mode (>40k tokens) should be indicated with pricing adjustment
+- Display distribution of requests per model
+- Use @doc [Cursor Settings](https://docs.cursor.com/settings/models) to lookup the latest request prices and extract them as a table with Tavily extract
+- List files in view
+- Provide cost estimation for current session
+
+<rule>
+name: context-info-display
+
+filters:
+  - type: event
+    pattern: "chat_response|cmd_k_response"
+  - type: content
+    pattern: "(context dump|context size|context length)"
+
+actions:
+  - type: append
+    content: |
+      ---
+      Account Status: {getAccountInfo().account_status}
+      Subscription: {getAccountInfo().subscription_type}
+      Usage-based Pricing: {getAccountInfo().usage_pricing_enabled ? "Enabled" : "Disabled"}
+      Monthly Requests: {calculateUsage().requests}/{calculateUsage().maxRequests}
+      
+      Model Usage:
+      {formatModelUsage(calculateUsage().modelUsage)}
+      
+      Model: {model_name}
+      Total size: ~{context_size}k tokens {context_size > 40 ? "(Large Context Mode)" : ""}
+      
+      Files in view:
+      {files_in_view}
+      
+
+functions:
+  getAccountInfo: |
+    try {
+    const subInfo = await fetch('https://www.cursor.com/api/auth/stripe').json()
+      const { subscriptionStatus, membershipType } = subInfo;
+      const hardLimits = await fetch('https://www.cursor.com/api/dashboard/get-hard-limit').json()
+
+      const { noUsageBasedAllowed } = hardLimits;
+
+      return {
+        subscription_type: membershipType
+        account_status: subscriptionStatus
+        usage_pricing_enabled: !noUsageBasedAllowed ? true : false
+      }
+    } catch (err) {
+      console.error(err)
+    }
+
+  formatModelUsage: |
+    // Format the model usage data for display
+    if (!modelUsage || Object.keys(modelUsage).length === 0) {
+      return "No usage data available";
+    }
+    
+    let result = '';
+    Object.keys(modelUsage).forEach(model => {
+      const usage = modelUsage[model];
+      if (usage.numRequests > 0) {
+        const limit = usage.maxRequestUsage ? `/${usage.maxRequestUsage}` : 'No Limit';
+        result += `- ${model}: ${usage.numRequests}${limit} requests\n`;
+      }
+    });
+    
+    return result.trim();
+
+  calculateUsage: |
+    try {
+      const userData =  await fetch('https://www.cursor.com/api/auth/me').json()
+      const {sub: user_id} = userData;
+
+      const response = await fetch(`https://www.cursor.com/api/usage?user=user_${user_id}`);
+      const data = await response.json();
+      
+      // Initialize variables for total usage
+      let totalRequests = 0;
+      let maxRequests = 500; // Default max requests for Pro accounts
+      let modelUsage = {};
+      
+      // Process the data to extract model-specific usage
+      Object.keys(data).forEach(model => {
+        if (model !== 'startOfMonth') {
+          const modelData = data[model];
+          modelUsage[model] = modelData;
+          totalRequests += modelData.numRequests || 0;
+          
+          // If this model has a max request limit, use it
+          if (modelData.maxRequestUsage) {
+            maxRequests = modelData.maxRequestUsage;
+          }
+        }
+      });
+      
+      // Return the calculated values
+      return {
+        requests: totalRequests,
+        maxRequests: maxRequests,
+        startDate: data.startOfMonth,
+        modelUsage: modelUsage
+      };
+    } catch (error) {
+      console.error('Error fetching usage data:', error);
+      // Return default values if the API call fails
+      return {
+        requests: 0,
+        maxRequests: 500,
+        startDate: new Date().toISOString(),
+        modelUsage: {}
+      };
+    }
+</rule>
