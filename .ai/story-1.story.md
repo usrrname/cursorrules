@@ -1,7 +1,7 @@
 ---
 id: story-1
 title: Create Modern Astro Blog with Markdown Support
-status: Draft
+status: Approved
 type: Feature
 priority: High
 ---
