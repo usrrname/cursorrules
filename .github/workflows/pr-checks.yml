@@ -2,8 +2,14 @@ name: PR Checks
 
 on:
   pull_request:
+    types: [opened, synchronize]
     branches:
       - main
+
+# Cancel in-progress runs on new pushes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lint:
@@ -34,9 +40,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add commit comments to PR
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+      - name: Add commit messages to PR description
         run: |
-          echo "## Changes" >> $GITHUB_STEP_SUMMARY
-          git log --pretty=format:"%s" >> $GITHUB_STEP_SUMMARY
+          # Get the commit messages from the PR
+          commits=$(gh pr view ${{ github.event.pull_request.number }} --json commits -q '.commits[].message')
+          echo "COMMIT_MESSAGES=$commits" >> $GITHUB_ENV
+          description=$(gh pr view ${{ github.event.pull_request.number }} --json body -q '.body')
+          new_description="$description\n\n### Commit Messages:\n$COMMIT_MESSAGES"
+          gh pr edit ${{ github.event.pull_request.number }} --body "$new_description"
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
