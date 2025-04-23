@@ -51,14 +51,15 @@ jobs:
       - name: Add commit messages to PR description
         run: |
           # Get the commit messages from the PR
-          commits=$(gh pr view ${{ github.event.pull_request.number }} --json commits | jq -r '.commits[].message')
+          commits=$(gh pr view ${{ github.event.pull_request.number }} --json commits | jq -r '.commits[] | [.messageHeadline + .messageBody] | join("\n")' )
           
 
           # Create new description with just commit messages
-          new_description="### Changes: \n $commits"
+          new_description="## Changes <br/> <br/>"
           
           # Update the PR description
-          gh pr edit ${{ github.event.pull_request.number }} --body "$new_description"
+          gh pr edit ${{ github.event.pull_request.number }} --body "$new_description  $commits"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           description: ${{ github.event.pull_request.body }}
+          CONTEXT: ${{ toJson(github.event.pull_request) }}
