@@ -48,11 +48,21 @@ jobs:
       - name: Add commit messages to PR description
         run: |
           # Get the commit messages from the PR
-          commits=$(gh pr view ${{ github.event.pull_request.number }} --json commits -q '.commits[].message')
-          echo "COMMIT_MESSAGES=$commits" >> $GITHUB_ENV
-          description=$(gh pr view ${{ github.event.pull_request.number }} --json body -q '.body')
-          new_description="$description\n\n### Commit Messages:\n$COMMIT_MESSAGES"
+          commits=$(gh pr view ${{ github.event.pull_request.number }} --json commits | jq -r '.commits[].message | select(. != null)')
+          
+          # Check if we have any commit messages
+          if [ -z "$commits" ]; then
+            echo "No commit messages found, skipping PR description update"
+            exit 0
+          fi
+          
+          # Get current description
+          description=$(gh pr view ${{ github.event.pull_request.number }} --json body | jq -r '.body // empty')
+          
+          # Create new description with commit messages
+          new_description="${description:+$description\n\n}### Commit Messages:\n$commits"
+          
+          # Update the PR description
           gh pr edit ${{ github.event.pull_request.number }} --body "$new_description"
-
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
