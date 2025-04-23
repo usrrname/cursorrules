@@ -34,7 +34,7 @@ jobs:
           node-version: '20'
       - run: npm ci
       - name: Run tests
-        run: npm test
+        run: npm run test:ci
 
   comment:
     runs-on: ubuntu-latest
