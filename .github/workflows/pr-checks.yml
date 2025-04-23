@@ -62,4 +62,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           description: ${{ github.event.pull_request.body }}
-          CONTEXT: ${{ toJson(github.event.pull_request) }}
