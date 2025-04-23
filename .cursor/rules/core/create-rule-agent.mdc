@@ -24,8 +24,8 @@ alwaysApply: true
 
 The front matter section must always start the file and include all 3 fields, even if the field value will be blank - the types are:
   - Manual Rule: if a Manual rule is requested, description and globs MUST be blank, `alwaysApply: false` and filename ends with `-manual.mdc`.
-  - Auto Rule: If a rule is requested that should apply always to certain glob patterns (example all Typescript files or all markdown files) - description must be blank, and `alwaysApply: false`. The filename should always end with -auto.mdc.
-  - Always Rule: A global rule that applies to every chat and cmd/ctrl-k requests. The description and globs should be blank, and `alwaysApply: true`. The filename ends with -always.mdc.
+  - Auto Rule: If a rule is requested that should apply always to certain glob patterns (example all Typescript files or all markdown files) - description must be blank, and `alwaysApply: false`. The filename should always end with `-auto.mdc`.
+  - Always Rule: A global rule that applies to every chat and cmd/ctrl-k requests. The description and globs should be blank, and `alwaysApply: true`. The filename ends with -`always.mdc`.
   - Agent Select Rule: The rule does not need to be loaded into every chat thread, it serves a specific purpose. The description MUST provide comprehensive context about when to apply the rule, including scenarios like code changes, architecture decisions, bug fixes, or new file creation. Globs blank, and `alwaysApply: false` and filename ends with -agent.mdc
   - The front matter `globs` property can be empty or specify the constrained filename, type or extension
 
