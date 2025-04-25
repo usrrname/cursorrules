@@ -194,8 +194,8 @@ For cursor rules:
       pattern: "file_create"
     - type: validate
       conditions:
-      - pattern: "^[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*\\.mdc$"
-        message: "Filenames of cursor rules should follow the format `####-rule-name.mdc` where # stands in for numbers."
+      - pattern: "^\\.\\/\\.cursor\\/rules\\/[\\w-]+\\/[a-z0-9]+(?:-[a-z0-9]+)*-(?:auto|agent|manual|always)\\.mdc$"
+        message: "Filenames inside `.ai/ of cursor rules should follow the format `{organizing-folder}/rule-name-{type}.mdc`"
   actions:
     - type: reject
       conditions:
