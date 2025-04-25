@@ -114,7 +114,6 @@ async function main() {
             case 'output':
                 downloadFiles(values[key]?.toString() ?? '')
                 break;
-            case 'flat':
             default:
                 console.log(`~~~~ 📂 Flattening rules ~~~~`);
                 downloadFiles(path.join(process.cwd(), '.cursor'))
