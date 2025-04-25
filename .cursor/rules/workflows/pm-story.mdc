@@ -14,7 +14,7 @@ In the name of the Moon, this workflow guides the process of discovering and cra
 - Stories MUST be independent, negotiable, valuable, estimable, small, and testable
 - Every story MUST have clear requirements and acceptance criteria
 - The user story MUST be saved in `.ai/` with the format `story-title.md`
-- The story should be updated as new insights, constraints and 
+- The story should be updated as new insights, constraints and decisions
 - Stories MUST be discoverable through semantic search
 - Stories MUST link to related architecture decisions, spike documents or technical constraints
 - Stories MUST include effort estimation (S, M, L, XL)
