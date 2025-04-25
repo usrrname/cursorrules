@@ -141,7 +141,6 @@ Folders should be created if they don't already exist.
 
 For User stories aka. PBIs (Product Backlog Item(s)):
   - Always use .md 
-  - User story filenames should follow the format `####-user-story-title.md` where # stands in for numbers. 
 
   <example>
   01234-automated-package-release.md
