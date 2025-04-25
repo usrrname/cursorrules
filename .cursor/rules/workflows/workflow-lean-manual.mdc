@@ -27,7 +27,7 @@ Cursor's memory resets completely between sessions. After each reset, agents sho
 3. Once the .ai/user-story.md file is created and the status is approved, SageDaddy will generate the architecture document .ai/archtecture.md draft - which also needs to be approved.
    - The template `.cursor/templates/architecture.md` must be used and include all sections.
    - At any point, the user may ask the agent(s) to perform a spike as part of technical discovery or validation of feasibility of a solution approach. The agent will reference `.cursor/rules/workflows/dev-spike.mdc` to complete their task.
-4. When the `.ai/architecture.md` is approved by the user, create the draft of the first story in the `.ai` folder.
+4. When the `.ai/high-level-architecture.md` is approved by the user, create the draft of the first story in the `.ai` folder.
 5. Always use the `.cursor/templates/template-story.md` file as a template for the story. The story will be named `<story-or-task-><N>.story.md and be added to the `.ai/` folder
    - Example: .ai/story-1.story.md or `.ai/task-1.story.md`
 6. ALWAYS wait for approval of the story before proceeding to do any coding or work on the story.
