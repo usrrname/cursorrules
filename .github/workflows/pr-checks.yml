@@ -55,7 +55,7 @@ jobs:
           
 
           # Create new description with just commit messages
-          new_description="## Changes <br/> <br/>"
+          new_description="## Changes # <br/> <br/>"
           
           # Update the PR description
           gh pr edit ${{ github.event.pull_request.number }} --body "$new_description  $commits"
