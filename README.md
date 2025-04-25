@@ -81,3 +81,8 @@ A project that uses these cursor rules and agents will generate the following st
 └── spikes/
     └── spike-#.spike.md
 ```
+
+## Contributing
+
+Contributions are welcome! Check out [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+
