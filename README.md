@@ -92,3 +92,8 @@ The lean workflow (defined in `.cursor/rules/workflows/dev-workflow.mdc`) guides
 Once a story is ready and approved, agents like `KawaiiSamurai` or `SageDaddy` will follow the workflow steps (like architecture planning and implementation) to bring it to life! ✨
 
 The workflow can be started in agent or manual mode. 
+
+## Contributing
+
+Contributions are welcome! Check out [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+
