@@ -23,11 +23,10 @@ alwaysApply: true
 ### Front matter and cursor rule types:
 
 The front matter section must always start the file and include all 3 fields, even if the field value will be blank - the types are:
-  - Manual Rule: if a Manual rule is requested, description and globs MUST be blank and `alwaysApply: false` and filename ends with `-manual.mdc`.
-  - Auto Rule: IF a rule is requested that should apply always to certain glob patterns (example all Typescript files or all markdown files) - description must be blank, and alwaysApply: false and filename ends with -auto.mdc.
-  - Always Rule: Global Rule applies to every chat and cmd/ctrl-k - description and globs blank, and alwaysApply: true  and filename ends with -always.mdc.
+  - Manual Rule: if a Manual rule is requested, description and globs MUST be blank, `alwaysApply: false` and filename ends with `-manual.mdc`.
+  - Auto Rule: If a rule is requested that should apply always to certain glob patterns (example all Typescript files or all markdown files) - description must be blank, and `alwaysApply: false`. The filename should always end with -auto.mdc.
+  - Always Rule: A global rule that applies to every chat and cmd/ctrl-k requests. The description and globs should be blank, and `alwaysApply: true`. The filename ends with -always.mdc.
   - Agent Select Rule: The rule does not need to be loaded into every chat thread, it serves a specific purpose. The description MUST provide comprehensive context about when to apply the rule, including scenarios like code changes, architecture decisions, bug fixes, or new file creation. Globs blank, and `alwaysApply: false` and filename ends with -agent.mdc
-  - If any of the fields are blank the value can be assumed false.
   - The front matter `globs` property can be empty or specify the constrained filename, type or extension
 
 ## Critical Rules
@@ -42,6 +41,7 @@ The front matter section must always start the file and include all 3 fields, ev
     - AutoRuleGen Success: path/rule-name.mdc
     - Rule Type: {Rule Type}
     - Rule Description: {The exact content of the description field}
+- Ideally, a cursor rule should be 500 lines or less.
 
 ### Rule Content
   - Rules may contain XML-style `<rule></rule>` and `<example></example>` tags
@@ -123,11 +123,16 @@ In projects that use the custom agents and their workflows, an .ai/ folder will 
 
 Folders should be created if they don't already exist.
 
-- User stories or PBIs: .ai/*.md
-- Completed user stories: .ai/backlog/*.md
+- User stories (PBIs): .ai/*.md
+- Dropped or Completed user stories: .ai/backlog/done/*.md
 - Architecture: .ai/architecture/*.md
 - Architecture decision records (ADR): .ai/architecture/decision-records/*.md
 - bugs: .ai/bugs/
+- NEVER create a nested folder with the same name as its parent
+
+<example type="invalid">
+ .cursor/rules/.ai/.ai/story-1.story.md
+</example>
 
 ### Filenaming conventions
 
@@ -136,7 +141,6 @@ Folders should be created if they don't already exist.
 
 For User stories aka. PBIs (Product Backlog Item(s)):
   - Always use .md 
-  - User story filenames should follow the format `####-user-story-title.md` where # stands in for numbers. 
 
   <example>
   01234-automated-package-release.md
@@ -190,8 +194,8 @@ For cursor rules:
       pattern: "file_create"
     - type: validate
       conditions:
-      - pattern: "^[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*\\.mdc$"
-        message: "Filenames of cursor rules should follow the format `####-rule-name.mdc` where # stands in for numbers."
+      - pattern: "^\\.\\/\\.cursor\\/rules\\/[\\w-]+\\/[a-z0-9]+(?:-[a-z0-9]+)*-(?:auto|agent|manual|always)\\.mdc$"
+        message: "Filenames inside `.ai/ of cursor rules should follow the format `{organizing-folder}/rule-name-{type}.mdc`"
   actions:
     - type: reject
       conditions:
@@ -217,8 +221,9 @@ For cursor rules:
           └──.cursor
               └── rules
                   ├── core        required global rules for agentic codegen
+                  ├── standards   standards for languages or particular tech stacks
                   ├── templates   document templates
-                  └── utils       rules that improve devex
+                  └── utils       rules that improve devex and apply to tooling
           ```
           Where this should live for projects that use this set of rules.
 

@@ -33,7 +33,7 @@ sequenceDiagram
     Note over U,CR: Architecture Planning
     SS->>SD: Notify story approved
     SD->>CR: Reference architecture template
-    SD->>AI: Generate .ai/architecture.md draft
+    SD->>AI: Generate .ai/high-level-architecture.md draft
     SD->>U: Present architecture for review
     
     loop Until Architecture Approved

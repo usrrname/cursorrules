@@ -21,7 +21,7 @@ This rule defines the workflow for AI architect agents to analyze user stories a
 - Document architectural decisions (ADRs) using `.cursor/rules/templates/architecture-decision-record.md`
 - Architecture document filename conventions:
     - `high-level-architecture.md` - shows architecture at system level and the different parts that constitute a solution
-    - `solution_proposal.md` - this may be created as part of a spike task and stored in .ai/spikes/.
+    - `solution_proposal.md` - should be created as part of a spike task and stored in .ai/spikes/.
 
 ### Workflow Phases
 
