@@ -1,24 +1,22 @@
 ---
-description: This rule displays context size and file information at the end of each response. It should run when: 1. the user requests information about Cursor context 2. when the user enters 'context dump', 'context length' or 'context size'
+description: This rule displays context size and file information at the end of each response. It should run when: 1. the user asks about Cursor context handling or token usage 2. when the user enters 'context dump', 'context length' or 'context size'
 globs: 
 alwaysApply: true
 ---
 
 # Context Information Display Rule
 
-This rule ensures that every AI response includes information about the account status, current context size, files in view, and request-based pricing.
+This rule ensures that every AI response includes information pertinent to the model choice, account status, current context size for the chat session, and request pricing.
 
 ## Critical Rules
 
-- Every AI response must end with context size information
-- Account subscription and usage information should be displayed clearly
+- Every AI response must end with context size, account subscription and usage information
 - Context size should be displayed in thousands of tokens (k)
-- Request pricing should be calculated based on model and context size
+- If a user has usage pricing enabled, request pricing should be calculated based on model and context size of the current chat session.
 - Large context mode (>40k tokens) should be indicated with pricing adjustment
-- Display distribution of requests per model
-- Use @doc [Cursor Settings](https://docs.cursor.com/settings/models) to lookup the latest request prices and extract them as a table with Tavily extract
-- List files in view
-- Provide cost estimation for current session
+- Where possible, display distribution of requests per model
+- Refer to [Cursor Settings](https://docs.cursor.com/settings/models) to lookup the latest request prices; do not hardcode them
+- Be brief and concise
 
 <rule>
 name: context-info-display
@@ -27,63 +25,31 @@ filters:
   - type: event
     pattern: "chat_response|cmd_k_response"
   - type: content
-    pattern: "(context dump|context size|context length)"
+    pattern: "(context dump|context size|context length|context window)"
 
 actions:
   - type: append
     content: |
+  
       ---
+      **NOTE:** The following information is an estimate.
+
       Account Status: {getAccountInfo().account_status}
       Subscription: {getAccountInfo().subscription_type}
-      Usage-based Pricing: {getAccountInfo().usage_pricing_enabled ? "Enabled" : "Disabled"}
+      Usage-based Pricing: {usage_pricing_enabled}
       Monthly Requests: {calculateUsage().requests}/{calculateUsage().maxRequests}
-      
-      Model Usage:
+  
+      Model Usage: {model_name}
       {formatModelUsage(calculateUsage().modelUsage)}
-      
-      Model: {model_name}
-      Total size: ~{context_size}k tokens {context_size > 40 ? "(Large Context Mode)" : ""}
-      
-      Files in view:
-      {files_in_view}
+    
+      Context size: ~{context_size}k tokens {context_size > 40 ? "(Large Context Mode)" : ""}
+      Max Context Size: {context_window_size}
       
 
 functions:
-  getAccountInfo: |
-    try {
-    const subInfo = await fetch('https://www.cursor.com/api/auth/stripe').json()
-      const { subscriptionStatus, membershipType } = subInfo;
-      const hardLimits = await fetch('https://www.cursor.com/api/dashboard/get-hard-limit').json()
-
-      const { noUsageBasedAllowed } = hardLimits;
-
-      return {
-        subscription_type: membershipType
-        account_status: subscriptionStatus
-        usage_pricing_enabled: !noUsageBasedAllowed ? true : false
-      }
-    } catch (err) {
-      console.error(err)
-    }
-
-  formatModelUsage: |
-    // Format the model usage data for display
-    if (!modelUsage || Object.keys(modelUsage).length === 0) {
-      return "No usage data available";
-    }
-    
-    let result = '';
-    Object.keys(modelUsage).forEach(model => {
-      const usage = modelUsage[model];
-      if (usage.numRequests > 0) {
-        const limit = usage.maxRequestUsage ? `/${usage.maxRequestUsage}` : 'No Limit';
-        result += `- ${model}: ${usage.numRequests}${limit} requests\n`;
-      }
-    });
-    
-    return result.trim();
 
   calculateUsage: |
+    let maxRequests = 0;
     try {
       const userData =  await fetch('https://www.cursor.com/api/auth/me').json()
       const {sub: user_id} = userData;
@@ -93,7 +59,7 @@ functions:
       
       // Initialize variables for total usage
       let totalRequests = 0;
-      let maxRequests = 500; // Default max requests for Pro accounts
+      maxRequests = 500; // Default max requests for Pro accounts
       let modelUsage = {};
       
       // Process the data to extract model-specific usage
@@ -122,9 +88,47 @@ functions:
       // Return default values if the API call fails
       return {
         requests: 0,
-        maxRequests: 500,
+        maxRequests,
         startDate: new Date().toISOString(),
         modelUsage: {}
       };
     }
+  
+  getAccountInfo: |
+    try {
+    const subInfo = await fetch('https://www.cursor.com/api/auth/stripe').json()
+      const { subscriptionStatus, membershipType } = subInfo;
+      const hardLimits = await fetch('https://www.cursor.com/api/dashboard/get-hard-limit', {
+        action: "POST",
+      }).json()
+
+      const { noUsageBasedAllowed } = hardLimits;
+
+      return {
+        subscription_type: membershipType
+        account_status: subscriptionStatus
+        usage_pricing_enabled: !noUsageBasedAllowed ? true : false
+      }
+    } catch (err) {
+      console.error(err)
+    }
+
+  formatModelUsage: |
+    // Format the model usage data for display
+    if (!modelUsage || Object.keys(modelUsage).length === 0) {
+      console.error('No usage data available')
+      return "No usage data available";
+    }
+    
+    let result = '';
+    Object.keys(modelUsage).forEach(model => {
+      const usage = modelUsage[model];
+      if (usage.numRequests > 0) {
+        const limit = usage.maxRequestUsage ? `/${usage.maxRequestUsage}` : 'No Limit';
+        result += `- ${model}: ${usage.numRequests}${limit} requests\n`;
+      }
+    });
+    
+    return result.trim();
+
 </rule>
