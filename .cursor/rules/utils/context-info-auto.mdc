@@ -6,19 +6,22 @@ alwaysApply: true
 
 # Context Information Display Rule
 
-This rule ensures that every AI response includes information about the account status, current context size, files in view, and request-based pricing.
+This rule ensures that every AI response includes information about the account status, current context size for the chat session, files in view, and request-based pricing.
 
 ## Critical Rules
 
 - Every AI response must end with context size information
 - Account subscription and usage information should be displayed clearly
 - Context size should be displayed in thousands of tokens (k)
-- Request pricing should be calculated based on model and context size
+- If a user has usage pricing enabled, request pricing should be calculated based on model and context size
 - Large context mode (>40k tokens) should be indicated with pricing adjustment
 - Display distribution of requests per model
-- Use @doc [Cursor Settings](https://docs.cursor.com/settings/models) to lookup the latest request prices and extract them as a table with Tavily extract
+- Use @doc [Cursor Settings](https://docs.cursor.com/settings/models) to lookup the latest request prices; do not hardcode them
 - List files in view
 - Provide cost estimation for current session
+- Be brief and concise
+// TODO: update this if Cursor ever exposes API for context
+- MUST warn the user that the above information is an estimate
 
 <rule>
 name: context-info-display
@@ -27,23 +30,24 @@ filters:
   - type: event
     pattern: "chat_response|cmd_k_response"
   - type: content
-    pattern: "(context dump|context size|context length)"
+    pattern: "(context dump|context size|context length|context window)"
 
 actions:
   - type: append
     content: |
+  
       ---
       Account Status: {getAccountInfo().account_status}
       Subscription: {getAccountInfo().subscription_type}
-      Usage-based Pricing: {getAccountInfo().usage_pricing_enabled ? "Enabled" : "Disabled"}
+      Usage-based Pricing: {usage_pricing_enabled}
       Monthly Requests: {calculateUsage().requests}/{calculateUsage().maxRequests}
-      
-      Model Usage:
+  
+      Model Usage: {model_name}
       {formatModelUsage(calculateUsage().modelUsage)}
-      
-      Model: {model_name}
-      Total size: ~{context_size}k tokens {context_size > 40 ? "(Large Context Mode)" : ""}
-      
+    
+      Context size: ~{context_size}k tokens {context_size > 40 ? "(Large Context Mode)" : ""}
+      Max Context Size: {context_window_size}
+
       Files in view:
       {files_in_view}
       
@@ -53,7 +57,9 @@ functions:
     try {
     const subInfo = await fetch('https://www.cursor.com/api/auth/stripe').json()
       const { subscriptionStatus, membershipType } = subInfo;
-      const hardLimits = await fetch('https://www.cursor.com/api/dashboard/get-hard-limit').json()
+      const hardLimits = await fetch('https://www.cursor.com/api/dashboard/get-hard-limit', {
+        action: "POST",
+      }).json()
 
       const { noUsageBasedAllowed } = hardLimits;
 
