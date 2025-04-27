@@ -5,3 +5,6 @@
 .cursor/modes.json
 .cursor/mcp.json
 .vscode/
+CODE_OF_CONDUCT.md
+SECURITY.md
+.github/ISSUE_TEMPLATE/
