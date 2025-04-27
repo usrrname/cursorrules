@@ -84,14 +84,23 @@ A project that uses these cursor rules and agents will generate the following st
 
 ## 🪄 Using the Lean Workflow
 
-The lean workflow (defined in `.cursor/rules/workflows/dev-workflow.mdc`) guides how our AI agents collaborate on features. You can initiate the workflow in a couple of ways:
+The lean workflow (defined in `.cursor/rules/workflows/dev-workflow.mdc`) guides how our AI agents collaborate on features. 
 
-1.  **Ask SailorScrum:** Request `SailorScrum` to create a new user story or task. She'll guide you through defining the requirements and save the file (e.g., `story-1.md`) in the `.ai/` directory. 🌙
-2.  **Use an Existing Story:** If you already have a user story file (like `story-1.md`) in the `.ai/` directory that follows the expected format, you can ask an agent (like `SailorScrum` for refinement or `SageDaddy`/`KawaiiSamurai` for implementation) to start working on it.
+You can start the workflow in Agent or Manual mode. 
+
+1. **Create a new user story**
+
+Ask `SailorScrum` to create a new user story or task. She'll guide you through defining the requirements and save the file (e.g., `story-1.md`) in the `.ai/` directory. 🌙
+
+2. **Use an Existing Story:** 
+
+If you already have a user story file (like `story-1.md`) in the `.ai/` directory that follows the expected format, you can ask an agent (like `SailorScrum` for refinement or `SageDaddy`/`KawaiiSamurai` for implementation) to start working on it.
+
+Just remember to attach the `.ai/` directory to the chat as context!
 
 Once a story is ready and approved, agents like `KawaiiSamurai` or `SageDaddy` will follow the workflow steps (like architecture planning and implementation) to bring it to life! ✨
 
-The workflow can be started in agent or manual mode. 
+In fact, any of the agents can be called upon to help with the workflow at any time.
 
 ## Contributing
 
