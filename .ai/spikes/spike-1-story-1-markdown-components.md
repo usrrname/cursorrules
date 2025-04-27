@@ -20,9 +20,8 @@
 1. **Project Initialization**
    ```bash
    # Create new Astro project for spike
-   npm create astro@latest spike-markdown-components
-   cd spike-markdown-components
-   
+    npm create astro@latest . --template blog --install --typescript strict --git 
+
    # Install required dependencies
    npm install @astrojs/mdx
    ```
