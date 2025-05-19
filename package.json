@@ -13,8 +13,8 @@
     "access": "public"
   },
   "scripts": {
-    "local:publish": "npm publish --registry http://localhost:4873/",
-    "clear": "npm unpublish --registry http://localhost:4873/ @usrrname/cursorrules",
+    "local:publish": "npm publish --registry http://localhost:4873/ --scope=@usrrname",
+    "clear": "npm unpublish --registry http://localhost:4873/ --scope=@usrrname",
     "lint": "tsc --noEmit --noImplicitAny",
     "test": "node --test --watch \"test/cli.test.js\"",
     "test:ci": "node --test test/cli.test.js"

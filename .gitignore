@@ -54,3 +54,4 @@ Thumbs.db
 .vercel
 .env*.local
 *.tsbuildinfo
+.verdaccio-db.json
