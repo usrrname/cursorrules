@@ -1,0 +1,318 @@
+---
+description: Laravel and PHP Development Standards
+globs: "**/*.{php}"
+alwaysApply: false
+---
+
+# Laravel and PHP Development Standards
+
+This rule enforces best practices, coding standards, and architectural patterns for Laravel and PHP development.
+
+## Critical Rules
+
+- Follow Laravel naming conventions for controllers, models, and other components
+- Use Laravel's built-in features rather than reinventing functionality
+- Structure code according to Laravel's MVC architecture
+- Adhere to Laravel's folder structure
+- Implement proper validation and error handling
+- Follow RESTful design principles for API development
+- Use Laravel's Eloquent ORM for database interactions
+- Implement proper security measures against common web vulnerabilities
+
+## Laravel Naming Conventions
+
+### Controllers
+
+- Use singular PascalCase + "Controller" suffix (e.g., `UserController`)
+- RESTful action names: index, create, store, show, edit, update, destroy
+
+### Models
+
+- Use singular PascalCase (e.g., `User`, `Product`)
+- Model properties and relationships should use camelCase
+
+### Migrations
+
+- Use descriptive names with timestamps (e.g., `2023_01_01_000000_create_users_table`)
+- Table names should be plural snake_case
+
+### Routes
+
+- Use plural kebab-case for resource routes (e.g., `/api/user-profiles`)
+- Group related routes using namespaces and middlewares
+
+## PHP Code Style
+
+- Follow PSR-12 coding standard for PHP code structure
+- Use strict typing
+- Use type declarations for method parameters and return types
+- Prefer explicit visibility declarations (public, protected, private)
+- Use null coalescing operators and other modern PHP features
+
+<rule>
+name: laravel-php-standards
+description: Standards and best practices for Laravel and PHP development
+version: 1.0
+severity: suggestion
+filters:
+  - type: file_extension
+    pattern: "\\.php$"
+  - type: content
+    pattern: "(namespace|class|function|Route::)"
+actions:
+  - type: suggest
+    message: |
+      Ensure your Laravel and PHP code follows these best practices:
+        1. Follow Laravel naming conventions
+        2. Use Laravel's built-in features instead of custom solutions
+        3. Structure code according to MVC architecture
+        4. Implement proper validation and error handling
+        5. Follow PSR-12 coding standards
+
+examples:
+  - description: "Proper Laravel controller implementation"
+    input: |
+      <?php
+      
+      namespace App\Http\Controllers;
+      
+      use App\Models\User;
+      use Illuminate\Http\Request;
+      
+      class userController extends Controller
+      {
+          function getAll() {
+              $users = User::all();
+              return $users;
+          }
+          
+          function addNew(Request $request) {
+              // No validation
+              $user = new User();
+              $user->name = $request->name;
+              $user->email = $request->email;
+              $user->save();
+              
+              return $user;
+          }
+      }
+    output: |
+      <?php
+        namespace App\Http\Controllers;
+        use App\Models\User;
+        use Illuminate\Http\Request;
+        use App\Http\Requests\StoreUserRequest;
+
+      class UserController extends Controller
+      {
+          public function index()
+          {
+              $users = User::all();
+              return response()->json($users);
+          }
+
+          public function store(StoreUserRequest $request)
+          {
+              // Validation handled via FormRequest
+              $user = User::create($request->validated());
+              return response()->json($user, 201);
+          }
+      }
+
+    - description: "Proper Laravel model implementation"
+    input: |
+      <?php
+          namespace App\Models;
+          use Illuminate\Database\Eloquent\Model;
+
+      class posts extends Model
+      {
+          protected $table = 'posts';
+          
+          // No mass assignment protection
+          
+          // No type definitions or relationships
+          function author() {
+              return $this->belongsTo('App\Models\User');
+          }
+          
+          function get_comments() {
+              return $this->hasMany('App\Models\Comment');
+          }
+      }
+    output: |
+      <?php
+      
+      namespace App\Models;
+      
+      use App\Models\User;
+      use App\Models\Comment;
+      use Illuminate\Database\Eloquent\Model;
+      use Illuminate\Database\Eloquent\Factories\HasFactory;
+      use Illuminate\Database\Eloquent\Relations\BelongsTo;
+      use Illuminate\Database\Eloquent\Relations\HasMany;
+      
+      class Post extends Model
+      {
+          use HasFactory;
+          
+          /**
+           * The attributes that are mass assignable.
+           *
+           * @var array
+           */
+          protected $fillable = [
+              'title',
+              'content',
+              'user_id',
+              'published_at'
+          ];
+          
+          /**
+           * Get the user that owns the post.
+           */
+          public function author(): BelongsTo
+          {
+              return $this->belongsTo(User::class, 'user_id');
+          }
+          
+          /**
+           * Get the comments for the post.
+           */
+          public function comments(): HasMany
+          {
+              return $this->hasMany(Comment::class);
+          }
+      }
+
+  - description: "Proper Laravel route definition"
+    input: |
+      <?php
+      
+      use App\Http\Controllers\UserController;
+      
+      // Bad: Not using resourceful routing
+      Route::get('/users', [UserController::class, 'getAll']);
+      Route::post('/users', [UserController::class, 'addNew']);
+      Route::get('/users/{id}', [UserController::class, 'getOne']);
+      Route::put('/users/{id}', [UserController::class, 'change']);
+      Route::delete('/users/{id}', [UserController::class, 'remove']);
+    output: |
+      <?php
+      
+      use App\Http\Controllers\UserController;
+      
+      // Good: Using resourceful routing
+      Route::resource('users', UserController::class);
+      
+      // If you need specific routes only:
+      // Route::apiResource('users', UserController::class)->only([
+      //     'index', 'store', 'show', 'update', 'destroy'
+      // ]);
+
+tests:
+  - input: |
+      <?php
+      
+      namespace App\Http\Controllers;
+      
+      use App\Models\Product;
+      
+      class productController extends Controller
+      {
+          function list() {
+              return Product::all();
+          }
+      }
+    output: "Suggest renaming controller to ProductController and method to index following RESTful conventions"
+
+  - input: |
+      <?php
+      
+      namespace App\Models;
+      
+      use Illuminate\Database\Eloquent\Model;
+      
+      class Orders extends Model
+      {
+          public $timestamps = false;
+          
+          function get_items() {
+              return $this->hasMany('App\Models\OrderItem');
+          }
+      }
+    output: "Suggest renaming model to singular Order, adding type hints, and renaming relationship method to items"
+
+  - input: |
+      <?php
+      
+      namespace App\Http\Controllers;
+      
+      use App\Models\User;
+      use Illuminate\Http\Request;
+      
+      class UserController extends Controller
+      {
+          public function index()
+          {
+              return User::all();
+          }
+          
+          public function store(Request $request)
+          {
+              $validated = $request->validate([
+                  'name' => 'required|string|max:255',
+                  'email' => 'required|email|unique:users',
+                  'password' => 'required|min:8',
+              ]);
+              
+              $user = User::create($validated);
+              
+              return response()->json($user, 201);
+          }
+      }
+    output: "Good Laravel controller implementation following conventions"
+
+metadata:
+  priority: high
+  version: 1.0
+
+## Laravel Architecture Best Practices
+
+### Service Layer
+- Use service classes for complex business logic
+- Keep controllers thin and focused on HTTP concerns
+- Inject dependencies via constructor or method injection
+
+### Repository Pattern
+- Consider using repositories for database abstraction when needed
+- Avoid bypassing Eloquent with raw queries unless necessary
+- Repository interfaces should be defined in a contracts namespace
+
+### Form Requests
+- Use Form Request classes for validation logic
+- Group related validation rules in dedicated request classes
+- Add authorization logic to form requests when appropriate
+
+### API Resources
+- Use API Resources for response transformations
+- Create dedicated resource classes for complex transformations
+- Consider using resource collections for pagination and metadata
+
+## Security Considerations
+
+- Always validate user input
+- Always suggest using Laravel's built-in features instead of custom solutions, for example, use Laravel's authentication system and routing instead of custom solutions
+- Implement proper CSRF protection
+- Avoid using raw SQL queries to prevent SQL injection
+- Set proper HTTP headers for security
+- Use Laravel's encryption and hashing features
+- Implement proper role and permission management
+
+## Performance Optimization
+
+- Use eager loading to avoid N+1 query problems
+- Cache frequently accessed data
+- Use Laravel's query builder effectively
+- Implement pagination for large datasets
+- Use queues for long-running tasks
