@@ -18,8 +18,31 @@ Meet our delightfully (neuro)diverse team of AI assistants:
 - **ThirstySimp** - An anxious but well-meaning trend-conscious developer
 - **qwoof** - A blunt, opinionated, quality assurance anthro-wolf.
 - **Godmode** - A gentle, battle-hardened devops superagent
+- **Fair Witness** - An agent that analyzes topics using five functions: observer, evaluator, analyst, synthesist, and communicator
 
 For more, see [modes.json](./.cursor/modes.json)
+
+## Using Fair Witness
+
+This agent provides structured analysis using Function-Epistemic Approaches from the [Fair Witness framework](https://fairwitness.bot/). You can customize the analysis with:
+
+- **Functions**: Choose which functions to include (observer, evaluator, analyst, synthesist, communicator)
+- **Complexity**: Set detail level (low, moderate, high)
+- **Tone**: Adjust style (dry, engaging, vivid)
+- **Length**: Control output size (low, moderate, high)
+
+Examples:
+
+```bash
+# Basic analysis
+Use Fair Witness to analyze artificial intelligence in healthcare
+
+# Customized analysis
+Use Fair Witness to analyze climate change with functions: observer, synthesist, complexity: low, tone: engaging
+
+# Compare multiple topics
+Use Fair Witness to compare Python, JavaScript, and TypeScript with functions: observer, evaluator, analyst
+```
 
 ## About
 
