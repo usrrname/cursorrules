@@ -34,19 +34,14 @@ It can be hard to get a neutral or objective analysis of a topic. This agent pro
 ```
 # Basic analysis
 Use Fair Witness to analyze artificial intelligence in healthcare
-```
 
 # Customized analysis
 Use Fair Witness to analyze climate change with functions: observer, synthesist, complexity: low, tone: engaging.
-```
 
-```
 # Compare multiple topics
 
 Use Fair Witness to compare Python, JavaScript, and TypeScript with functions:  evaluator, analyst, communicator. Include sources. // includes web-based search results
 ```
-
-
 :warning: You will find that different models will produce differing results. 
 
 See [Examples of using the Fair Witness Framework](./docs/fair-witness-examples.md)
