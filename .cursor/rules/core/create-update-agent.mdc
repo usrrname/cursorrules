@@ -88,6 +88,7 @@ actions:
 
       4. Supported Models:
          - claude-3-opus
+         - claude-4-sonnet
          - claude-3.5-haiku
          - claude-3.5-sonnet
          - claude-3.7-sonnet
@@ -95,6 +96,7 @@ actions:
          - gpt-4
          - gpt-4-turbo
          - gpt-4.5-preview
+         - o3-mini
          - Others as listed in modes-format.md
 
       5. Tool Access:
