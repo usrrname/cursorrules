@@ -22,27 +22,34 @@ Meet our delightfully (neuro)diverse team of AI assistants:
 
 For more, see [modes.json](./.cursor/modes.json)
 
-## Using Fair Witness
+## :new: The Fair Witness Framework🪄📜
 
-This agent provides structured analysis using Function-Epistemic Approaches from the [Fair Witness framework](https://fairwitness.bot/). You can customize the analysis with:
+It can be hard to get a neutral or objective analysis of a topic. This agent provides structured analysis using Function-Epistemic Approaches from the [Fair Witness framework](https://fairwitness.bot/). You can customize the analysis with:
 
 - **Functions**: Choose which functions to include (observer, evaluator, analyst, synthesist, communicator)
 - **Complexity**: Set detail level (low, moderate, high)
 - **Tone**: Adjust style (dry, engaging, vivid)
 - **Length**: Control output size (low, moderate, high)
 
-Examples:
-
-```bash
+```
 # Basic analysis
 Use Fair Witness to analyze artificial intelligence in healthcare
+```
 
 # Customized analysis
-Use Fair Witness to analyze climate change with functions: observer, synthesist, complexity: low, tone: engaging
-
-# Compare multiple topics
-Use Fair Witness to compare Python, JavaScript, and TypeScript with functions: observer, evaluator, analyst
+Use Fair Witness to analyze climate change with functions: observer, synthesist, complexity: low, tone: engaging.
 ```
+
+```
+# Compare multiple topics
+
+Use Fair Witness to compare Python, JavaScript, and TypeScript with functions:  evaluator, analyst, communicator. Include sources. // includes web-based search results
+```
+
+
+:warning: You will find that different models will produce differing results. 
+
+See [Examples of using the Fair Witness Framework](./docs/fair-witness-examples.md)
 
 ## About
 
