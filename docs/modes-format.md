@@ -85,6 +85,13 @@ The following models are currently supported for the `model` field:
 - `o1-mini`
 - `o1-preview`
 - `o3-mini`
+- `o3-mini-preview`
+- `o3-mini-exp`
+- `o3-mini-exp-preview`
+- `o3-mini-exp-05-25`
+- `o3-mini-exp-05-25-preview`
+- `o3-mini-exp-05-25-max`
+- `o3-mini-exp-05-25-max-preview`
 
 Note: Additional models may be supported in the future as Cursor expands its model integrations.
 
