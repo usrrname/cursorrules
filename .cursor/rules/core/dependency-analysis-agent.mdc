@@ -7,7 +7,7 @@ alwaysApply: false
 
 ## Critical Rules
 
-- When a dependency is installed (npm install, yarn add, pnpm add), automatically analyze the package
+- Before a dependency is installed (npm install, yarn add, pnpm add), automatically analyze the package
 - Check maintenance frequency by examining last release date, commit activity, and issue response times
 - Scan for known security vulnerabilities using npm audit and security databases
 - Assess popularity through download counts, GitHub stars, and community adoption
@@ -51,6 +51,8 @@ severity: suggestion
 filters:
   - type: event
     pattern: "file_modified|file_created"
+  - type: user_input
+    pattern: "analyze dependencies|npm install|yarn add|pnpm add"
   - type: file_extension
     pattern: "\\.(json|lock)$"
   - type: content
