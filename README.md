@@ -131,10 +131,9 @@ In fact, any of the agents can be called upon to help with the workflow at any t
 
 In the enablement of complete laziness, I tried getting Cursor to release from chat.
 
-Generate professional release notes and changelogs automatically from your git history! 
-These rules analyze your commits and create structured documentation following best practices.
+### :construction: Automate Release Workflow :construction:
 
-### 🚀 Automate Release Workflow
+Use with caution. This isn't perfect.
 
 Create a release with a version bump, generate release notes and changelog, and update the version in package.json.
 
@@ -150,17 +149,12 @@ Create/Prepare a release
 [Create|Generate] release notes
 
 # Specify version bump upfront
-Create a release with a major version bump
-Create a release with a minor version bump  
-Create a release with a patch version bump
-
-# Interactive version selection (if no version specified)
-# The rule will prompt you to choose:
-# 1) Major version (breaking changes)
-# 2) Minor version (new features)
-# 3) Patch version (bug fixes)
-# 4) Custom version
+Create a major release
+Create a minor release  
+Create a patch release
 ```
+
+If you don't specify a version bump, the rule will ask you to choose a version bump.
 
 <details>
 
@@ -186,6 +180,9 @@ npm version minor --no-git-tag
 git tag v0.2.0
 git push origin v0.2.0
 ```
+
+See [RELEASE_NOTES_v0.1.3_to_v0.1.4.md](./RELEASE_NOTES_v0.1.3_to_v0.1.4.md)
+
 </details>
 
 ### 📚 Changelog Generator
@@ -204,8 +201,6 @@ Generates a comprehensive `changelog.md` file at the project root in the style o
 # - Include unreleased changes section
 # - Follow Keep a Changelog format standards
 ```
-
-#### Output Example:
 
 <details>
 <summary>Output Example</summary>
