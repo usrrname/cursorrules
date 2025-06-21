@@ -1,0 +1,323 @@
+---
+description: This rule generates a comprehensive changelog.md file by analyzing all git tags and commits, creating a chronological record of all project changes with proper semantic versioning structure. The changelog.md file is stored at the root of the project.
+globs: changelog.md
+alwaysApply: false
+---
+# Changelog Generator
+
+## Critical Rules
+
+- Must analyze all git tags from the beginning of the repository
+- Must create a chronological changelog with newest versions at the top
+- Must categorize changes into Features, Bug Fixes, Breaking Changes, and Other
+- Must provide a structured summary suitable for changelog documentation
+- Must handle cases where no tags exist
+- Must exclude merge commits and focus on meaningful changes
+- Must link features and changes to their corresponding commits or PRs
+- Must follow Keep a Changelog format standards
+- Must include unreleased changes section for current development
+- Must store the changelog.md file at the project root directory
+
+<rule>
+name: generate-changelog
+description: Analyzes complete git history and generates structured changelog.md from all tags with unreleased changes
+
+actions:
+  - type: generate
+    content: |
+      ## Changelog Generation Process
+      
+      1. **Identify All Versions**:
+         ```bash
+         # Read current version from package.json
+         CURRENT_VERSION=$(node -p "require('./package.json').version")
+         
+         # Get all git tags sorted by version
+         ALL_TAGS=$(git tag --sort=-version:refname)
+         
+         # Get commits since last tag (unreleased changes)
+         UNRELEASED_COMMITS=$(git log --oneline --no-merges $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD)
+         
+         echo "Current package.json version: $CURRENT_VERSION"
+         echo "All git tags: $ALL_TAGS"
+         ```
+      
+      2. **Analyze All Version Changes**:
+         ```bash
+         # For each tag, get commits since previous tag
+         for tag in $ALL_TAGS; do
+           PREV_TAG=$(git describe --tags --abbrev=0 $tag^ 2>/dev/null || echo "")
+           COMMITS=$(git log --oneline --no-merges $PREV_TAG..$tag)
+           echo "Version $tag: $COMMITS"
+         done
+         ```
+      
+      3. **Categorize Changes by Type**:
+         - **Features**: `feat:` commits, new functionality
+         - **Bug Fixes**: `fix:` commits, bug resolutions
+         - **Breaking Changes**: `BREAKING:` commits, incompatible changes
+         - **Documentation**: `docs:` commits, documentation updates
+         - **Other**: `chore:`, `refactor:`, `style:`, `test:` commits
+      
+      4. **Generate Structured Output**:
+         ```markdown
+         # Changelog
+         
+         All notable changes to this project will be documented in this file.
+         
+         The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+         and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+         
+         ## [Unreleased]
+         
+         ### 🚀 Added
+         - **[Feature Name]** ([commit-hash](link-to-commit)) - [Description]
+         - **[Feature Name]** ([#PR-number](link-to-PR)) - [Description]
+         
+         ### 🐛 Fixed
+         - **[Bug Description]** ([commit-hash](link-to-commit)) - [Fix details]
+         - **[Bug Description]** ([#PR-number](link-to-PR)) - [Fix details]
+         
+         ### 💥 Changed
+         - **[Change Description]** ([commit-hash](link-to-commit)) - [Migration notes]
+         - **[Change Description]** ([#PR-number](link-to-PR)) - [Migration notes]
+         
+         ### 📚 Documentation
+         - **[Doc Update]** ([commit-hash](link-to-commit)) - [Description]
+         - **[Doc Update]** ([#PR-number](link-to-PR)) - [Description]
+         
+         ---
+         
+         ## [v2.0.0] - 2024-12-19
+         
+         ### 🚀 Added
+         - **[Feature Name]** ([commit-hash](link-to-commit)) - [Description]
+         
+         ### 🐛 Fixed
+         - **[Bug Description]** ([commit-hash](link-to-commit)) - [Fix details]
+         
+         ### 💥 Changed
+         - **[Breaking Change]** ([commit-hash](link-to-commit)) - [Migration notes]
+         
+         ### 📚 Documentation
+         - **[Doc Update]** ([commit-hash](link-to-commit)) - [Description]
+         
+         ---
+         
+         ## [v1.3.0] - 2024-12-15
+         
+         ### 🚀 Added
+         - **[Feature Name]** ([commit-hash](link-to-commit)) - [Description]
+         
+         ### 🐛 Fixed
+         - **[Bug Description]** ([commit-hash](link-to-commit)) - [Fix details]
+         
+         ---
+         
+         ## [v1.2.0] - 2024-12-10
+         
+         ### 🚀 Added
+         - **[Feature Name]** ([commit-hash](link-to-commit)) - [Description]
+         
+         ### 🐛 Fixed
+         - **[Bug Description]** ([commit-hash](link-to-commit)) - [Fix details]
+         
+         ---
+         
+         ## [v1.0.0] - 2024-12-01
+         
+         ### 🚀 Added
+         - Initial release
+         - **[Feature Name]** ([commit-hash](link-to-commit)) - [Description]
+         
+         [Unreleased]: https://github.com/username/project/compare/v2.0.0...HEAD
+         [v2.0.0]: https://github.com/username/project/compare/v1.3.0...v2.0.0
+         [v1.3.0]: https://github.com/username/project/compare/v1.2.0...v1.3.0
+         [v1.2.0]: https://github.com/username/project/compare/v1.0.0...v1.2.0
+         [v1.0.0]: https://github.com/username/project/releases/tag/v1.0.0
+         ```
+         
+         **File Location**: `./changelog.md` (project root directory)
+
+examples:
+  - input: |
+      User: "Generate changelog"
+      
+      Current package.json version: 2.0.0
+      All git tags: v2.0.0 v1.3.0 v1.2.0 v1.0.0
+      Unreleased commits:
+      - feat: add new authentication method (abc1234)
+      - fix: resolve login issue (def5678)
+      
+      Version v2.0.0 commits:
+      - feat: add user authentication system (#123)
+      - fix: resolve memory leak (ghi9012)
+      - BREAKING: remove deprecated v1 endpoints (jkl3456)
+      
+      Version v1.3.0 commits:
+      - feat: add dark mode support (#125)
+      - fix: resolve login button alignment (mno7890)
+    output: |
+      # Changelog
+      
+      All notable changes to this project will be documented in this file.
+      
+      The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+      and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+      
+      ## [Unreleased]
+      
+      ### 🚀 Added
+      - **New Authentication Method** ([abc1234](link-to-commit)) - Added alternative authentication method for enhanced security
+      
+      ### 🐛 Fixed
+      - **Login Issue Resolution** ([def5678](link-to-commit)) - Fixed critical login issue affecting user authentication
+      
+      ---
+      
+      ## [v2.0.0] - 2024-12-19
+      
+      ### 🚀 Added
+      - **User Authentication System** ([#123](link-to-PR)) - Added comprehensive authentication with JWT tokens, password reset, and session management
+      
+      ### 🐛 Fixed
+      - **Memory Leak Fix** ([ghi9012](link-to-commit)) - Resolved critical memory leak in data processing module
+      
+      ### 💥 Changed
+      - **API v1 Deprecation** ([jkl3456](link-to-commit)) - Removed deprecated v1 endpoints. Please migrate to v2 API endpoints.
+      
+      ---
+      
+      ## [v1.3.0] - 2024-12-15
+      
+      ### 🚀 Added
+      - **Dark Mode Support** ([#125](link-to-PR)) - Added comprehensive dark mode theme with automatic system preference detection
+      
+      ### 🐛 Fixed
+      - **Login Button Alignment** ([mno7890](link-to-commit)) - Fixed misaligned login button in authentication form
+      
+      ---
+      
+      ## [v1.2.0] - 2024-12-10
+      
+      ### 🚀 Added
+      - Initial features and functionality
+      
+      ---
+      
+      ## [v1.0.0] - 2024-12-01
+      
+      ### 🚀 Added
+      - Initial release
+      - Core project functionality
+      
+      [Unreleased]: https://github.com/username/project/compare/v2.0.0...HEAD
+      [v2.0.0]: https://github.com/username/project/compare/v1.3.0...v2.0.0
+      [v1.3.0]: https://github.com/username/project/compare/v1.2.0...v1.3.0
+      [v1.2.0]: https://github.com/username/project/compare/v1.0.0...v1.2.0
+      [v1.0.0]: https://github.com/username/project/releases/tag/v1.0.0
+
+  - input: |
+      User: "Generate changelog"
+      
+      Current package.json version: 0.1.3
+      All git tags: v0.1.3 v0.1.2.3
+      Unreleased commits: None
+      
+      Version v0.1.3 commits:
+      - feat: enhance dependency analysis agent (abc1234)
+      - fix: update globs for security-scan-agent (def5678)
+      - feat: add dependency analysis and security scan rules (ghi9012)
+    output: |
+      # Changelog
+      
+      All notable changes to this project will be documented in this file.
+      
+      The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+      and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+      
+      ## [Unreleased]
+      
+      No unreleased changes.
+      
+      ---
+      
+      ## [v0.1.3] - 2024-12-19
+      
+      ### 🚀 Added
+      - **Enhanced Dependency Analysis Agent** ([abc1234](link-to-commit)) - Enhanced dependency analysis agent with user input filters
+      - **Dependency Analysis and Security Scan Rules** ([ghi9012](link-to-commit)) - Added comprehensive dependency analysis and security scanning capabilities
+      
+      ### 🐛 Fixed
+      - **Security Scan Glob Patterns** ([def5678](link-to-commit)) - Fixed glob patterns for security-scan-agent rule to include bun.lockb files
+      
+      ---
+      
+      ## [v0.1.2.3] - 2024-12-15
+      
+      ### 🚀 Added
+      - Initial project setup and core functionality
+      
+      [Unreleased]: https://github.com/username/project/compare/v0.1.3...HEAD
+      [v0.1.3]: https://github.com/username/project/compare/v0.1.2.3...v0.1.3
+      [v0.1.2.3]: https://github.com/username/project/releases/tag/v0.1.2.3
+
+tests:
+  - input: "Generate changelog for project with multiple versions"
+    output: "Should analyze all git tags, categorize changes by version, include unreleased changes, and produce structured changelog.md"
+  
+  - input: "No git tags exist"
+    output: "Should create changelog with only unreleased changes section and initial release placeholder"
+  
+  - input: "Only one version exists"
+    output: "Should create changelog with unreleased section and single version entry"
+  
+  - input: "Breaking changes detected in commits"
+    output: "Should properly categorize breaking changes under 'Changed' section with migration notes"
+
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+## Usage Instructions
+
+1. **Manual Trigger**: This rule must be manually invoked when you're ready to generate or update changelog.md
+2. **File Location**: The changelog.md file will be created at the project root directory (`./changelog.md`)
+3. **Prerequisites**: Ensure your repository has proper git tags for version tracking
+4. **Conventional Commits**: Works best with conventional commit message format (feat:, fix:, docs:, etc.)
+5. **Commit Linking**: Automatically links features and changes to their corresponding commits or PRs
+6. **Keep a Changelog Format**: Follows the standard Keep a Changelog format for consistency
+7. **Unreleased Section**: Always includes current unreleased changes for ongoing development
+
+## Keep a Changelog Standards
+
+This rule follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format:
+
+- **Unreleased**: Current development changes
+- **Added**: New features
+- **Changed**: Changes in existing functionality (including breaking changes)
+- **Deprecated**: Soon-to-be removed features
+- **Removed**: Removed features
+- **Fixed**: Bug fixes
+- **Security**: Vulnerability fixes
+
+## Integration with Existing Workflow
+
+This rule is designed to work with your existing release process and will generate a changelog.md file at the project root that can be:
+
+- Committed to your repository
+- Used in GitHub/GitLab releases
+- Referenced in documentation
+- Shared with stakeholders and users
+- Easily discovered by users and contributors
+
+## Quality Assurance
+
+The rule includes validation to ensure:
+- All significant changes are captured across all versions
+- Breaking changes are clearly highlighted with migration guidance
+- Each change is properly linked to its source commit or PR
+- Follows Keep a Changelog format standards
+- Includes proper version comparison links
+- Maintains chronological order with newest versions at top

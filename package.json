@@ -7,7 +7,8 @@
     "cursorrules": "cli.mjs"
   },
   "files": [
-    ".cursor/**/*"
+    ".cursor/**/*",
+    "changelog.md"
   ],
   "publishConfig": {
     "access": "public"
