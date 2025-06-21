@@ -129,24 +129,30 @@ In fact, any of the agents can be called upon to help with the workflow at any t
 
 ## 📝 Release Notes & Changelog Generation
 
-Generate professional release notes and changelogs automatically from your git history! These rules analyze your commits and create structured documentation following best practices.
+In the enablement of complete laziness, I tried getting Cursor to release from chat.
 
-### 🚀 Release Notes Generator
+Generate professional release notes and changelogs automatically from your git history! 
+These rules analyze your commits and create structured documentation following best practices.
 
-Generate release notes for a specific version with semantic versioning support.
+### 🚀 Automate Release Workflow
+
+Create a release with a version bump, generate release notes and changelog, and update the version in package.json.
 
 #### Usage Examples:
 
 In Agent, or Manual mode, you can use the following commands to generate release notes:
 
 ```bash
+# Automate release
+Create/Prepare a release
+
 # Generate release notes with automatic version bump detection
-release notes
+[Create|Generate] release notes
 
 # Specify version bump upfront
-Create release notes with major version bump
-Create release notes with minor version bump  
-Create release notes with patch version bump
+Create a release with a major version bump
+Create a release with a minor version bump  
+Create a release with a patch version bump
 
 # Interactive version selection (if no version specified)
 # The rule will prompt you to choose:
@@ -156,17 +162,10 @@ Create release notes with patch version bump
 # 4) Custom version
 ```
 
-#### Features:
-- **Smart Version Detection**: Automatically applies version bump type from your request
-- **Interactive Prompting**: Guides you through version selection if not specified
-- **Semantic Analysis**: Analyzes commits to suggest appropriate version bumps
-- **Commit Linking**: Links features and changes to their corresponding commits/PRs
-- **Package.json Integration**: Reads current version from package.json
-- **Git Tag Management**: Provides commands to update version and create tags
-
-#### Output Example:
 <details>
+
 <summary>Output Example</summary>
+
 ```markdown
 # What's Changed in @usrrname/cursorrules v0.2.0
 
@@ -210,6 +209,7 @@ Generates a comprehensive `changelog.md` file at the project root in the style o
 
 <details>
 <summary>Output Example</summary>
+
 ```markdown
 # Changelog
 
@@ -247,6 +247,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [v2.0.0]: https://github.com/username/project/compare/v1.3.0...v2.0.0
 [v1.3.0]: https://github.com/username/project/releases/tag/v1.3.0
 ```
+
 </details>
 
 
