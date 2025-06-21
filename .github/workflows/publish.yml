@@ -1,13 +1,14 @@
 name: Publish Package
 
 on:
+    # branch merged must be called 'releases/*'
+    # or a tag must be called 'v*'
   release:
     types: [created, edited]  # Trigger on release creation or edit
+
   pull_request:               # Trigger on pull request merge
     types: [closed]
-    branches: [main]
-
-  workflow_dispatch:
+    branches: ['main']
 
 jobs:
   prepare-version:
@@ -23,26 +24,61 @@ jobs:
           ref: main
           clean: true
       
+      - name: Check if PR is from release branch
+        id: check-release-branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'release/*'
+        run: |
+          if [[ "${{ github.event.pull_request.head.ref }}" == release* ]] && [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+            echo "is_release_branch=true" >> $GITHUB_OUTPUT
+            echo "Release branch merged: ${{ github.event.pull_request.head.ref }}"
+          else
+            echo "is_release_branch=false" >> $GITHUB_OUTPUT
+            echo "Not a release branch or not merged, skipping"
+          fi
+      
       - name: Extract version from tag
         id: extract-version
+        if: github.event_name == 'pull_request' && steps.check-release-branch.outputs.is_release_branch == 'true' || github.event_name == 'release'
         run: |
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
             echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "Extracted version: $VERSION"
+            echo "Extracted version from tag: $VERSION"
           else
             # check for new git tag
             if git rev-parse "v${{ github.event.release.tag_name }}" >/dev/null 2>&1; then
               VERSION=${{ github.event.release.tag_name }}
               echo "version=$VERSION" >> $GITHUB_OUTPUT
-              echo "Extracted version: $VERSION"
+              echo "Extracted version from release: $VERSION"
             else
               echo "Not a tag event, aborting"
               exit 1
             fi
           fi
+          elif [[ "${{ github.event_name }}" == "pull_request" ]] && [[ "${{ steps.check-release-branch.outputs.is_release_branch }}" == "true" ]]; then
+          # Handle release branch merge - check for new tags
+          echo "Checking for new tags in merged release branch"
+          # Check for tags that were created in this branch
+          NEW_TAGS=$(git tag --contains "$GITHUB_SHA" --sort=-version:refname | head -1)
+          echo "New tags: $NEW_TAGS"
+          
+          if [[ -n "$NEW_TAGS" ]]; then
+            # Remove 'v' prefix if present
+            VERSION=${NEW_TAGS#v}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "Found new tag in merged branch: $NEW_TAGS (version: $VERSION)"
+          else
+            echo "No new tags found in merged branch: $BRANCH_NAME"
+            echo "Please create a tag (e.g., v1.2.3) in your release branch before merging"
+            exit 1
+          fi
+          else
+            echo "No valid trigger found"
+            exit 1
+          fi
       
       - name: Update package.json version
+        if: steps.extract-version.outputs.version != ''
         run: | 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -56,6 +92,7 @@ jobs:
 
   publish-npm:
     needs: prepare-version
+    if: needs.prepare-version.outputs.version != ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -84,6 +121,7 @@ jobs:
 
   publish-gpr:
     needs: prepare-version
+    if: needs.prepare-version.outputs.version != ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
