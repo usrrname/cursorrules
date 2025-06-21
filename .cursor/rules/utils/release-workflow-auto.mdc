@@ -147,10 +147,13 @@ actions:
          ```
       
       6. **Generate Structured Release Notes**:
+         ```bash
+         $RELEASE_DATE=$(date +%Y-%m-%d)
+         ```
          ```markdown
          # What's Changed in [PACKAGE_NAME] v[NEW_VERSION]
          
-         **Release Date**: [DATE]
+         **Release Date**: [RELEASE_DATE]
          **Previous Version**: [PREVIOUS_VERSION]
          **Version Bump**: [MAJOR|MINOR|PATCH] - [REASON]
          **Branch**: [CURRENT_BRANCH]
@@ -345,7 +348,7 @@ actions:
            echo "⏭️ Skipping version update"
          fi
          ```
-      9. **Offer Git Tag Creation** 🏷️
+      9.  **Offer Git Tag Creation** 🏷️
          ```bash
 
          echo "🏷️ Would you like me to create a git tag for version $NEW_VERSION?"
