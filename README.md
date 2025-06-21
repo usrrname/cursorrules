@@ -127,6 +127,129 @@ Once a story is ready and approved, agents like `KawaiiSamurai` or `SageDaddy` w
 
 In fact, any of the agents can be called upon to help with the workflow at any time.
 
+## 📝 Release Notes & Changelog Generation
+
+Generate professional release notes and changelogs automatically from your git history! These rules analyze your commits and create structured documentation following best practices.
+
+### 🚀 Release Notes Generator
+
+Generate release notes for a specific version with semantic versioning support.
+
+#### Usage Examples:
+
+In Agent, or Manual mode, you can use the following commands to generate release notes:
+
+```bash
+# Generate release notes with automatic version bump detection
+release notes
+
+# Specify version bump upfront
+Create release notes with major version bump
+Create release notes with minor version bump  
+Create release notes with patch version bump
+
+# Interactive version selection (if no version specified)
+# The rule will prompt you to choose:
+# 1) Major version (breaking changes)
+# 2) Minor version (new features)
+# 3) Patch version (bug fixes)
+# 4) Custom version
+```
+
+#### Features:
+- **Smart Version Detection**: Automatically applies version bump type from your request
+- **Interactive Prompting**: Guides you through version selection if not specified
+- **Semantic Analysis**: Analyzes commits to suggest appropriate version bumps
+- **Commit Linking**: Links features and changes to their corresponding commits/PRs
+- **Package.json Integration**: Reads current version from package.json
+- **Git Tag Management**: Provides commands to update version and create tags
+
+#### Output Example:
+<details>
+<summary>Output Example</summary>
+```markdown
+# What's Changed in @usrrname/cursorrules v0.2.0
+
+**Release Date**: December 19, 2024
+**Previous Version**: 0.1.3
+**Version Bump**: MINOR - New features added (dependency analysis and security scan rules)
+
+## 🚀 New Features
+- **Dependency Analysis Agent** ([bd3cc13](link-to-commit)) - Added comprehensive dependency analysis agent with security scanning capabilities
+- **Security Scan Agent** ([bd3cc13](link-to-commit)) - Implemented security scanning functionality for dependency vulnerability assessment
+
+## 🐛 Bug Fixes
+- **Security Scan Glob Patterns** ([b6ab515](link-to-commit)) - Fixed glob patterns for security-scan-agent rule to include bun.lockb files
+
+## 📋 Version Update Commands
+```bash
+npm version minor --no-git-tag
+git tag v0.2.0
+git push origin v0.2.0
+```
+</details>
+
+### 📚 Changelog Generator
+
+Generates a comprehensive `changelog.md` file at the project root in the style of [Keep a Changelog](https://keepachangelog.com/en/) with all version history when asked in Agent or Manual mode.
+
+#### Usage Examples:
+
+```bash
+# Generate complete changelog with all versions
+(Create/generate) changelog
+
+# The rule will:
+# - Analyze all git tags from the beginning of the repository
+# - Create chronological changelog with newest versions at top
+# - Include unreleased changes section
+# - Follow Keep a Changelog format standards
+```
+
+#### Output Example:
+
+<details>
+<summary>Output Example</summary>
+```markdown
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### 🚀 Added
+- **New Authentication Method** ([abc1234](link-to-commit)) - Added alternative authentication method for enhanced security
+
+### 🐛 Fixed
+- **Login Issue Resolution** ([def5678](link-to-commit)) - Fixed critical login issue affecting user authentication
+
+---
+
+## [v2.0.0] - 2024-12-19
+
+### 🚀 Added
+- **User Authentication System** ([#123](link-to-PR)) - Added comprehensive authentication with JWT tokens
+
+### 💥 Changed
+- **API v1 Deprecation** ([jkl3456](link-to-commit)) - Removed deprecated v1 endpoints
+
+---
+
+## [v1.3.0] - 2024-12-15
+
+### 🚀 Added
+- **Dark Mode Support** ([#125](link-to-PR)) - Added comprehensive dark mode theme
+
+[Unreleased]: https://github.com/username/project/compare/v2.0.0...HEAD
+[v2.0.0]: https://github.com/username/project/compare/v1.3.0...v2.0.0
+[v1.3.0]: https://github.com/username/project/releases/tag/v1.3.0
+```
+</details>
+
+
 ## Contributing
 
 Contributions are welcome! Check out [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
