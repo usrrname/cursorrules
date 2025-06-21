@@ -3,7 +3,7 @@ name: Publish Package
 on:
   release:
     types: [created, edited]  # Trigger on release creation or edit
-  pull_request:               # Trigger on pull request merge to main
+  pull_request:               # Trigger on pull request merge
     types: [closed]
     branches: [main]
 
@@ -26,9 +26,21 @@ jobs:
       - name: Extract version from tag
         id: extract-version
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Extracted version: $VERSION"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "Extracted version: $VERSION"
+          else
+            # check for new git tag
+            if git rev-parse "v${{ github.event.release.tag_name }}" >/dev/null 2>&1; then
+              VERSION=${{ github.event.release.tag_name }}
+              echo "version=$VERSION" >> $GITHUB_OUTPUT
+              echo "Extracted version: $VERSION"
+            else
+              echo "Not a tag event, aborting"
+              exit 1
+            fi
+          fi
       
       - name: Update package.json version
         run: | 
