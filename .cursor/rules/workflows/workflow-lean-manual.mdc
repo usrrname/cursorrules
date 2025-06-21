@@ -1,5 +1,5 @@
 ---
-description:
+description: This rule is responsible for triggering the lean workflow in any Cursor chat mode. It begins by creating a new user story or task. It will always look for a .ai/ folder inside the project and pick up from where the most recent task left off. It should identify the correct agents for completing the task.
 globs:
 alwaysApply: false
 ---
