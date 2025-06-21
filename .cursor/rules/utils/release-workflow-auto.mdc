@@ -1,5 +1,5 @@
 ---
-description: This rule automatically generates comprehensive release notes when users ask to create a release, but only when they're not on the main branch. It analyzes the git diff between the previous tag and the latest commit, and provides version bumping options based on semantic versioning. After generating release notes, it automatically creates or updates the changelog.md file.
+description: This rule prepares for a package release through a series of user preferences: creating a release branch, generate release notes, creating or updating the changelog.md file, and updating the package.json version. It analyzes the git diff between the previous tag and the latest commit, and provides version bumping options based on semantic versioning.
 globs: release-notes-*.md, changelog.md
 alwaysApply: false
 ---
@@ -9,6 +9,7 @@ alwaysApply: false
 
 - Must only trigger when user asks to create a release (release, version, tag, etc.)
 - Must check that user is NOT on main/master branch before proceeding
+- Must warn user if they're on main branch and suggest creating a release branch
 - Must identify the most recent git tag as the baseline for comparison
 - Must analyze commit messages, file changes, and code modifications
 - Must categorize changes into Features, Bug Fixes, Breaking Changes, and Other
@@ -18,17 +19,16 @@ alwaysApply: false
 - Must link features and changes to their corresponding commits or PRs
 - Must provide version bumping options (major, minor, patch) based on semantic versioning
 - Must suggest appropriate version bump based on change analysis
-- Must warn user if they're on main branch and suggest creating a feature branch
 - Must automatically generate or update changelog.md after creating release notes
 - Must ensure changelog follows Keep a Changelog format standards
 - Must include unreleased changes section in changelog
+- Must offer to create a git tag for the new version
 - Must offer to automatically update package.json version property
 - Must offer to commit version changes with appropriate commit message
 - Must provide clear confirmation prompts before making changes
 
 <rule>
-name: auto-release-workflow
-description: Automatically generates release notes when users ask to create a release, but only when not on main branch, and creates changelog afterward
+name: release-workflow-auto
 
 filters:
 - type: content
@@ -42,7 +42,7 @@ actions:
   - type: validate
     conditions:
       - pattern: "^(main|master)$"
-        message: "⚠️ You're currently on the main branch! Please create a feature branch before generating release notes. This ensures proper version control and prevents accidental releases."
+        message: "⚠️ You're currently on the main branch! Please create a release branch before generating release notes. This ensures proper version control and prevents accidental releases."
   
   - type: generate
     content: |
@@ -60,7 +60,7 @@ actions:
          # Verify we're not on main/master
          if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "master" ]]; then
            echo "❌ Error: Cannot generate release notes on main/master branch"
-           echo "Please create a feature branch first:"
+           echo "Please create a release branch first:"
            echo "git checkout -b release/v[VERSION]"
            exit 1
          fi
@@ -345,8 +345,46 @@ actions:
            echo "⏭️ Skipping version update"
          fi
          ```
-      
-      9. **Final Release Instructions** 📋
+      9. **Offer Git Tag Creation** 🏷️
+         ```bash
+
+         echo "🏷️ Would you like me to create a git tag for version $NEW_VERSION?"
+         echo "This will create a tag that marks this exact point in your release."
+         
+         read -p "Create git tag v$NEW_VERSION? (y/N): " CREATE_TAG
+         
+         if [[ "$CREATE_TAG" =~ ^[Yy]$ ]]; then
+           echo "🔄 Creating git tag v$NEW_VERSION..."
+           
+           # Create the git tag
+           git tag v$NEW_VERSION
+           echo "✅ Git tag v$NEW_VERSION created successfully"
+           
+           # Offer to push the tag
+           echo ""
+           echo "🔄 Would you like me to push the git tag to the remote repository?"
+           echo "This makes the tag available to other developers and CI/CD systems."
+           
+           read -p "Push git tag v$NEW_VERSION? (y/N): " PUSH_TAG
+           
+           if [[ "$PUSH_TAG" =~ ^[Yy]$ ]]; then
+             echo "🔄 Pushing git tag v$NEW_VERSION..."
+             git push origin v$NEW_VERSION
+             echo "✅ Git tag v$NEW_VERSION pushed successfully"
+             
+             echo ""
+             echo "🎉 Release tag is now live!"
+             echo "Tag URL: https://github.com/[USERNAME]/[REPO]/releases/tag/v$NEW_VERSION"
+           else
+             echo "⏭️ Tag created locally but not pushed"
+             echo "You can push it later with: git push origin v$NEW_VERSION"
+           fi
+         else
+           echo "⏭️ Skipping git tag creation"
+           echo "You can create the tag manually later with: git tag v$NEW_VERSION"
+         fi
+         ```
+      10. **Final Release Instructions** 📋
          ```bash
          echo ""
          echo "🎉 Release preparation complete!"
@@ -354,23 +392,64 @@ actions:
          echo "📋 Next steps:"
          echo "1. Review the generated release notes"
          echo "2. Review the updated changelog.md"
-         echo "3. Create git tag: git tag v$NEW_VERSION"
-         echo "4. Push tag: git push origin v$NEW_VERSION"
-         echo "5. Merge to main: git checkout main && git merge $CURRENT_BRANCH"
-         echo "6. Push to main: git push origin main"
+         if [[ "$UPDATE_VERSION" =~ ^[Yy]$ ]]; then
+           echo "3. ✅ Package.json version updated to $NEW_VERSION"
+         else
+           echo "3. Update package.json version manually if needed"
+         fi
+         if [[ "$COMMIT_VERSION" =~ ^[Yy]$ ]]; then
+           echo "4. ✅ Version change committed"
+         else
+           echo "4. Commit version changes manually if needed"
+         fi
+         if [[ "$CREATE_TAG" =~ ^[Yy]$ ]]; then
+           echo "5. ✅ Git tag v$NEW_VERSION created"
+         else
+           echo "5. Create git tag manually: git tag v$NEW_VERSION"
+         fi
+         if [[ "$PUSH_TAG" =~ ^[Yy]$ ]]; then
+           echo "6. ✅ Git tag pushed to remote"
+         else
+           echo "6. Push tag manually: git push origin v$NEW_VERSION"
+         fi
+         echo "7. Create a PR against main with your feature branch"
+         echo "Once the PR is merged, the publishing Github Actions workflow will be triggered."
+         echo ""
          echo ""
          echo "📁 Generated files:"
          echo "- Release notes: RELEASE_NOTES_v$CURRENT_VERSION_to_v$NEW_VERSION.md"
          echo "- Changelog: changelog.md"
-         echo "- Updated: package.json (version: $NEW_VERSION)"
+         if [[ "$UPDATE_VERSION" =~ ^[Yy]$ ]]; then
+           echo "- Updated: package.json (version: $NEW_VERSION)"
+         fi
+         if [[ "$CREATE_TAG" =~ ^[Yy]$ ]]; then
+           echo "- Git tag: v$NEW_VERSION"
+         fi
+         echo ""
+         echo "🔗 Useful links:"
+         if [[ "$PUSH_TAG" =~ ^[Yy]$ ]]; then
+           echo "- Release tag: https://github.com/[USERNAME]/[REPO]/releases/tag/v$NEW_VERSION"
+           echo "- Compare changes: https://github.com/[USERNAME]/[REPO]/compare/$LATEST_TAG...v$NEW_VERSION"
+         fi
+         echo "- Changelog: ./changelog.md"
+         echo ""
+         echo "🎯 Release workflow summary:"
+         echo "- Branch: $CURRENT_BRANCH"
+         echo "- Version bump: $CURRENT_VERSION → $NEW_VERSION ($VERSION_BUMP)"
+         echo "- Changes analyzed: $(echo "$COMMITS" | wc -l | tr -d ' ') commits"
+         echo "- Breaking changes: $BREAKING_COUNT"
+         echo "- New features: $FEAT_COUNT"
+         echo "- Bug fixes: $FIX_COUNT"
          ```
 
 examples:
   - input: |
       User: "Create a release with minor version bump"
       Current branch: feat/new-feature
-      Git analysis: 3 feat commits, 1 fix commit
+      Git analysis: 3 feat commits, 1 fix commit, 2 docs commits
+      Current version: 1.2.3
     output: |
+      ## 🚀 Release Workflow Process
       
       I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
       
@@ -386,11 +465,28 @@ examples:
          User requested minor version bump
       
       4. **Analyze Changes for Guidance**:
-         Analysis suggests: minor (3 new features, 1 bug fix)
+         Analysis suggests: minor (3 new features, 1 bug fix, 2 documentation updates)
          ✅ User choice matches analysis
       
       5. **Generate Structured Release Notes**:
-         [Generated release notes with proper structure and commit links]
+         # What's Changed in [PACKAGE_NAME] v1.3.0
+         
+         **Release Date**: 2024-01-15
+         **Previous Version**: 1.2.3
+         **Version Bump**: MINOR - New features added
+         **Branch**: feat/new-feature
+         
+         ## 🚀 New Features
+         - **Add user authentication system** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Implemented JWT-based authentication
+         - **Add dark mode support** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Added theme switching functionality
+         - **Add search functionality** ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l)) - Implemented global search with filters
+         
+         ## 🐛 Bug Fixes  
+         - **Fix memory leak in data processing** ([m1n2o3p](https://github.com/user/repo/commit/m1n2o3p)) - Resolved issue with large dataset handling
+         
+         ## 📚 Documentation
+         - **Update API documentation** ([q4r5s6t](https://github.com/user/repo/commit/q4r5s6t)) - Added comprehensive API examples
+         - **Update README with setup instructions** ([u7v8w9x](https://github.com/user/repo/commit/u7v8w9x)) - Improved installation guide
       
       6. **Generate Changelog** 📝
          🔄 Now generating comprehensive changelog...
@@ -427,7 +523,8 @@ examples:
   - input: |
       User: "Prepare release notes for version 2.0.0"
       Current branch: breaking-changes
-      Git analysis: 1 BREAKING commit, 2 feat commits
+      Git analysis: 1 BREAKING commit, 2 feat commits, 3 fix commits
+      Current version: 1.2.3
     output: |
       ## 🚀 Release Workflow Process
       
@@ -449,7 +546,24 @@ examples:
          ✅ User choice aligns with breaking changes analysis
       
       5. **Generate Structured Release Notes**:
-         [Generated release notes highlighting breaking changes prominently]
+         # What's Changed in [PACKAGE_NAME] v2.0.0
+         
+         **Release Date**: 2024-01-15
+         **Previous Version**: 1.2.3
+         **Version Bump**: MAJOR - Breaking changes
+         **Branch**: breaking-changes
+         
+         ## 💥 Breaking Changes
+         - **Remove deprecated API endpoints** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Removed /api/v1/old-endpoint, use /api/v2/new-endpoint instead
+         
+         ## 🚀 New Features
+         - **Add new API v2 endpoints** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Implemented improved API structure
+         - **Add real-time notifications** ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l)) - WebSocket-based notification system
+         
+         ## 🐛 Bug Fixes  
+         - **Fix authentication token validation** ([m1n2o3p](https://github.com/user/repo/commit/m1n2o3p)) - Resolved token expiration issues
+         - **Fix data synchronization race condition** ([q4r5s6t](https://github.com/user/repo/commit/q4r5s6t)) - Prevented data corruption
+         - **Fix memory usage in background tasks** ([u7v8w9x](https://github.com/user/repo/commit/u7v8w9x)) - Optimized resource consumption
       
       6. **Generate Changelog** 📝
          🔄 Now generating comprehensive changelog...
@@ -462,95 +576,235 @@ examples:
          Update package.json version? (y/N): y
          ✅ Updated package.json version to 2.0.0
 
+  - input: |
+      User: "Create a patch release"
+      Current branch: hotfix/security-fix
+      Git analysis: 2 fix commits, 1 docs commit
+      Current version: 1.2.3
+    output: |
+      ## 🚀 Release Workflow Process
+      
+      I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
+      
+      1. **Branch Validation** ✅
+         Current branch: hotfix/security-fix
+         ✅ Not on main branch - proceeding with release notes generation
+      
+      2. **Identify Current Version**:
+         Current package.json version: 1.2.3
+         Latest git tag: v1.2.3
+      
+      3. **Check User Request for Version Bump**:
+         User requested patch version bump
+      
+      4. **Analyze Changes for Guidance**:
+         Analysis suggests: patch (2 bug fixes, 1 documentation update)
+         ✅ User choice matches analysis
+      
+      5. **Generate Structured Release Notes**:
+         # What's Changed in [PACKAGE_NAME] v1.2.4
+         
+         **Release Date**: 2024-01-15
+         **Previous Version**: 1.2.3
+         **Version Bump**: PATCH - Bug fixes and security updates
+         **Branch**: hotfix/security-fix
+         
+         ## 🐛 Bug Fixes  
+         - **Fix SQL injection vulnerability** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Sanitized user input in database queries
+         - **Fix XSS vulnerability in user input** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Added proper input sanitization
+         
+         ## 📚 Documentation
+         - **Update security documentation** ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l)) - Added security best practices guide
+      
+      6. **Generate Changelog** 📝
+         🔄 Now generating comprehensive changelog...
+         ✅ Changelog generated successfully at ./changelog.md
+      
+      7. **Offer Version Bump Update** 🔄
+         🔄 Would you like me to automatically update the version in package.json?
+         Current version: 1.2.3
+         New version would be: 1.2.4
+         Update package.json version? (y/N): y
+         ✅ Updated package.json version to 1.2.4
+
+  - input: |
+      User: "Generate release notes for v3.1.0"
+      Current branch: feature/major-update
+      Git analysis: 5 feat commits, 2 fix commits, 1 BREAKING commit
+      Current version: 3.0.0
+    output: |
+      ## 🚀 Release Workflow Process
+      
+      I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
+      
+      1. **Branch Validation** ✅
+         Current branch: feature/major-update
+         ✅ Not on main branch - proceeding with release notes generation
+      
+      2. **Identify Current Version**:
+         Current package.json version: 3.0.0
+         Latest git tag: v3.0.0
+      
+      3. **Check User Request for Version Bump**:
+         User specified custom version: 3.1.0
+      
+      4. **Analyze Changes for Guidance**:
+         Analysis suggests: major (1 breaking change detected)
+         ⚠️ Warning: Analysis suggests major version due to breaking changes, but user specified minor version
+      
+      5. **Generate Structured Release Notes**:
+         # What's Changed in [PACKAGE_NAME] v3.1.0
+         
+         **Release Date**: 2024-01-15
+         **Previous Version**: 3.0.0
+         **Version Bump**: MINOR - New features (with breaking changes)
+         **Branch**: feature/major-update
+         
+         ## 💥 Breaking Changes
+         - **Change default configuration format** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Config files now use YAML instead of JSON
+         
+         ## 🚀 New Features
+         - **Add plugin system** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Extensible plugin architecture
+         - **Add performance monitoring** ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l)) - Real-time performance metrics
+         - **Add multi-language support** ([m1n2o3p](https://github.com/user/repo/commit/m1n2o3p)) - Internationalization framework
+         - **Add automated testing framework** ([q4r5s6t](https://github.com/user/repo/commit/q4r5s6t)) - Built-in test runner
+         - **Add configuration validation** ([u7v8w9x](https://github.com/user/repo/commit/u7v8w9x)) - Schema-based config validation
+         
+         ## 🐛 Bug Fixes  
+         - **Fix memory leak in plugin loader** ([y1z2a3b](https://github.com/user/repo/commit/y1z2a3b)) - Resolved resource cleanup issue
+         - **Fix race condition in async operations** ([c4d5e6f](https://github.com/user/repo/commit/c4d5e6f)) - Improved concurrency handling
+      
+      6. **Generate Changelog** 📝
+         🔄 Now generating comprehensive changelog...
+         ✅ Changelog generated successfully at ./changelog.md
+      
+      7. **Offer Version Bump Update** 🔄
+         🔄 Would you like me to automatically update the version in package.json?
+         Current version: 3.0.0
+         New version would be: 3.1.0
+         Update package.json version? (y/N): y
+         ✅ Updated package.json version to 3.1.0
+
+  - input: |
+      User: "Make a release"
+      Current branch: release/v1.0.0
+      Git analysis: No commits since last tag
+      Current version: 1.0.0
+    output: |
+      ## 🚀 Release Workflow Process
+      
+      I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
+      
+      1. **Branch Validation** ✅
+         Current branch: release/v1.0.0
+         ✅ Not on main branch - proceeding with release notes generation
+      
+      2. **Identify Current Version**:
+         Current package.json version: 1.0.0
+         Latest git tag: v1.0.0
+      
+      3. **Check User Request for Version Bump**:
+         No version bump specified by user
+      
+      4. **Analyze Changes for Guidance**:
+         Analysis suggests: patch (no new changes detected)
+         ⚠️ Warning: No commits found since last tag. This might be an initial release or the tag is up to date.
+      
+      5. **Generate Structured Release Notes**:
+         # What's Changed in [PACKAGE_NAME] v1.0.0
+         
+         **Release Date**: 2024-01-15
+         **Previous Version**: Initial release
+         **Version Bump**: PATCH - No new changes
+         **Branch**: release/v1.0.0
+         
+         ## 📝 Initial Release
+         This is the initial release of [PACKAGE_NAME]. All features and functionality are new.
+         
+         ## 🚀 Features
+         - Initial release with core functionality
+         - Basic API implementation
+         - Documentation and examples
+      
+      6. **Generate Changelog** 📝
+         🔄 Now generating comprehensive changelog...
+         ✅ Changelog generated successfully at ./changelog.md
+      
+      7. **Offer Version Bump Update** 🔄
+         🔄 Would you like me to automatically update the version in package.json?
+         Current version: 1.0.0
+         New version would be: 1.0.1
+         Update package.json version? (y/N): n
+         ⏭️ Skipping version update
+
 tests:
   - input: "Create a release" (on main branch)
     output: "Should warn user they're on main branch and suggest creating a feature branch"
   
-  - input: "Make a release with minor version" (on feature branch)
-    output: "Should proceed with release notes generation, detect minor version bump, generate structured notes, create changelog.md, and offer package.json version update"
+  - input: "Make a release with minor version" (on feature branch with 3 feat commits, 1 fix commit)
+    output: "Should proceed with release notes generation, detect minor version bump, generate structured notes with proper categorization, create changelog.md, and offer package.json version update"
   
-  - input: "Prepare release for v2.0.0" (on breaking-changes branch)
-    output: "Should validate branch, detect custom version, analyze breaking changes, generate release notes, update changelog, and offer version bump with custom version"
+  - input: "Prepare release for v2.0.0" (on breaking-changes branch with 1 BREAKING commit, 2 feat commits)
+    output: "Should validate branch, detect custom version, analyze breaking changes, generate release notes highlighting breaking changes prominently, update changelog, and offer version bump with custom version"
   
   - input: "Generate release notes" (on main branch)
     output: "Should block execution and provide guidance to create feature branch first"
   
-  - input: "Tag this as a release" (on release/v1.3.0 branch)
+  - input: "Tag this as a release" (on release/v1.3.0 branch with mixed commit types)
     output: "Should proceed with release notes generation, provide version update commands, generate comprehensive changelog, and offer automatic version bumping"
+  
+  - input: "Create a patch release" (on hotfix branch with only fix commits)
+    output: "Should detect patch version bump, generate focused release notes on bug fixes, create changelog, and offer version update"
+  
+  - input: "Make a major release" (on feature branch with BREAKING commits)
+    output: "Should detect major version bump due to breaking changes, generate release notes with prominent breaking changes section, provide migration guidance, and offer version update"
+  
+  - input: "Release v3.1.0" (on branch with breaking changes but user specifies minor version)
+    output: "Should warn about version mismatch, proceed with user-specified version, generate release notes including breaking changes, and offer version update"
+  
+  - input: "Create release" (on branch with no commits since last tag)
+    output: "Should detect no new changes, suggest patch version or initial release, generate minimal release notes, and offer version update"
+  
+  - input: "Prepare release notes" (on master branch)
+    output: "Should block execution and provide guidance to create feature branch first"
+  
+  - input: "Make a release with custom version 4.2.1" (on feature branch with various commit types)
+    output: "Should accept custom version, generate release notes with proper categorization, create changelog, and offer version update with custom version"
+  
+  - input: "Generate release for version bump" (on main branch)
+    output: "Should block execution and provide clear instructions for creating release branch"
+  
+  - input: "Create release with major version" (on breaking-changes branch with only documentation commits)
+    output: "Should warn about version mismatch, proceed with user request, generate release notes, and offer version update"
+  
+  - input: "Tag release v1.0.0" (on release branch with initial release)
+    output: "Should handle initial release scenario, generate appropriate release notes, create changelog, and offer version update"
+  
+  - input: "Make a release" (on feature branch with merge commits only)
+    output: "Should filter out merge commits, analyze meaningful changes, generate release notes based on actual changes, and offer version update"
+  
+  - input: "Prepare release notes for deployment" (on main branch)
+    output: "Should block execution and provide guidance to create feature branch first"
+  
+  - input: "Create release with patch version" (on hotfix branch with security fixes)
+    output: "Should detect security-related fixes, generate release notes highlighting security improvements, create changelog, and offer version update"
+  
+  - input: "Generate release for version 5.0.0" (on feature branch with no breaking changes)
+    output: "Should warn about version choice, proceed with user request, generate release notes, create changelog, and offer version update"
+  
+  - input: "Make a release" (on release branch with only documentation and style changes)
+    output: "Should detect patch-level changes, generate release notes focusing on documentation and style improvements, create changelog, and offer version update"
+  
+  - input: "Create release with minor version" (on feature branch with feat and fix commits)
+    output: "Should detect minor version bump, generate balanced release notes, create changelog, and offer version update"
+  
+  - input: "Prepare release notes for tag" (on main branch)
+    output: "Should block execution and provide guidance to create feature branch first"
+  
+  - input: "Make a release" (on branch with conventional commits and PR references)
+    output: "Should parse conventional commits, extract PR references, generate release notes with proper links, create changelog, and offer version update"
 
 metadata:
   priority: high
   version: 1.0
 </rule>
-
-## Usage Instructions
-
-1. **Automatic Trigger**: This rule automatically triggers when you ask to create a release, version, tag, or prepare for deployment
-2. **Branch Safety**: Only works when you're NOT on main/master branch to prevent accidental releases
-3. **Version Bump Detection**: Automatically detects if you specify a version bump in your request
-4. **Interactive Guidance**: Prompts for version choice if not specified and provides analysis-based recommendations
-5. **Prerequisites**: Ensure your repository has proper git tags for version tracking
-6. **Conventional Commits**: Works best with conventional commit message format (feat:, fix:, docs:, etc.)
-7. **Commit Linking**: Automatically links features and changes to their corresponding commits or PRs
-8. **Analysis Guidance**: Compares your choice with the suggested version bump and provides guidance
-9. **Review Required**: Always review and edit the generated release notes before publishing
-10. **Changelog Integration**: Automatically generates or updates changelog.md after creating release notes
-11. **Version Bump Automation**: Offers to automatically update package.json version and commit changes
-12. **Git Integration**: Provides options to commit and push version changes automatically
-
-## Semantic Versioning Guidelines
-
-- **Major Version (X.0.0)**: Breaking changes, incompatible API changes
-- **Minor Version (0.X.0)**: New features, backward-compatible additions  
-- **Patch Version (0.0.X)**: Bug fixes, documentation, minor improvements
-
-## Branch Safety Features
-
-- **Main Branch Protection**: Prevents release generation on main/master branches
-- **Feature Branch Requirement**: Encourages proper git workflow with feature branches
-- **Accident Prevention**: Reduces risk of accidental releases from main branch
-- **Workflow Guidance**: Provides clear instructions for creating release branches
-
-## Changelog Integration
-
-- **Automatic Generation**: Creates or updates changelog.md after release notes
-- **Keep a Changelog Format**: Follows standard Keep a Changelog format
-- **Complete History**: Includes all versions with proper categorization
-- **Unreleased Section**: Maintains current development changes
-- **Version Links**: Provides GitHub comparison links for each version
-- **File Location**: Stores changelog.md at project root for easy discovery
-
-## Version Bump Automation
-
-- **Interactive Prompts**: Asks user before making any changes to package.json
-- **Multiple Options**: Supports major, minor, patch, and custom version bumps
-- **Smart Detection**: Uses npm version for standard bumps, manual update for custom versions
-- **Commit Integration**: Offers to commit version changes with appropriate commit message
-- **Push Options**: Provides option to push version commits automatically
-- **Safety First**: Always asks for confirmation before making changes
-
-## Integration with Existing Workflow
-
-This rule integrates seamlessly with your existing release process and will generate structured content that can be:
-
-- Saved to new release notes files
-- Used in GitHub/GitLab releases
-- Included in changelog documentation
-- Shared with stakeholders
-- Used for automated deployment triggers
-- Committed to repository for version history
-- Automatically updated package.json versions
-- Integrated with git workflow for version management
-
-
-## Quality Assurance
-
-The rule includes comprehensive validation to ensure:
-- All significant changes are captured and categorized
-- Breaking changes are prominently highlighted with migration guidance
-- Each change is properly linked to its source commit or PR
-- Version bump recommendations follow semantic versioning principles
-- Branch safety prevents accidental releases
-- Generated content follows professional release documentation standards
-- Changelog maintains complete project history with proper formatting
-- Both release notes and changelog are generated in a single workflow
