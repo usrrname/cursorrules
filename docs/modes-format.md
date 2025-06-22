@@ -59,42 +59,51 @@ The `modes.json` file contains a JSON object with two main fields:
 
 The following models are currently supported for the `model` field:
 
+### Anthropic Models
 - `claude-3-opus`
 - `claude-3.5-haiku`
 - `claude-3.5-sonnet`
 - `claude-4-sonnet`
+- `claude-4-opus`
 - `claude-3.7-sonnet`
-- `claude-3.7-sonnet-max`
-- `cursor-fast`
-- `cursor-small`
-- `deepseek-r1`
-- `deepseek-v3`
-- `gemini-2.0-flash`
-- `gemini-2.0-flash-exp`
-- `gemini-2.0-pro-exp`
-- `gemini-2.5-pro-exp-05-25`
-- `gemini-2.5-pro-max`
-- `gemini-exp-1206`
+
+### OpenAI Models
 - `gpt-3.5-turbo`
 - `gpt-4`
 - `gpt-4-turbo-2024-04-09`
 - `gpt-4.5-preview`
 - `gpt-4o`
 - `gpt-4o-mini`
-- `grok-2`
+- `gpt-4.1`
 - `o1`
 - `o1-mini`
-- `o1-preview`
+- `o3`
 - `o3-mini`
-- `o3-mini-preview`
-- `o3-mini-exp`
-- `o3-mini-exp-preview`
-- `o3-mini-exp-05-25`
-- `o3-mini-exp-05-25-preview`
-- `o3-mini-exp-05-25-max`
-- `o3-mini-exp-05-25-max-preview`
+- `o4-mini`
 
-Note: Additional models may be supported in the future as Cursor expands its model integrations.
+### Google Models
+- `gemini-2.0-flash`
+- `gemini-2.0-flash-exp`
+- `gemini-2.0-pro-exp`
+- `gemini-2.5-flash`
+- `gemini-2.5-pro-exp-05-25`
+- `gemini-2.5-pro-max`
+- `gemini-exp-1206`
+
+### xAI Models
+- `grok-2`
+- `grok-3-beta`
+- `grok-3-mini`
+
+### DeepSeek Models
+- `deepseek-r1`
+- `deepseek-v3`
+
+### Cursor Models
+- `cursor-fast`
+- `cursor-small`
+
+Note: Additional models may be supported in the future as Cursor expands its model integrations. For the most up-to-date list and pricing information, visit [Cursor's Models documentation](https://docs.cursor.com/models#overview).
 
 ## Supported Cursor Tools
 
