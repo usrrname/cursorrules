@@ -26,6 +26,8 @@ alwaysApply: false
 - Must offer to automatically update package.json version property
 - Must offer to commit version changes with appropriate commit message
 - Must provide clear confirmation prompts before making changes
+- Must update release-workflow-sequence.md to reflect any changes to this workflow rule
+- Must ensure sequence diagram accurately represents current workflow implementation and failure points
 
 <rule>
 name: release-workflow-auto
@@ -146,6 +148,58 @@ actions:
          fi
          ```
       
+      5.5. **Validate Version Bump Against Changes**:
+         ```bash
+         # Validate that the chosen version bump matches the change analysis
+         if [ -n "$VERSION_BUMP" ]; then
+           echo "🔍 Validating version bump against change analysis..."
+           echo "Analysis suggests: $SUGGESTED_BUMP (breaking: $BREAKING_COUNT, features: $FEAT_COUNT, fixes: $FIX_COUNT)"
+           echo "User requested: $VERSION_BUMP"
+           
+           # Check for version mismatches
+           if [ "$SUGGESTED_BUMP" == "major" ] && [ "$VERSION_BUMP" != "major" ]; then
+             echo "❌ CRITICAL ERROR: Breaking changes detected but user requested $VERSION_BUMP version"
+             echo "Breaking changes require a MAJOR version bump according to semantic versioning."
+             echo ""
+             echo "Breaking changes found:"
+             echo "$COMMITS" | grep "BREAKING:" | while read commit; do
+               echo "  - $commit"
+             done
+             echo ""
+             echo "Please either:"
+             echo "1. Use major version bump to properly indicate breaking changes"
+             echo "2. Review and remove breaking changes from your commits"
+             echo "3. Use '--force' flag to override this validation (not recommended)"
+             echo ""
+             read -p "Do you want to force continue with $VERSION_BUMP version? (y/N): " FORCE_CONTINUE
+             if [[ ! "$FORCE_CONTINUE" =~ ^[Yy]$ ]]; then
+               echo "❌ Release workflow terminated due to version mismatch"
+               exit 1
+             else
+               echo "⚠️ WARNING: Proceeding with $VERSION_BUMP version despite breaking changes"
+               echo "This may cause dependency issues for users of your package"
+             fi
+           elif [ "$SUGGESTED_BUMP" == "minor" ] && [ "$VERSION_BUMP" == "patch" ]; then
+             echo "⚠️ WARNING: New features detected but user requested patch version"
+             echo "New features typically require a MINOR version bump according to semantic versioning."
+             echo ""
+             echo "New features found:"
+             echo "$COMMITS" | grep "feat:" | while read commit; do
+               echo "  - $commit"
+             done
+             echo ""
+             read -p "Do you want to continue with patch version? (y/N): " CONTINUE_PATCH
+             if [[ ! "$CONTINUE_PATCH" =~ ^[Yy]$ ]]; then
+               echo "❌ Release workflow terminated due to version mismatch"
+               exit 1
+             else
+               echo "⚠️ WARNING: Proceeding with patch version despite new features"
+             fi
+           else
+             echo "✅ Version bump validation passed"
+           fi
+         fi
+         ```
       6. **Generate Structured Release Notes**:
          ```bash
          $RELEASE_DATE=$(date +%Y-%m-%d)
@@ -359,28 +413,117 @@ actions:
          if [[ "$CREATE_TAG" =~ ^[Yy]$ ]]; then
            echo "🔄 Creating git tag v$NEW_VERSION..."
            
-           # Create the git tag
-           git tag v$NEW_VERSION
-           echo "✅ Git tag v$NEW_VERSION created successfully"
-           
-           # Offer to push the tag
-           echo ""
-           echo "🔄 Would you like me to push the git tag to the remote repository?"
-           echo "This makes the tag available to other developers and CI/CD systems."
-           
-           read -p "Push git tag v$NEW_VERSION? (y/N): " PUSH_TAG
-           
-           if [[ "$PUSH_TAG" =~ ^[Yy]$ ]]; then
-             echo "🔄 Pushing git tag v$NEW_VERSION..."
-             git push origin v$NEW_VERSION
-             echo "✅ Git tag v$NEW_VERSION pushed successfully"
-             
+           # Check if tag already exists
+           if git tag -l "v$NEW_VERSION" | grep -q "v$NEW_VERSION"; then
+             echo "❌ ERROR: Git tag v$NEW_VERSION already exists!"
              echo ""
-             echo "🎉 Release tag is now live!"
-             echo "Tag URL: https://github.com/[USERNAME]/[REPO]/releases/tag/v$NEW_VERSION"
-           else
-             echo "⏭️ Tag created locally but not pushed"
-             echo "You can push it later with: git push origin v$NEW_VERSION"
+             echo "Existing tag details:"
+             git show --no-patch --format="%H%n%an%n%ad%n%s" "v$NEW_VERSION" 2>/dev/null || echo "Tag exists but details unavailable"
+             echo ""
+             echo "Options:"
+             echo "1. Use a different version number"
+             echo "2. Delete the existing tag (if you're sure it's safe)"
+             echo "3. Skip tag creation and create it manually later"
+             echo ""
+             read -p "Choose option (1-3): " TAG_CONFLICT_CHOICE
+             
+             case $TAG_CONFLICT_CHOICE in
+               1)
+                 echo "Please restart the release workflow with a different version number"
+                 echo "❌ Release workflow terminated due to tag conflict"
+                 exit 1
+                 ;;
+               2)
+                 echo "⚠️ WARNING: You're about to delete an existing tag!"
+                 echo "This action cannot be undone and may affect other developers."
+                 read -p "Are you absolutely sure? Type 'DELETE' to confirm: " DELETE_CONFIRM
+                 
+                 if [[ "$DELETE_CONFIRM" == "DELETE" ]]; then
+                   echo "🔄 Deleting existing tag v$NEW_VERSION..."
+                   git tag -d "v$NEW_VERSION"
+                   
+                   # Also delete from remote if it exists there
+                   if git ls-remote --tags origin "v$NEW_VERSION" | grep -q "v$NEW_VERSION"; then
+                     echo "🔄 Deleting remote tag v$NEW_VERSION..."
+                     git push origin ":refs/tags/v$NEW_VERSION"
+                   fi
+                   
+                   echo "✅ Existing tag deleted successfully"
+                 else
+                   echo "❌ Tag deletion cancelled. Release workflow terminated"
+                   exit 1
+                 fi
+                 ;;
+               3)
+                 echo "⏭️ Skipping tag creation due to conflict"
+                 CREATE_TAG=""
+                 ;;
+               *)
+                 echo "❌ Invalid choice. Release workflow terminated"
+                 exit 1
+                 ;;
+             esac
+           fi
+           
+           # Create the git tag (only if we didn't skip due to conflict)
+           if [[ "$CREATE_TAG" =~ ^[Yy]$ ]]; then
+             git tag v$NEW_VERSION
+             echo "✅ Git tag v$NEW_VERSION created successfully"
+             
+             # Offer to push the tag
+             echo ""
+             echo "🔄 Would you like me to push the git tag to the remote repository?"
+             echo "This makes the tag available to other developers and CI/CD systems."
+             
+             read -p "Push git tag v$NEW_VERSION? (y/N): " PUSH_TAG
+             
+             if [[ "$PUSH_TAG" =~ ^[Yy]$ ]]; then
+               echo "🔄 Pushing git tag v$NEW_VERSION..."
+               
+               # Check for remote tag conflicts before pushing
+               if git ls-remote --tags origin "v$NEW_VERSION" | grep -q "v$NEW_VERSION"; then
+                 echo "❌ ERROR: Remote tag v$NEW_VERSION already exists!"
+                 echo "The local tag was created, but cannot be pushed due to remote conflict."
+                 echo ""
+                 echo "Options:"
+                 echo "1. Delete the remote tag first (requires appropriate permissions)"
+                 echo "2. Keep the local tag only"
+                 echo "3. Delete the local tag and skip"
+                 echo ""
+                 read -p "Choose option (1-3): " REMOTE_CONFLICT_CHOICE
+                 
+                 case $REMOTE_CONFLICT_CHOICE in
+                   1)
+                     echo "🔄 Deleting remote tag v$NEW_VERSION..."
+                     git push origin ":refs/tags/v$NEW_VERSION"
+                     echo "🔄 Now pushing local tag..."
+                     git push origin v$NEW_VERSION
+                     echo "✅ Git tag v$NEW_VERSION pushed successfully"
+                     ;;
+                   2)
+                     echo "⏭️ Keeping local tag only. You can push it later with: git push origin v$NEW_VERSION"
+                     ;;
+                   3)
+                     echo "🔄 Deleting local tag..."
+                     git tag -d "v$NEW_VERSION"
+                     echo "⏭️ Tag creation cancelled"
+                     ;;
+                   *)
+                     echo "❌ Invalid choice. Keeping local tag only"
+                     ;;
+                 esac
+               else
+                 git push origin v$NEW_VERSION
+                 echo "✅ Git tag v$NEW_VERSION pushed successfully"
+                 
+                 echo ""
+                 echo "🎉 Release tag is now live!"
+                 echo "Tag URL: https://github.com/[USERNAME]/[REPO]/releases/tag/v$NEW_VERSION"
+               fi
+             else
+               echo "⏭️ Tag created locally but not pushed"
+               echo "You can push it later with: git push origin v$NEW_VERSION"
+             fi
            fi
          else
            echo "⏭️ Skipping git tag creation"
@@ -740,6 +883,89 @@ examples:
          Update package.json version? (y/N): n
          ⏭️ Skipping version update
 
+  - input: |
+      User: "Create release v2.1.0"
+      Current branch: feature/new-features
+      Git analysis: 3 feat commits, 1 fix commit
+      Current version: 2.0.0
+      Git tag v2.1.0 already exists
+    output: |
+      ## 🚀 Release Workflow Process
+      
+      I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
+      
+      1. **Branch Validation** ✅
+         Current branch: feature/new-features
+         ✅ Not on main branch - proceeding with release notes generation
+      
+      2. **Identify Current Version**:
+         Current package.json version: 2.0.0
+         Latest git tag: v2.0.0
+      
+      3. **Check User Request for Version Bump**:
+         User specified custom version: 2.1.0
+      
+      4. **Analyze Changes for Guidance**:
+         Analysis suggests: minor (3 new features, 1 bug fix)
+         ✅ User choice matches analysis
+      
+      5.5. **Validate Version Bump Against Changes**:
+         🔍 Validating version bump against change analysis...
+         Analysis suggests: minor (breaking: 0, features: 3, fixes: 1)
+         User requested: minor
+         ✅ Version bump validation passed
+      
+      6. **Generate Structured Release Notes**:
+         # What's Changed in [PACKAGE_NAME] v2.1.0
+         
+         **Release Date**: 2024-01-15
+         **Previous Version**: 2.0.0
+         **Version Bump**: MINOR - New features added
+         **Branch**: feature/new-features
+         
+         ## 🚀 New Features
+         - **Add user dashboard** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Interactive user dashboard with analytics
+         - **Add export functionality** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Export data in multiple formats
+         - **Add notification system** ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l)) - Real-time notifications
+         
+         ## 🐛 Bug Fixes  
+         - **Fix authentication timeout** ([m1n2o3p](https://github.com/user/repo/commit/m1n2o3p)) - Resolved session timeout issues
+      
+      7. **Generate Changelog** 📝
+         🔄 Now generating comprehensive changelog...
+         ✅ Changelog generated successfully at ./changelog.md
+      
+      8. **Offer Version Bump Update** 🔄
+         🔄 Would you like me to automatically update the version in package.json?
+         Current version: 2.0.0
+         New version would be: 2.1.0
+         Update package.json version? (y/N): y
+         ✅ Updated package.json version to 2.1.0
+      
+      9. **Offer Git Tag Creation** 🏷️
+         🏷️ Would you like me to create a git tag for version 2.1.0?
+         This will create a tag that marks this exact point in your release.
+         
+         Create git tag v2.1.0? (y/N): y
+         🔄 Creating git tag v2.1.0...
+         
+         ❌ ERROR: Git tag v2.1.0 already exists!
+         
+         Existing tag details:
+         a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+         John Doe
+         Mon Jan 15 10:30:00 2024 -0500
+         Release v2.1.0
+         
+         Options:
+         1. Use a different version number
+         2. Delete the existing tag (if you're sure it's safe)
+         3. Skip tag creation and create it manually later
+         
+         Choose option (1-3): 1
+         Please restart the release workflow with a different version number
+         ❌ Release workflow terminated due to tag conflict
+
 tests:
   - input: "Create a release" (on main branch)
     output: "Should warn user they're on main branch and suggest creating a feature branch"
@@ -763,7 +989,7 @@ tests:
     output: "Should detect major version bump due to breaking changes, generate release notes with prominent breaking changes section, provide migration guidance, and offer version update"
   
   - input: "Release v3.1.0" (on branch with breaking changes but user specifies minor version)
-    output: "Should warn about version mismatch, proceed with user-specified version, generate release notes including breaking changes, and offer version update"
+    output: "Should detect version mismatch, show critical error, list breaking changes, and terminate workflow unless user forces continue"
   
   - input: "Create release" (on branch with no commits since last tag)
     output: "Should detect no new changes, suggest patch version or initial release, generate minimal release notes, and offer version update"
@@ -806,6 +1032,9 @@ tests:
   
   - input: "Make a release" (on branch with conventional commits and PR references)
     output: "Should parse conventional commits, extract PR references, generate release notes with proper links, create changelog, and offer version update"
+  
+  - input: "Create release v2.1.0" (on feature branch with existing tag v2.1.0)
+    output: "Should detect tag conflict, show existing tag details, provide resolution options (different version, delete tag, skip), and handle user choice appropriately"
 
 metadata:
   priority: high
