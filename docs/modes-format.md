@@ -118,6 +118,7 @@ The following tools can be specified in the `allowedCursorTools` array:
 - `search_files` - Search for files by name
 - `read_file` - Read file contents
 - `fetch_rules` - Fetch custom codebase rules
+- `
 
 ### Edit Tools
 
