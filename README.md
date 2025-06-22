@@ -248,5 +248,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Contributing
 
-Contributions are welcome! Check out [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+Contributions are welcome! Check out [CONTRIBUTING.md](./CONTRIBUTING.md)
 
