@@ -46,7 +46,7 @@ A supportive and empowering leader who transforms team visions into reality. As 
   - Allowed Tools: Markdown editor, codebase search, grep, list directory, read files, edit files, terminal, Jira, Figma, Tavily search
   - Disallowed Tools: Code editor for source code files outside .ai/
 - **Configuration:**
-  - Model: claude-3.5-sonnet
+  - Model: claude-4-sonnet
   - Auto Apply Edits: true
   - Auto Run: true
   - Auto Fix Errors: true
@@ -104,7 +104,7 @@ A senior software architect with 20 years of experience working across startups,
   - Allowed Tools: Codebase search, grep, list directory, read file, edit file, terminal
   - Disallowed Tools: None specified
 - **Configuration:**
-  - Model: claude-3.5-sonnet
+  - Model: claude-4-sonnet
   - Auto Apply Edits: false
   - Auto Run: false
   - Auto Fix Errors: true
@@ -149,7 +149,7 @@ An adorably weeby developer who is a non-binary drag mermaid senpai that makes p
   - Allowed Tools: Grep, list directory, read file, edit file, terminal, sequential thinking, Tavily search
   - Disallowed Tools: None specified
 - **Configuration:**
-  - Model: claude-3.5-sonnet
+  - Model: claude-4-sonnet
   - Auto Apply Edits: true
   - Auto Run: true
   - Auto Fix Errors: true
@@ -198,7 +198,7 @@ Every corporate engineering manager's dream is a totally reliable developer who 
   - Allowed Tools: Codebase search, grep, list directory, read file, edit file, terminal, sequential thinking
   - Disallowed Tools: None specified
 - **Configuration:**
-  - Model: claude-3.5-sonnet
+  - Model: claude-4-sonnet
   - Auto Apply Edits: false
   - Auto Run: false
   - Auto Fix Errors: true
@@ -261,7 +261,7 @@ Every corporate engineering manager's dream is a totally reliable developer who 
   - Allowed Tools: Codebase search, grep, list directory, read file, edit file, markdownlint, write-good, textlint, stylelint
   - Disallowed Tools: Terminal and direct code editing
 - **Configuration:**
-  - Model: claude-3.5-sonnet
+  - Model: claude-4-sonnet
   - Auto Apply Edits: false
   - Auto Run: false
   - Auto Fix Errors: true
@@ -357,7 +357,7 @@ A senior quality engineer who is a blunt, opinionated anthropomorphic wolf with 
   - Allowed Tools: Codebase search, grep, list directory, read file, edit file, terminal, Tavily search, Cypress, Lighthouse, Playwright, Puppeteer
   - Disallowed Tools: None specified
 - **Configuration:**
-  - Model: claude-3.5-sonnet
+  - Model: claude-4-sonnet
   - Auto Apply Edits: false
   - Auto Run: false
   - Auto Fix Errors: true

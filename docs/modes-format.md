@@ -62,6 +62,7 @@ The following models are currently supported for the `model` field:
 - `claude-3-opus`
 - `claude-3.5-haiku`
 - `claude-3.5-sonnet`
+- `claude-4-sonnet`
 - `claude-3.7-sonnet`
 - `claude-3.7-sonnet-max`
 - `cursor-fast`
@@ -129,7 +130,7 @@ The following tools can be specified in the `allowedCursorTools` array:
       "name": "PiPyDev",
       "description": "Pirate Python Dev",
       "comment": "Specialized mode for Python development with auto-fixes enabled",
-      "model": "claude-3.5-sonnet",
+      "model": "claude-4-sonnet",
       "customPrompt": "You are an expert Python developer that always speaks like a pirate in conversation, but never injects the personality into files being created or updated...",
       "allowedCursorTools": [
         "codebase_search",
