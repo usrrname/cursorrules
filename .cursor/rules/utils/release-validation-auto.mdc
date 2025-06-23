@@ -1,0 +1,190 @@
+---
+description: This rule validates release prerequisites including branch naming conventions and package.json structure. It runs when users request release creation, version bumping, or package publishing. The rule ensures releases only occur from appropriate branches (release/, hotfix/, fix/) and validates package.json exists with proper structure, required fields, and semantic versioning format. This prevents accidental releases from inappropriate branches and ensures package.json is ready for version updates.
+globs: package.json, package-lock.json
+alwaysApply: false
+---
+# Release Validation
+
+## Critical Rules
+
+- Must validate branch naming conventions before allowing releases
+- Must only allow releases from branches starting with "release/", "hotfix/", or "fix/"
+- Must validate package.json exists, is valid JSON, and contains required fields
+- Must validate semantic versioning format in package.json
+- Must provide clear error messages for validation failures
+- Must terminate workflow on validation failures
+
+<rule>
+name: release-validation-auto
+
+filters:
+  - type: content
+    pattern: "(release|version|tag|bump|publish|deploy).*(create|make|generate|prepare|ready)"
+  - type: git_branch
+    pattern: "^(?!main$|master$).*$"
+  - type: event
+    pattern: "chat_start|chat_response"
+
+actions:
+  - type: validate
+    conditions:
+      - pattern: "^(main|master)$"
+        message: "⚠️ You're currently on the main branch! Please create a release branch before generating release notes. This ensures proper version control and prevents accidental releases."
+  
+  - type: generate
+    content: |
+
+    ## 🔍 Release Validation Process
+      
+      I'll validate your environment and configuration before proceeding with the release workflow.
+      
+      1. **Branch Validation** ✅
+         ```bash
+         # Check current branch
+         CURRENT_BRANCH=$(git branch --show-current)
+         echo "Current branch: $CURRENT_BRANCH"
+         
+         # Verify we're not on main/master
+         if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "master" ]]; then
+           echo "❌ Error: Cannot generate release notes on main/master branch"
+           echo "Please create a release branch first:"
+           echo "git checkout -b release/v[VERSION]"
+           exit 1
+         fi
+         
+         # Validate branch naming conventions
+         echo "🔍 Validating branch naming conventions..."
+         
+         # Only allow releases from branches that start with "release/", "hotfix/", or "fix/"
+         if [[ ! "$CURRENT_BRANCH" =~ ^(release|hotfix|fix)/ ]]; then
+           echo "❌ ERROR: Releases can only be created from branches that start with 'release/', 'hotfix/', or 'fix/'"
+           echo ""
+           echo "Current branch: $CURRENT_BRANCH"
+           echo ""
+           echo "Please create an appropriate branch first:"
+           echo "git checkout -b release/v[VERSION]"
+           echo "git checkout -b hotfix/urgent-fix-v[VERSION]"
+           echo "git checkout -b fix/bug-description-v[VERSION]"
+           echo ""
+           echo "Examples of valid release branches:"
+           echo "- release/v1.2.3"
+           echo "- release/v2.0.0"
+           echo "- hotfix/security-patch-v1.2.4"
+           echo "- fix/memory-leak-v1.1.5"
+           echo "- release/feature-name-v1.1.0"
+           echo ""
+           echo "❌ Release workflow terminated due to invalid branch"
+           exit 1
+         fi
+         
+         echo "✅ Branch validation passed - using $CURRENT_BRANCH"
+         ```
+      
+      2. **Package.json Validation**:
+         ```bash
+         # Validate package.json exists and is valid
+         if [ ! -f "package.json" ]; then
+           echo "❌ ERROR: package.json not found in current directory"
+           echo "Please ensure you're running this workflow from the project root directory"
+           echo "Current directory: $(pwd)"
+           exit 1
+         fi
+         
+         # Validate package.json is valid JSON
+         if ! node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))" 2>/dev/null; then
+           echo "❌ ERROR: package.json contains invalid JSON"
+           echo "Please fix the JSON syntax in package.json before proceeding"
+           exit 1
+         fi
+         
+         # Validate required fields exist
+         REQUIRED_FIELDS=("name" "version")
+         for field in "${REQUIRED_FIELDS[@]}"; do
+           if ! node -e "const pkg = require('./package.json'); if (!pkg.$field) { process.exit(1); }" 2>/dev/null; then
+             echo "❌ ERROR: package.json is missing required field: $field"
+             echo "Please add the '$field' field to package.json before proceeding"
+             exit 1
+           fi
+         done
+         
+         # Validate version format (semantic versioning)
+         VERSION_REGEX="^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
+         CURRENT_VERSION=$(node -p "require('./package.json').version")
+         
+         if [[ ! "$CURRENT_VERSION" =~ $VERSION_REGEX ]]; then
+           echo "❌ ERROR: Invalid version format in package.json: $CURRENT_VERSION"
+           echo "Version must follow semantic versioning format: x.y.z[-prerelease][+build]"
+           echo "Examples: 1.2.3, 2.0.0-beta.1, 1.0.0+20231201"
+           exit 1
+         fi
+         
+         # Read current version from package.json
+         echo "✅ Package.json validation passed"
+         echo "Package name: $(node -p "require('./package.json').name")"
+         echo "Current version: $CURRENT_VERSION"
+         
+         # Get the most recent git tag (if exists)
+         LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v$CURRENT_VERSION")
+         
+         echo "Latest git tag: $LATEST_TAG"
+         ```
+
+examples:
+  - input: |
+      User: "Create a release"
+      Current branch: main
+    output: |
+      ## 🔍 Release Validation Process
+      
+      ❌ Error: Cannot generate release notes on main/master branch
+      Please create a release branch first:
+      git checkout -b release/v[VERSION]
+
+  - input: |
+      User: "Create a release"
+      Current branch: wip/experimental
+    output: |
+      ## 🔍 Release Validation Process
+      
+      ❌ ERROR: Releases can only be created from branches that start with 'release/', 'hotfix/', or 'fix/'
+      
+      Current branch: wip/experimental
+      
+      Please create an appropriate branch first:
+      git checkout -b release/v[VERSION]
+
+  - input: |
+      User: "Create a release"
+      Current branch: release/v1.2.3
+      Missing package.json
+    output: |
+      ## 🔍 Release Validation Process
+      
+      ✅ Branch validation passed - using release/v1.2.3
+      
+      ❌ ERROR: package.json not found in current directory
+      Please ensure you're running this workflow from the project root directory
+
+tests:
+  - input: "Create release on main branch"
+    output: "Should show error and suggest creating release branch"
+  
+  - input: "Create release on invalid branch name"
+    output: "Should show error and list valid branch patterns"
+  
+  - input: "Create release with missing package.json"
+    output: "Should show error about missing package.json"
+  
+  - input: "Create release with invalid JSON in package.json"
+    output: "Should show error about invalid JSON syntax"
+  
+  - input: "Create release with missing version field"
+    output: "Should show error about missing required field"
+  
+  - input: "Create release with invalid version format"
+    output: "Should show error about invalid semantic versioning format"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>
