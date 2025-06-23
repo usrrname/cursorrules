@@ -3,14 +3,9 @@ name: Publish Package
 on:
   release:
     types: [created, edited]  # Trigger on release creation or edit
-  pull_request:
+  pull_request:               # Trigger on merge to main
     types: [closed]
-    branches: [main]
-  push:
-    tags:
-      - v*
-
-  workflow_dispatch:
+    branches: [main]                      # Trigger on push to tags
 
 jobs:
   prepare-version:
@@ -28,6 +23,7 @@ jobs:
       
       - name: Extract version from tag
         id: extract-version
+        if: github.event_name == 'release' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
         run: |
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
@@ -45,14 +41,20 @@ jobs:
             fi
           fi
       
-      - name: Update package.json version
+      - name: Check if package.json version matches tag
         run: | 
+          # configure git user
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # Update version
-          npm version ${{ steps.extract-version.outputs.version }} --no-git-tag-version 
-          git add package.json package-lock.json
-          git commit -m "chore: Update package version to ${{ steps.extract-version.outputs.version }} [skip ci]"
+          # check if package.json version matches tag
+          if [[ "$(jq -r '.version' package.json)" != "$VERSION" ]]; then
+            echo "Package.json version does not match tag, updating version"
+            npm version ${{ steps.extract-version.outputs.version }} --no-git-tag-version
+            git add package.json package-lock.json
+            git commit -m "chore: Update package version to ${{ steps.extract-version.outputs.version }} [skip ci]"
+          else
+            echo "Package.json version matches tag, skipping version update"
+          fi
           git push origin main 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
