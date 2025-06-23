@@ -66,17 +66,81 @@ actions:
            echo "git checkout -b release/v[VERSION]"
            exit 1
          fi
+         
+         # Validate branch naming conventions
+         echo "🔍 Validating branch naming conventions..."
+         
+         # Only allow releases from branches that start with "release/", "hotfix/", or "fix/"
+         if [[ ! "$CURRENT_BRANCH" =~ ^(release|hotfix|fix)/ ]]; then
+           echo "❌ ERROR: Releases can only be created from branches that start with 'release/', 'hotfix/', or 'fix/'"
+           echo ""
+           echo "Current branch: $CURRENT_BRANCH"
+           echo ""
+           echo "Please create an appropriate branch first:"
+           echo "git checkout -b release/v[VERSION]"
+           echo "git checkout -b hotfix/urgent-fix-v[VERSION]"
+           echo "git checkout -b fix/bug-description-v[VERSION]"
+           echo ""
+           echo "Examples of valid release branches:"
+           echo "- release/v1.2.3"
+           echo "- release/v2.0.0"
+           echo "- hotfix/security-patch-v1.2.4"
+           echo "- fix/memory-leak-v1.1.5"
+           echo "- release/feature-name-v1.1.0"
+           echo ""
+           echo "❌ Release workflow terminated due to invalid branch"
+           exit 1
+         fi
+         
+         echo "✅ Branch validation passed - using $CURRENT_BRANCH"
          ```
       
       2. **Identify Current Version**:
          ```bash
-         # Read current version from package.json
+         # Validate package.json exists and is valid
+         if [ ! -f "package.json" ]; then
+           echo "❌ ERROR: package.json not found in current directory"
+           echo "Please ensure you're running this workflow from the project root directory"
+           echo "Current directory: $(pwd)"
+           exit 1
+         fi
+         
+         # Validate package.json is valid JSON
+         if ! node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))" 2>/dev/null; then
+           echo "❌ ERROR: package.json contains invalid JSON"
+           echo "Please fix the JSON syntax in package.json before proceeding"
+           exit 1
+         fi
+         
+         # Validate required fields exist
+         REQUIRED_FIELDS=("name" "version")
+         for field in "${REQUIRED_FIELDS[@]}"; do
+           if ! node -e "const pkg = require('./package.json'); if (!pkg.$field) { process.exit(1); }" 2>/dev/null; then
+             echo "❌ ERROR: package.json is missing required field: $field"
+             echo "Please add the '$field' field to package.json before proceeding"
+             exit 1
+           fi
+         done
+         
+         # Validate version format (semantic versioning)
+         VERSION_REGEX="^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
          CURRENT_VERSION=$(node -p "require('./package.json').version")
+         
+         if [[ ! "$CURRENT_VERSION" =~ $VERSION_REGEX ]]; then
+           echo "❌ ERROR: Invalid version format in package.json: $CURRENT_VERSION"
+           echo "Version must follow semantic versioning format: x.y.z[-prerelease][+build]"
+           echo "Examples: 1.2.3, 2.0.0-beta.1, 1.0.0+20231201"
+           exit 1
+         fi
+         
+         # Read current version from package.json
+         echo "✅ Package.json validation passed"
+         echo "Package name: $(node -p "require('./package.json').name")"
+         echo "Current version: $CURRENT_VERSION"
          
          # Get the most recent git tag (if exists)
          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v$CURRENT_VERSION")
          
-         echo "Current package.json version: $CURRENT_VERSION"
          echo "Latest git tag: $LATEST_TAG"
          ```
       
@@ -103,11 +167,75 @@ actions:
          # Get all commits since that tag with full details
          COMMITS=$(git log --oneline --no-merges $LATEST_TAG..HEAD)
          
-         # Analyze commit types for version bump suggestion
+         # Get detailed commit information for better analysis
+         COMMIT_DETAILS=$(git log --format="%H%n%s%n%b" --no-merges $LATEST_TAG..HEAD)
+         
+         # Analyze conventional commit types for version bump suggestion
          BREAKING_COUNT=$(echo "$COMMITS" | grep -c "BREAKING:" || echo "0")
          FEAT_COUNT=$(echo "$COMMITS" | grep -c "feat:" || echo "0")
          FIX_COUNT=$(echo "$COMMITS" | grep -c "fix:" || echo "0")
+         DOCS_COUNT=$(echo "$COMMITS" | grep -c "docs:" || echo "0")
+         STYLE_COUNT=$(echo "$COMMITS" | grep -c "style:" || echo "0")
+         REFACTOR_COUNT=$(echo "$COMMITS" | grep -c "refactor:" || echo "0")
+         PERF_COUNT=$(echo "$COMMITS" | grep -c "perf:" || echo "0")
+         TEST_COUNT=$(echo "$COMMITS" | grep -c "test:" || echo "0")
+         CHORE_COUNT=$(echo "$COMMITS" | grep -c "chore:" || echo "0")
          
+         # Analyze non-conventional commits with intelligent categorization
+         NON_CONVENTIONAL_COMMITS=$(echo "$COMMITS" | grep -v "^(feat|fix|docs|style|refactor|perf|test|chore):" | grep -v "BREAKING:")
+         
+         if [ -n "$NON_CONVENTIONAL_COMMITS" ]; then
+           echo "🔍 Found non-conventional commits, analyzing content for categorization..."
+           
+           # Initialize counters for non-conventional commits
+           NC_FEAT_COUNT=0
+           NC_FIX_COUNT=0
+           NC_BREAKING_COUNT=0
+           NC_DOCS_COUNT=0
+           NC_OTHER_COUNT=0
+           
+           # Analyze each non-conventional commit
+           while IFS= read -r commit; do
+             HASH=$(echo "$commit" | cut -d' ' -f1)
+             MESSAGE=$(echo "$commit" | cut -d' ' -f2-)
+             
+             # Get files changed in this commit
+             FILES_CHANGED=$(git show --name-only --format="" "$HASH" 2>/dev/null)
+             
+             # Categorize based on message content and file changes
+             if [[ "$MESSAGE" =~ (add|new|implement|create|introduce|support|enable|feature) ]]; then
+               NC_FEAT_COUNT=$((NC_FEAT_COUNT + 1))
+               echo "  📝 Non-conventional commit categorized as FEATURE: $MESSAGE"
+             elif [[ "$MESSAGE" =~ (fix|bug|issue|problem|error|crash|fail|broken|resolve|correct) ]]; then
+               NC_FIX_COUNT=$((NC_FIX_COUNT + 1))
+               echo "  🐛 Non-conventional commit categorized as FIX: $MESSAGE"
+             elif [[ "$MESSAGE" =~ (BREAKING|breaking|remove|delete|drop|deprecate|change|update|upgrade|migrate) ]]; then
+               NC_BREAKING_COUNT=$((NC_BREAKING_COUNT + 1))
+               echo "  💥 Non-conventional commit categorized as BREAKING: $MESSAGE"
+             elif [[ "$MESSAGE" =~ (doc|readme|comment|example|guide|tutorial) ]] || echo "$FILES_CHANGED" | grep -q "\.md$\|\.txt$\|docs/\|README"; then
+               NC_DOCS_COUNT=$((NC_DOCS_COUNT + 1))
+               echo "  📚 Non-conventional commit categorized as DOCS: $MESSAGE"
+             else
+               NC_OTHER_COUNT=$((NC_OTHER_COUNT + 1))
+               echo "  🔧 Non-conventional commit categorized as OTHER: $MESSAGE"
+             fi
+           done <<< "$NON_CONVENTIONAL_COMMITS"
+           
+           # Add non-conventional counts to conventional counts
+           FEAT_COUNT=$((FEAT_COUNT + NC_FEAT_COUNT))
+           FIX_COUNT=$((FIX_COUNT + NC_FIX_COUNT))
+           BREAKING_COUNT=$((BREAKING_COUNT + NC_BREAKING_COUNT))
+           DOCS_COUNT=$((DOCS_COUNT + NC_DOCS_COUNT))
+           
+           echo "📊 Non-conventional commit analysis complete:"
+           echo "  - Features: $NC_FEAT_COUNT"
+           echo "  - Fixes: $NC_FIX_COUNT"
+           echo "  - Breaking: $NC_BREAKING_COUNT"
+           echo "  - Docs: $NC_DOCS_COUNT"
+           echo "  - Other: $NC_OTHER_COUNT"
+         fi
+         
+         # Determine version bump suggestion based on all analyzed commits
          if [ "$BREAKING_COUNT" -gt 0 ]; then
            SUGGESTED_BUMP="major"
          elif [ "$FEAT_COUNT" -gt 0 ]; then
@@ -117,6 +245,17 @@ actions:
          else
            SUGGESTED_BUMP="patch"
          fi
+         
+         echo "📈 Commit analysis summary:"
+         echo "  - Breaking changes: $BREAKING_COUNT"
+         echo "  - New features: $FEAT_COUNT"
+         echo "  - Bug fixes: $FIX_COUNT"
+         echo "  - Documentation: $DOCS_COUNT"
+         echo "  - Style/Refactor: $((STYLE_COUNT + REFACTOR_COUNT))"
+         echo "  - Performance: $PERF_COUNT"
+         echo "  - Tests: $TEST_COUNT"
+         echo "  - Chores: $CHORE_COUNT"
+         echo "  - Suggested version bump: $SUGGESTED_BUMP"
          ```
       
       5. **Prompt User for Version Bump (if not specified)**:
@@ -236,107 +375,483 @@ actions:
          ```bash
          echo "🔄 Now generating comprehensive changelog..."
          
+         # Backup existing changelog if it exists
+         if [ -f "changelog.md" ]; then
+           cp changelog.md changelog.md.backup
+           echo "📋 Backed up existing changelog.md"
+           
+           # Check if existing changelog has proper structure
+           if grep -q "## \[Unreleased\]" changelog.md; then
+             echo "✅ Existing changelog has proper structure, will preserve content"
+             PRESERVE_EXISTING=true
+           else
+             echo "⚠️ Existing changelog doesn't follow Keep a Changelog format"
+             echo "Will create new changelog with existing content as reference"
+             PRESERVE_EXISTING=false
+           fi
+         else
+           echo "📝 No existing changelog.md found, creating new one"
+           PRESERVE_EXISTING=false
+         fi
+         
          # Get all git tags sorted by version
          ALL_TAGS=$(git tag --sort=-version:refname)
          
          # Get commits since last tag (unreleased changes)
          UNRELEASED_COMMITS=$(git log --oneline --no-merges $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD)
          
-         # Generate changelog content
-         cat > changelog.md << 'EOF'
-         # Changelog
-         
-         All notable changes to this project will be documented in this file.
-         
-         The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-         and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-         
-         ## [Unreleased]
-         
-         EOF
-         
-         # Add unreleased changes if any
-         if [ -n "$UNRELEASED_COMMITS" ]; then
-           echo "### 🚀 Added" >> changelog.md
-           echo "$UNRELEASED_COMMITS" | grep "feat:" | while read commit; do
-             HASH=$(echo $commit | cut -d' ' -f1)
-             MESSAGE=$(echo $commit | cut -d' ' -f2-)
-             echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
-           done
+         if [ "$PRESERVE_EXISTING" = true ]; then
+           echo "🔄 Updating existing changelog with new unreleased changes..."
            
-           echo "" >> changelog.md
-           echo "### 🐛 Fixed" >> changelog.md
-           echo "$UNRELEASED_COMMITS" | grep "fix:" | while read commit; do
-             HASH=$(echo $commit | cut -d' ' -f1)
-             MESSAGE=$(echo $commit | cut -d' ' -f2-)
-             echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
-           done
+           # Create temporary file for new unreleased content
+           TEMP_UNRELEASED=$(mktemp)
+           
+           # Process conventional commits
+           CONVENTIONAL_FEATURES=$(echo "$UNRELEASED_COMMITS" | grep "feat:")
+           CONVENTIONAL_FIXES=$(echo "$UNRELEASED_COMMITS" | grep "fix:")
+           CONVENTIONAL_BREAKING=$(echo "$UNRELEASED_COMMITS" | grep "BREAKING:")
+           CONVENTIONAL_DOCS=$(echo "$UNRELEASED_COMMITS" | grep "docs:")
+           
+           # Process non-conventional commits
+           NON_CONVENTIONAL_COMMITS=$(echo "$UNRELEASED_COMMITS" | grep -v "^(feat|fix|docs|style|refactor|perf|test|chore):" | grep -v "BREAKING:")
+           
+           # Categorize non-conventional commits
+           NC_FEATURES=""
+           NC_FIXES=""
+           NC_BREAKING=""
+           NC_DOCS=""
+           NC_OTHER=""
+           
+           if [ -n "$NON_CONVENTIONAL_COMMITS" ]; then
+             echo "🔍 Categorizing non-conventional commits for changelog..."
+             
+             while IFS= read -r commit; do
+               HASH=$(echo "$commit" | cut -d' ' -f1)
+               MESSAGE=$(echo "$commit" | cut -d' ' -f2-)
+               
+               # Get files changed in this commit
+               FILES_CHANGED=$(git show --name-only --format="" "$HASH" 2>/dev/null)
+               
+               # Categorize based on message content and file changes
+               if [[ "$MESSAGE" =~ (add|new|implement|create|introduce|support|enable|feature) ]]; then
+                 NC_FEATURES="$NC_FEATURES$commit"$'\n'
+               elif [[ "$MESSAGE" =~ (fix|bug|issue|problem|error|crash|fail|broken|resolve|correct) ]]; then
+                 NC_FIXES="$NC_FIXES$commit"$'\n'
+               elif [[ "$MESSAGE" =~ (BREAKING|breaking|remove|delete|drop|deprecate|change|update|upgrade|migrate) ]]; then
+                 NC_BREAKING="$NC_BREAKING$commit"$'\n'
+               elif [[ "$MESSAGE" =~ (doc|readme|comment|example|guide|tutorial) ]] || echo "$FILES_CHANGED" | grep -q "\.md$\|\.txt$\|docs/\|README"; then
+                 NC_DOCS="$NC_DOCS$commit"$'\n'
+               else
+                 NC_OTHER="$NC_OTHER$commit"$'\n'
+               fi
+             done <<< "$NON_CONVENTIONAL_COMMITS"
+           fi
+           
+           # Combine conventional and non-conventional commits
+           ALL_FEATURES="$CONVENTIONAL_FEATURES$NC_FEATURES"
+           ALL_FIXES="$CONVENTIONAL_FIXES$NC_FIXES"
+           ALL_BREAKING="$CONVENTIONAL_BREAKING$NC_BREAKING"
+           ALL_DOCS="$CONVENTIONAL_DOCS$NC_DOCS"
+           
+           # Generate new unreleased content
+           if [ -n "$ALL_FEATURES" ]; then
+             echo "### 🚀 Added" >> "$TEMP_UNRELEASED"
+             echo "$ALL_FEATURES" | while read commit; do
+               if [ -n "$commit" ]; then
+                 HASH=$(echo $commit | cut -d' ' -f1)
+                 MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                 echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> "$TEMP_UNRELEASED"
+               fi
+             done
+             echo "" >> "$TEMP_UNRELEASED"
+           fi
+           
+           if [ -n "$ALL_FIXES" ]; then
+             echo "### 🐛 Fixed" >> "$TEMP_UNRELEASED"
+             echo "$ALL_FIXES" | while read commit; do
+               if [ -n "$commit" ]; then
+                 HASH=$(echo $commit | cut -d' ' -f1)
+                 MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                 echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> "$TEMP_UNRELEASED"
+               fi
+             done
+             echo "" >> "$TEMP_UNRELEASED"
+           fi
+           
+           if [ -n "$ALL_BREAKING" ]; then
+             echo "### 💥 Changed" >> "$TEMP_UNRELEASED"
+             echo "$ALL_BREAKING" | while read commit; do
+               if [ -n "$commit" ]; then
+                 HASH=$(echo $commit | cut -d' ' -f1)
+                 MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                 echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> "$TEMP_UNRELEASED"
+               fi
+             done
+             echo "" >> "$TEMP_UNRELEASED"
+           fi
+           
+           if [ -n "$ALL_DOCS" ]; then
+             echo "### 📚 Documentation" >> "$TEMP_UNRELEASED"
+             echo "$ALL_DOCS" | while read commit; do
+               if [ -n "$commit" ]; then
+                 HASH=$(echo $commit | cut -d' ' -f1)
+                 MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                 echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> "$TEMP_UNRELEASED"
+               fi
+             done
+             echo "" >> "$TEMP_UNRELEASED"
+           fi
+           
+           if [ -n "$NC_OTHER" ]; then
+             echo "### 🔧 Other Changes" >> "$TEMP_UNRELEASED"
+             echo "$NC_OTHER" | while read commit; do
+               if [ -n "$commit" ]; then
+                 HASH=$(echo $commit | cut -d' ' -f1)
+                 MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                 echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> "$TEMP_UNRELEASED"
+               fi
+             done
+             echo "" >> "$TEMP_UNRELEASED"
+           fi
+           
+           # Replace the [Unreleased] section with new content
+           awk -v temp="$TEMP_UNRELEASED" '
+           /^## \[Unreleased\]/ {
+             print "## [Unreleased]"
+             print ""
+             system("cat " temp)
+             next
+           }
+           /^### 🚀 Added$/, /^## \[/ {
+             if ($0 ~ /^## \[/) {
+               print $0
+               next
+             }
+             next
+           }
+           /^### 🐛 Fixed$/, /^## \[/ {
+             if ($0 ~ /^## \[/) {
+               print $0
+               next
+             }
+             next
+           }
+           /^### 💥 Changed$/, /^## \[/ {
+             if ($0 ~ /^## \[/) {
+               print $0
+               next
+             }
+             next
+           }
+           /^### 📚 Documentation$/, /^## \[/ {
+             if ($0 ~ /^## \[/) {
+               print $0
+               next
+             }
+             next
+           }
+           /^### 🔧 Other Changes$/, /^## \[/ {
+             if ($0 ~ /^## \[/) {
+               print $0
+               next
+             }
+             next
+           }
+           { print }
+           ' changelog.md > changelog.md.new
+           
+           mv changelog.md.new changelog.md
+           rm -f "$TEMP_UNRELEASED"
+           
+           echo "✅ Updated existing changelog with new unreleased changes"
          else
-           echo "No unreleased changes." >> changelog.md
-         fi
-         
-         echo "" >> changelog.md
-         echo "---" >> changelog.md
-         echo "" >> changelog.md
-         
-         # Add version entries for each tag
-         for tag in $ALL_TAGS; do
-           PREV_TAG=$(git describe --tags --abbrev=0 $tag^ 2>/dev/null || echo "")
-           TAG_DATE=$(git log -1 --format=%cd --date=short $tag)
+           echo "🔄 Creating new changelog..."
            
-           echo "## [$tag] - $TAG_DATE" >> changelog.md
-           echo "" >> changelog.md
+           # Generate changelog content
+           cat > changelog.md << 'EOF'
+           # Changelog
            
-           # Get commits for this version
-           VERSION_COMMITS=$(git log --oneline --no-merges $PREV_TAG..$tag)
+           All notable changes to this project will be documented in this file.
            
-           # Categorize commits
-           echo "$VERSION_COMMITS" | grep "feat:" | while read commit; do
-             HASH=$(echo $commit | cut -d' ' -f1)
-             MESSAGE=$(echo $commit | cut -d' ' -f2-)
-             echo "### 🚀 Added" >> changelog.md
-             echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
-           done
+           The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+           and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
            
-           echo "$VERSION_COMMITS" | grep "fix:" | while read commit; do
-             HASH=$(echo $commit | cut -d' ' -f1)
-             MESSAGE=$(echo $commit | cut -d' ' -f2-)
-             echo "### 🐛 Fixed" >> changelog.md
-             echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
-           done
+           ## [Unreleased]
            
-           echo "$VERSION_COMMITS" | grep "BREAKING:" | while read commit; do
-             HASH=$(echo $commit | cut -d' ' -f1)
-             MESSAGE=$(echo $commit | cut -d' ' -f2-)
-             echo "### 💥 Changed" >> changelog.md
-             echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
-           done
+           EOF
+           
+           # Add unreleased changes if any
+           if [ -n "$UNRELEASED_COMMITS" ]; then
+             # Process conventional commits
+             CONVENTIONAL_FEATURES=$(echo "$UNRELEASED_COMMITS" | grep "feat:")
+             CONVENTIONAL_FIXES=$(echo "$UNRELEASED_COMMITS" | grep "fix:")
+             CONVENTIONAL_BREAKING=$(echo "$UNRELEASED_COMMITS" | grep "BREAKING:")
+             CONVENTIONAL_DOCS=$(echo "$UNRELEASED_COMMITS" | grep "docs:")
+             
+             # Process non-conventional commits
+             NON_CONVENTIONAL_COMMITS=$(echo "$UNRELEASED_COMMITS" | grep -v "^(feat|fix|docs|style|refactor|perf|test|chore):" | grep -v "BREAKING:")
+             
+             # Categorize non-conventional commits
+             NC_FEATURES=""
+             NC_FIXES=""
+             NC_BREAKING=""
+             NC_DOCS=""
+             NC_OTHER=""
+             
+             if [ -n "$NON_CONVENTIONAL_COMMITS" ]; then
+               echo "🔍 Categorizing non-conventional commits for changelog..."
+               
+               while IFS= read -r commit; do
+                 HASH=$(echo "$commit" | cut -d' ' -f1)
+                 MESSAGE=$(echo "$commit" | cut -d' ' -f2-)
+                 
+                 # Get files changed in this commit
+                 FILES_CHANGED=$(git show --name-only --format="" "$HASH" 2>/dev/null)
+                 
+                 # Categorize based on message content and file changes
+                 if [[ "$MESSAGE" =~ (add|new|implement|create|introduce|support|enable|feature) ]]; then
+                   NC_FEATURES="$NC_FEATURES$commit"$'\n'
+                 elif [[ "$MESSAGE" =~ (fix|bug|issue|problem|error|crash|fail|broken|resolve|correct) ]]; then
+                   NC_FIXES="$NC_FIXES$commit"$'\n'
+                 elif [[ "$MESSAGE" =~ (BREAKING|breaking|remove|delete|drop|deprecate|change|update|upgrade|migrate) ]]; then
+                   NC_BREAKING="$NC_BREAKING$commit"$'\n'
+                 elif [[ "$MESSAGE" =~ (doc|readme|comment|example|guide|tutorial) ]] || echo "$FILES_CHANGED" | grep -q "\.md$\|\.txt$\|docs/\|README"; then
+                   NC_DOCS="$NC_DOCS$commit"$'\n'
+                 else
+                   NC_OTHER="$NC_OTHER$commit"$'\n'
+                 fi
+               done <<< "$NON_CONVENTIONAL_COMMITS"
+             fi
+             
+             # Combine conventional and non-conventional commits
+             ALL_FEATURES="$CONVENTIONAL_FEATURES$NC_FEATURES"
+             ALL_FIXES="$CONVENTIONAL_FIXES$NC_FIXES"
+             ALL_BREAKING="$CONVENTIONAL_BREAKING$NC_BREAKING"
+             ALL_DOCS="$CONVENTIONAL_DOCS$NC_DOCS"
+             
+             # Write features section
+             if [ -n "$ALL_FEATURES" ]; then
+               echo "### 🚀 Added" >> changelog.md
+               echo "$ALL_FEATURES" | while read commit; do
+                 if [ -n "$commit" ]; then
+                   HASH=$(echo $commit | cut -d' ' -f1)
+                   MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                   echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                 fi
+               done
+               echo "" >> changelog.md
+             fi
+             
+             # Write fixes section
+             if [ -n "$ALL_FIXES" ]; then
+               echo "### 🐛 Fixed" >> changelog.md
+               echo "$ALL_FIXES" | while read commit; do
+                 if [ -n "$commit" ]; then
+                   HASH=$(echo $commit | cut -d' ' -f1)
+                   MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                   echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                 fi
+               done
+               echo "" >> changelog.md
+             fi
+             
+             # Write breaking changes section
+             if [ -n "$ALL_BREAKING" ]; then
+               echo "### 💥 Changed" >> changelog.md
+               echo "$ALL_BREAKING" | while read commit; do
+                 if [ -n "$commit" ]; then
+                   HASH=$(echo $commit | cut -d' ' -f1)
+                   MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                   echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                 fi
+               done
+               echo "" >> changelog.md
+             fi
+             
+             # Write documentation section
+             if [ -n "$ALL_DOCS" ]; then
+               echo "### 📚 Documentation" >> changelog.md
+               echo "$ALL_DOCS" | while read commit; do
+                 if [ -n "$commit" ]; then
+                   HASH=$(echo $commit | cut -d' ' -f1)
+                   MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                   echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                 fi
+               done
+               echo "" >> changelog.md
+             fi
+             
+             # Write other changes section
+             if [ -n "$NC_OTHER" ]; then
+               echo "### 🔧 Other Changes" >> changelog.md
+               echo "$NC_OTHER" | while read commit; do
+                 if [ -n "$commit" ]; then
+                   HASH=$(echo $commit | cut -d' ' -f1)
+                   MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                   echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                 fi
+               done
+               echo "" >> changelog.md
+             fi
+           else
+             echo "No unreleased changes." >> changelog.md
+           fi
            
            echo "" >> changelog.md
            echo "---" >> changelog.md
            echo "" >> changelog.md
-         done
-         
-         # Add version comparison links
-         echo "## Version Links" >> changelog.md
-         echo "" >> changelog.md
-         
-         LATEST_TAG_FOR_LINKS=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-         if [ -n "$LATEST_TAG_FOR_LINKS" ]; then
-           echo "[Unreleased]: https://github.com/[USERNAME]/[REPO]/compare/$LATEST_TAG_FOR_LINKS...HEAD" >> changelog.md
-         fi
-         
-         for tag in $ALL_TAGS; do
-           PREV_TAG_FOR_LINKS=$(git describe --tags --abbrev=0 $tag^ 2>/dev/null || echo "")
-           if [ -n "$PREV_TAG_FOR_LINKS" ]; then
-             echo "[$tag]: https://github.com/[USERNAME]/[REPO]/compare/$PREV_TAG_FOR_LINKS...$tag" >> changelog.md
-           else
-             echo "[$tag]: https://github.com/[USERNAME]/[REPO]/releases/tag/$tag" >> changelog.md
+           
+           # Add version entries for each tag
+           for tag in $ALL_TAGS; do
+             PREV_TAG=$(git describe --tags --abbrev=0 $tag^ 2>/dev/null || echo "")
+             TAG_DATE=$(git log -1 --format=%cd --date=short $tag)
+             
+             echo "## [$tag] - $TAG_DATE" >> changelog.md
+             echo "" >> changelog.md
+             
+             # Get commits for this version
+             VERSION_COMMITS=$(git log --oneline --no-merges $PREV_TAG..$tag)
+             
+             if [ -n "$VERSION_COMMITS" ]; then
+               # Process conventional commits for this version
+               V_CONVENTIONAL_FEATURES=$(echo "$VERSION_COMMITS" | grep "feat:")
+               V_CONVENTIONAL_FIXES=$(echo "$VERSION_COMMITS" | grep "fix:")
+               V_CONVENTIONAL_BREAKING=$(echo "$VERSION_COMMITS" | grep "BREAKING:")
+               V_CONVENTIONAL_DOCS=$(echo "$VERSION_COMMITS" | grep "docs:")
+               
+               # Process non-conventional commits for this version
+               V_NON_CONVENTIONAL_COMMITS=$(echo "$VERSION_COMMITS" | grep -v "^(feat|fix|docs|style|refactor|perf|test|chore):" | grep -v "BREAKING:")
+               
+               # Categorize non-conventional commits for this version
+               V_NC_FEATURES=""
+               V_NC_FIXES=""
+               V_NC_BREAKING=""
+               V_NC_DOCS=""
+               V_NC_OTHER=""
+               
+               if [ -n "$V_NON_CONVENTIONAL_COMMITS" ]; then
+                 while IFS= read -r commit; do
+                   HASH=$(echo "$commit" | cut -d' ' -f1)
+                   MESSAGE=$(echo "$commit" | cut -d' ' -f2-)
+                   
+                   # Get files changed in this commit
+                   FILES_CHANGED=$(git show --name-only --format="" "$HASH" 2>/dev/null)
+                   
+                   # Categorize based on message content and file changes
+                   if [[ "$MESSAGE" =~ (add|new|implement|create|introduce|support|enable|feature) ]]; then
+                     V_NC_FEATURES="$V_NC_FEATURES$commit"$'\n'
+                   elif [[ "$MESSAGE" =~ (fix|bug|issue|problem|error|crash|fail|broken|resolve|correct) ]]; then
+                     V_NC_FIXES="$V_NC_FIXES$commit"$'\n'
+                   elif [[ "$MESSAGE" =~ (BREAKING|breaking|remove|delete|drop|deprecate|change|update|upgrade|migrate) ]]; then
+                     V_NC_BREAKING="$V_NC_BREAKING$commit"$'\n'
+                   elif [[ "$MESSAGE" =~ (doc|readme|comment|example|guide|tutorial) ]] || echo "$FILES_CHANGED" | grep -q "\.md$\|\.txt$\|docs/\|README"; then
+                     V_NC_DOCS="$V_NC_DOCS$commit"$'\n'
+                   else
+                     V_NC_OTHER="$V_NC_OTHER$commit"$'\n'
+                   fi
+                 done <<< "$V_NON_CONVENTIONAL_COMMITS"
+               fi
+               
+               # Combine conventional and non-conventional commits for this version
+               V_ALL_FEATURES="$V_CONVENTIONAL_FEATURES$V_NC_FEATURES"
+               V_ALL_FIXES="$V_CONVENTIONAL_FIXES$V_NC_FIXES"
+               V_ALL_BREAKING="$V_CONVENTIONAL_BREAKING$V_NC_BREAKING"
+               V_ALL_DOCS="$V_CONVENTIONAL_DOCS$V_NC_DOCS"
+               
+               # Write features section for this version
+               if [ -n "$V_ALL_FEATURES" ]; then
+                 echo "### 🚀 Added" >> changelog.md
+                 echo "$V_ALL_FEATURES" | while read commit; do
+                   if [ -n "$commit" ]; then
+                     HASH=$(echo $commit | cut -d' ' -f1)
+                     MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                     echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                   fi
+                 done
+                 echo "" >> changelog.md
+               fi
+               
+               # Write fixes section for this version
+               if [ -n "$V_ALL_FIXES" ]; then
+                 echo "### 🐛 Fixed" >> changelog.md
+                 echo "$V_ALL_FIXES" | while read commit; do
+                   if [ -n "$commit" ]; then
+                     HASH=$(echo $commit | cut -d' ' -f1)
+                     MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                     echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                   fi
+                 done
+                 echo "" >> changelog.md
+               fi
+               
+               # Write breaking changes section for this version
+               if [ -n "$V_ALL_BREAKING" ]; then
+                 echo "### 💥 Changed" >> changelog.md
+                 echo "$V_ALL_BREAKING" | while read commit; do
+                   if [ -n "$commit" ]; then
+                     HASH=$(echo $commit | cut -d' ' -f1)
+                     MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                     echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                   fi
+                 done
+                 echo "" >> changelog.md
+               fi
+               
+               # Write documentation section for this version
+               if [ -n "$V_ALL_DOCS" ]; then
+                 echo "### 📚 Documentation" >> changelog.md
+                 echo "$V_ALL_DOCS" | while read commit; do
+                   if [ -n "$commit" ]; then
+                     HASH=$(echo $commit | cut -d' ' -f1)
+                     MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                     echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                   fi
+                 done
+                 echo "" >> changelog.md
+               fi
+               
+               # Write other changes section for this version
+               if [ -n "$V_NC_OTHER" ]; then
+                 echo "### 🔧 Other Changes" >> changelog.md
+                 echo "$V_NC_OTHER" | while read commit; do
+                   if [ -n "$commit" ]; then
+                     HASH=$(echo $commit | cut -d' ' -f1)
+                     MESSAGE=$(echo $commit | cut -d' ' -f2-)
+                     echo "- **$MESSAGE** ([$HASH](https://github.com/[USERNAME]/[REPO]/commit/$HASH))" >> changelog.md
+                   fi
+                 done
+                 echo "" >> changelog.md
+               fi
+             else
+               echo "No changes in this version." >> changelog.md
+             fi
+             
+             echo "" >> changelog.md
+             echo "---" >> changelog.md
+             echo "" >> changelog.md
+           done
+           
+           # Add version comparison links
+           echo "## Version Links" >> changelog.md
+           echo "" >> changelog.md
+           
+           LATEST_TAG_FOR_LINKS=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+           if [ -n "$LATEST_TAG_FOR_LINKS" ]; then
+             echo "[Unreleased]: https://github.com/[USERNAME]/[REPO]/compare/$LATEST_TAG_FOR_LINKS...HEAD" >> changelog.md
            fi
-         done
-         
-         echo "✅ Changelog generated successfully at ./changelog.md"
-         ```
+           
+           for tag in $ALL_TAGS; do
+             PREV_TAG_FOR_LINKS=$(git describe --tags --abbrev=0 $tag^ 2>/dev/null || echo "")
+             if [ -n "$PREV_TAG_FOR_LINKS" ]; then
+               echo "[$tag]: https://github.com/[USERNAME]/[REPO]/compare/$PREV_TAG_FOR_LINKS...$tag" >> changelog.md
+             else
+               echo "[$tag]: https://github.com/[USERNAME]/[REPO]/releases/tag/$tag" >> changelog.md
+             fi
+           done
+           
+           echo "✅ Changelog generated successfully at ./changelog.md"
+           ```
+         fi
       8. **Offer Version Bump Update** 🔄
          ```bash
          echo ""
@@ -654,187 +1169,9 @@ examples:
          ✅ Version commit pushed successfully
 
   - input: |
-      User: "I want to make a release"
-      Current branch: main
-    output: |
-      ⚠️ You're currently on the main branch! Please create a feature branch before generating release notes. This ensures proper version control and prevents accidental releases.
-      
-      ```bash
-      # Create a release branch
-      git checkout -b release/v1.3.0
-      
-      # Then ask me to create the release again
-      ```
-
-  - input: |
-      User: "Prepare release notes for version 2.0.0"
-      Current branch: breaking-changes
-      Git analysis: 1 BREAKING commit, 2 feat commits, 3 fix commits
-      Current version: 1.2.3
-    output: |
-      ## 🚀 Release Workflow Process
-      
-      I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
-      
-      1. **Branch Validation** ✅
-         Current branch: breaking-changes
-         ✅ Not on main branch - proceeding with release notes generation
-      
-      2. **Identify Current Version**:
-         Current package.json version: 1.2.3
-         Latest git tag: v1.2.3
-      
-      3. **Check User Request for Version Bump**:
-         User specified custom version: 2.0.0
-      
-      4. **Analyze Changes for Guidance**:
-         Analysis suggests: major (1 breaking change detected)
-         ✅ User choice aligns with breaking changes analysis
-      
-      5. **Generate Structured Release Notes**:
-         # What's Changed in [PACKAGE_NAME] v2.0.0
-         
-         **Release Date**: 2024-01-15
-         **Previous Version**: 1.2.3
-         **Version Bump**: MAJOR - Breaking changes
-         **Branch**: breaking-changes
-         
-         ## 💥 Breaking Changes
-         - **Remove deprecated API endpoints** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Removed /api/v1/old-endpoint, use /api/v2/new-endpoint instead
-         
-         ## 🚀 New Features
-         - **Add new API v2 endpoints** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Implemented improved API structure
-         - **Add real-time notifications** ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l)) - WebSocket-based notification system
-         
-         ## 🐛 Bug Fixes  
-         - **Fix authentication token validation** ([m1n2o3p](https://github.com/user/repo/commit/m1n2o3p)) - Resolved token expiration issues
-         - **Fix data synchronization race condition** ([q4r5s6t](https://github.com/user/repo/commit/q4r5s6t)) - Prevented data corruption
-         - **Fix memory usage in background tasks** ([u7v8w9x](https://github.com/user/repo/commit/u7v8w9x)) - Optimized resource consumption
-      
-      6. **Generate Changelog** 📝
-         🔄 Now generating comprehensive changelog...
-         ✅ Changelog generated successfully at ./changelog.md
-      
-      7. **Offer Version Bump Update** 🔄
-         🔄 Would you like me to automatically update the version in package.json?
-         Current version: 1.2.3
-         New version would be: 2.0.0
-         Update package.json version? (y/N): y
-         ✅ Updated package.json version to 2.0.0
-
-  - input: |
-      User: "Create a patch release"
-      Current branch: hotfix/security-fix
-      Git analysis: 2 fix commits, 1 docs commit
-      Current version: 1.2.3
-    output: |
-      ## 🚀 Release Workflow Process
-      
-      I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
-      
-      1. **Branch Validation** ✅
-         Current branch: hotfix/security-fix
-         ✅ Not on main branch - proceeding with release notes generation
-      
-      2. **Identify Current Version**:
-         Current package.json version: 1.2.3
-         Latest git tag: v1.2.3
-      
-      3. **Check User Request for Version Bump**:
-         User requested patch version bump
-      
-      4. **Analyze Changes for Guidance**:
-         Analysis suggests: patch (2 bug fixes, 1 documentation update)
-         ✅ User choice matches analysis
-      
-      5. **Generate Structured Release Notes**:
-         # What's Changed in [PACKAGE_NAME] v1.2.4
-         
-         **Release Date**: 2024-01-15
-         **Previous Version**: 1.2.3
-         **Version Bump**: PATCH - Bug fixes and security updates
-         **Branch**: hotfix/security-fix
-         
-         ## 🐛 Bug Fixes  
-         - **Fix SQL injection vulnerability** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Sanitized user input in database queries
-         - **Fix XSS vulnerability in user input** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Added proper input sanitization
-         
-         ## 📚 Documentation
-         - **Update security documentation** ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l)) - Added security best practices guide
-      
-      6. **Generate Changelog** 📝
-         🔄 Now generating comprehensive changelog...
-         ✅ Changelog generated successfully at ./changelog.md
-      
-      7. **Offer Version Bump Update** 🔄
-         🔄 Would you like me to automatically update the version in package.json?
-         Current version: 1.2.3
-         New version would be: 1.2.4
-         Update package.json version? (y/N): y
-         ✅ Updated package.json version to 1.2.4
-
-  - input: |
-      User: "Generate release notes for v3.1.0"
-      Current branch: feature/major-update
-      Git analysis: 5 feat commits, 2 fix commits, 1 BREAKING commit
-      Current version: 3.0.0
-    output: |
-      ## 🚀 Release Workflow Process
-      
-      I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
-      
-      1. **Branch Validation** ✅
-         Current branch: feature/major-update
-         ✅ Not on main branch - proceeding with release notes generation
-      
-      2. **Identify Current Version**:
-         Current package.json version: 3.0.0
-         Latest git tag: v3.0.0
-      
-      3. **Check User Request for Version Bump**:
-         User specified custom version: 3.1.0
-      
-      4. **Analyze Changes for Guidance**:
-         Analysis suggests: major (1 breaking change detected)
-         ⚠️ Warning: Analysis suggests major version due to breaking changes, but user specified minor version
-      
-      5. **Generate Structured Release Notes**:
-         # What's Changed in [PACKAGE_NAME] v3.1.0
-         
-         **Release Date**: 2024-01-15
-         **Previous Version**: 3.0.0
-         **Version Bump**: MINOR - New features (with breaking changes)
-         **Branch**: feature/major-update
-         
-         ## 💥 Breaking Changes
-         - **Change default configuration format** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Config files now use YAML instead of JSON
-         
-         ## 🚀 New Features
-         - **Add plugin system** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Extensible plugin architecture
-         - **Add performance monitoring** ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l)) - Real-time performance metrics
-         - **Add multi-language support** ([m1n2o3p](https://github.com/user/repo/commit/m1n2o3p)) - Internationalization framework
-         - **Add automated testing framework** ([q4r5s6t](https://github.com/user/repo/commit/q4r5s6t)) - Built-in test runner
-         - **Add configuration validation** ([u7v8w9x](https://github.com/user/repo/commit/u7v8w9x)) - Schema-based config validation
-         
-         ## 🐛 Bug Fixes  
-         - **Fix memory leak in plugin loader** ([y1z2a3b](https://github.com/user/repo/commit/y1z2a3b)) - Resolved resource cleanup issue
-         - **Fix race condition in async operations** ([c4d5e6f](https://github.com/user/repo/commit/c4d5e6f)) - Improved concurrency handling
-      
-      6. **Generate Changelog** 📝
-         🔄 Now generating comprehensive changelog...
-         ✅ Changelog generated successfully at ./changelog.md
-      
-      7. **Offer Version Bump Update** 🔄
-         🔄 Would you like me to automatically update the version in package.json?
-         Current version: 3.0.0
-         New version would be: 3.1.0
-         Update package.json version? (y/N): y
-         ✅ Updated package.json version to 3.1.0
-
-  - input: |
-      User: "Make a release"
-      Current branch: release/v1.0.0
-      Git analysis: No commits since last tag
+      User: "Create a release"
+      Current branch: wip/experimental-feature
+      Git analysis: 2 feat commits, 1 fix commit
       Current version: 1.0.0
     output: |
       ## 🚀 Release Workflow Process
@@ -842,201 +1179,116 @@ examples:
       I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
       
       1. **Branch Validation** ✅
-         Current branch: release/v1.0.0
+         Current branch: wip/experimental-feature
          ✅ Not on main branch - proceeding with release notes generation
-      
-      2. **Identify Current Version**:
-         Current package.json version: 1.0.0
-         Latest git tag: v1.0.0
-      
-      3. **Check User Request for Version Bump**:
-         No version bump specified by user
-      
-      4. **Analyze Changes for Guidance**:
-         Analysis suggests: patch (no new changes detected)
-         ⚠️ Warning: No commits found since last tag. This might be an initial release or the tag is up to date.
-      
-      5. **Generate Structured Release Notes**:
-         # What's Changed in [PACKAGE_NAME] v1.0.0
          
-         **Release Date**: 2024-01-15
-         **Previous Version**: Initial release
-         **Version Bump**: PATCH - No new changes
-         **Branch**: release/v1.0.0
+         🔍 Validating branch naming conventions...
+         ❌ ERROR: Releases can only be created from branches that start with 'release/', 'hotfix/', or 'fix/'
          
-         ## 📝 Initial Release
-         This is the initial release of [PACKAGE_NAME]. All features and functionality are new.
+         Current branch: wip/experimental-feature
          
-         ## 🚀 Features
-         - Initial release with core functionality
-         - Basic API implementation
-         - Documentation and examples
-      
-      6. **Generate Changelog** 📝
-         🔄 Now generating comprehensive changelog...
-         ✅ Changelog generated successfully at ./changelog.md
-      
-      7. **Offer Version Bump Update** 🔄
-         🔄 Would you like me to automatically update the version in package.json?
-         Current version: 1.0.0
-         New version would be: 1.0.1
-         Update package.json version? (y/N): n
-         ⏭️ Skipping version update
+         Please create a release branch first:
+         git checkout -b release/v[VERSION]
+         
+         Examples of valid release branches:
+         - release/v1.2.3
+         - release/v2.0.0
+         - hotfix/security-patch-v1.2.4
+         - fix/memory-leak-v1.1.5
+         - release/feature-name-v1.1.0
+         
+         ❌ Release workflow terminated due to invalid branch
+
+  - input: "Make a release" (on wip/experimental branch)
+    output: "Should detect invalid branch pattern, show error message requiring 'release/', 'hotfix/', or 'fix/' prefix, and terminate workflow"
+  
+  - input: "Create release" (on custom-named branch without standard patterns)
+    output: "Should detect invalid branch pattern, show error message requiring 'release/', 'hotfix/', or 'fix/' prefix, and terminate workflow"
+  
+  - input: "Create release" (on feature/new-feature branch)
+    output: "Should detect invalid branch pattern, show error message requiring 'release/', 'hotfix/', or 'fix/' prefix, and terminate workflow"
+  
+  - input: "Create release" (on hotfix/security-patch-v1.2.4 branch)
+    output: "Should validate hotfix branch, proceed with release workflow, and allow version bumping"
+  
+  - input: "Create release" (on fix/memory-leak-v1.1.5 branch)
+    output: "Should validate fix branch, proceed with release workflow, and allow version bumping"
 
   - input: |
-      User: "Create release v2.1.0"
-      Current branch: feature/new-features
-      Git analysis: 3 feat commits, 1 fix commit
-      Current version: 2.0.0
-      Git tag v2.1.0 already exists
+      User: "Create a release"
+      Current branch: release/v2.0.0
+      Git analysis: 2 feat commits, 1 fix commit, 3 non-conventional commits
+      Non-conventional commits: "Add new API endpoint", "Fix broken login", "Update documentation"
+      Current version: 1.5.0
     output: |
       ## 🚀 Release Workflow Process
       
       I'll help you create comprehensive release notes, update the changelog, and handle version bumping! Let me analyze your changes and guide you through the entire release process.
       
       1. **Branch Validation** ✅
-         Current branch: feature/new-features
-         ✅ Not on main branch - proceeding with release notes generation
+         Current branch: release/v2.0.0
+         ✅ Branch validation passed - using release/v2.0.0
       
       2. **Identify Current Version**:
-         Current package.json version: 2.0.0
-         Latest git tag: v2.0.0
+         Current package.json version: 1.5.0
+         Latest git tag: v1.5.0
       
       3. **Check User Request for Version Bump**:
-         User specified custom version: 2.1.0
+         No version bump specified by user
       
       4. **Analyze Changes for Guidance**:
-         Analysis suggests: minor (3 new features, 1 bug fix)
-         ✅ User choice matches analysis
+         🔍 Found non-conventional commits, analyzing content for categorization...
+           📝 Non-conventional commit categorized as FEATURE: Add new API endpoint
+           🐛 Non-conventional commit categorized as FIX: Fix broken login
+           📚 Non-conventional commit categorized as DOCS: Update documentation
+         
+         📊 Non-conventional commit analysis complete:
+           - Features: 1
+           - Fixes: 1
+           - Breaking: 0
+           - Docs: 1
+           - Other: 0
+         
+         📈 Commit analysis summary:
+           - Breaking changes: 0
+           - New features: 3 (2 conventional + 1 non-conventional)
+           - Bug fixes: 2 (1 conventional + 1 non-conventional)
+           - Documentation: 1 (0 conventional + 1 non-conventional)
+           - Style/Refactor: 0
+           - Performance: 0
+           - Tests: 0
+           - Chores: 0
+           - Suggested version bump: minor
+         
+         Choose your version bump:
+         1) Major version: 1.5.0 → 2.0.0 (breaking changes)
+         2) Minor version: 1.5.0 → 1.6.0 (new features)
+         3) Patch version: 1.5.0 → 1.5.1 (bug fixes)
+         4) Custom version
+         
+         Enter your choice (1-4): 2
       
-      5.5. **Validate Version Bump Against Changes**:
-         🔍 Validating version bump against change analysis...
-         Analysis suggests: minor (breaking: 0, features: 3, fixes: 1)
-         User requested: minor
-         ✅ Version bump validation passed
-      
-      6. **Generate Structured Release Notes**:
-         # What's Changed in [PACKAGE_NAME] v2.1.0
+      5. **Generate Structured Release Notes**:
+         # What's Changed in [PACKAGE_NAME] v1.6.0
          
          **Release Date**: 2024-01-15
-         **Previous Version**: 2.0.0
+         **Previous Version**: 1.5.0
          **Version Bump**: MINOR - New features added
-         **Branch**: feature/new-features
+         **Branch**: release/v2.0.0
          
          ## 🚀 New Features
-         - **Add user dashboard** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Interactive user dashboard with analytics
-         - **Add export functionality** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Export data in multiple formats
-         - **Add notification system** ([i7j8k9l](https://github.com/user/repo/commit/i7j8k9l)) - Real-time notifications
+         - **Add user authentication system** ([a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)) - Implemented JWT-based authentication
+         - **Add dark mode support** ([e4f5g6h](https://github.com/user/repo/commit/e4f5g6h)) - Added theme switching functionality
+         - **Add new API endpoint** ([x9y0z1a](https://github.com/user/repo/commit/x9y0z1a)) - New REST API endpoint for data processing
          
          ## 🐛 Bug Fixes  
-         - **Fix authentication timeout** ([m1n2o3p](https://github.com/user/repo/commit/m1n2o3p)) - Resolved session timeout issues
+         - **Fix memory leak in data processing** ([m1n2o3p](https://github.com/user/repo/commit/m1n2o3p)) - Resolved issue with large dataset handling
+         - **Fix broken login** ([b2c3d4e](https://github.com/user/repo/commit/b2c3d4e)) - Resolved authentication issue
+         
+         ## 📚 Documentation
+         - **Update documentation** ([f5g6h7i](https://github.com/user/repo/commit/f5g6h7i)) - Updated API documentation and examples
       
-      7. **Generate Changelog** 📝
+      6. **Generate Changelog** 📝
          🔄 Now generating comprehensive changelog...
+         🔍 Categorizing non-conventional commits for changelog...
          ✅ Changelog generated successfully at ./changelog.md
-      
-      8. **Offer Version Bump Update** 🔄
-         🔄 Would you like me to automatically update the version in package.json?
-         Current version: 2.0.0
-         New version would be: 2.1.0
-         Update package.json version? (y/N): y
-         ✅ Updated package.json version to 2.1.0
-      
-      9. **Offer Git Tag Creation** 🏷️
-         🏷️ Would you like me to create a git tag for version 2.1.0?
-         This will create a tag that marks this exact point in your release.
-         
-         Create git tag v2.1.0? (y/N): y
-         🔄 Creating git tag v2.1.0...
-         
-         ❌ ERROR: Git tag v2.1.0 already exists!
-         
-         Existing tag details:
-         a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
-         John Doe
-         Mon Jan 15 10:30:00 2024 -0500
-         Release v2.1.0
-         
-         Options:
-         1. Use a different version number
-         2. Delete the existing tag (if you're sure it's safe)
-         3. Skip tag creation and create it manually later
-         
-         Choose option (1-3): 1
-         Please restart the release workflow with a different version number
-         ❌ Release workflow terminated due to tag conflict
-
-tests:
-  - input: "Create a release" (on main branch)
-    output: "Should warn user they're on main branch and suggest creating a feature branch"
-  
-  - input: "Make a release with minor version" (on feature branch with 3 feat commits, 1 fix commit)
-    output: "Should proceed with release notes generation, detect minor version bump, generate structured notes with proper categorization, create changelog.md, and offer package.json version update"
-  
-  - input: "Prepare release for v2.0.0" (on breaking-changes branch with 1 BREAKING commit, 2 feat commits)
-    output: "Should validate branch, detect custom version, analyze breaking changes, generate release notes highlighting breaking changes prominently, update changelog, and offer version bump with custom version"
-  
-  - input: "Generate release notes" (on main branch)
-    output: "Should block execution and provide guidance to create feature branch first"
-  
-  - input: "Tag this as a release" (on release/v1.3.0 branch with mixed commit types)
-    output: "Should proceed with release notes generation, provide version update commands, generate comprehensive changelog, and offer automatic version bumping"
-  
-  - input: "Create a patch release" (on hotfix branch with only fix commits)
-    output: "Should detect patch version bump, generate focused release notes on bug fixes, create changelog, and offer version update"
-  
-  - input: "Make a major release" (on feature branch with BREAKING commits)
-    output: "Should detect major version bump due to breaking changes, generate release notes with prominent breaking changes section, provide migration guidance, and offer version update"
-  
-  - input: "Release v3.1.0" (on branch with breaking changes but user specifies minor version)
-    output: "Should detect version mismatch, show critical error, list breaking changes, and terminate workflow unless user forces continue"
-  
-  - input: "Create release" (on branch with no commits since last tag)
-    output: "Should detect no new changes, suggest patch version or initial release, generate minimal release notes, and offer version update"
-  
-  - input: "Prepare release notes" (on master branch)
-    output: "Should block execution and provide guidance to create feature branch first"
-  
-  - input: "Make a release with custom version 4.2.1" (on feature branch with various commit types)
-    output: "Should accept custom version, generate release notes with proper categorization, create changelog, and offer version update with custom version"
-  
-  - input: "Generate release for version bump" (on main branch)
-    output: "Should block execution and provide clear instructions for creating release branch"
-  
-  - input: "Create release with major version" (on breaking-changes branch with only documentation commits)
-    output: "Should warn about version mismatch, proceed with user request, generate release notes, and offer version update"
-  
-  - input: "Tag release v1.0.0" (on release branch with initial release)
-    output: "Should handle initial release scenario, generate appropriate release notes, create changelog, and offer version update"
-  
-  - input: "Make a release" (on feature branch with merge commits only)
-    output: "Should filter out merge commits, analyze meaningful changes, generate release notes based on actual changes, and offer version update"
-  
-  - input: "Prepare release notes for deployment" (on main branch)
-    output: "Should block execution and provide guidance to create feature branch first"
-  
-  - input: "Create release with patch version" (on hotfix branch with security fixes)
-    output: "Should detect security-related fixes, generate release notes highlighting security improvements, create changelog, and offer version update"
-  
-  - input: "Generate release for version 5.0.0" (on feature branch with no breaking changes)
-    output: "Should warn about version choice, proceed with user request, generate release notes, create changelog, and offer version update"
-  
-  - input: "Make a release" (on release branch with only documentation and style changes)
-    output: "Should detect patch-level changes, generate release notes focusing on documentation and style improvements, create changelog, and offer version update"
-  
-  - input: "Create release with minor version" (on feature branch with feat and fix commits)
-    output: "Should detect minor version bump, generate balanced release notes, create changelog, and offer version update"
-  
-  - input: "Prepare release notes for tag" (on main branch)
-    output: "Should block execution and provide guidance to create feature branch first"
-  
-  - input: "Make a release" (on branch with conventional commits and PR references)
-    output: "Should parse conventional commits, extract PR references, generate release notes with proper links, create changelog, and offer version update"
-  
-  - input: "Create release v2.1.0" (on feature branch with existing tag v2.1.0)
-    output: "Should detect tag conflict, show existing tag details, provide resolution options (different version, delete tag, skip), and handle user choice appropriately"
-
-metadata:
-  priority: high
-  version: 1.0
-</rule>

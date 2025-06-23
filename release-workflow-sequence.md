@@ -27,6 +27,31 @@ sequenceDiagram
         A-->>U: Suggest creating release branch
         Note right of A: Workflow terminates here
     else Branch is feature/release branch
+        A->>A: Validate branch naming conventions
+        Note right of A: Check for "release/", "hotfix/", or "fix/" prefix<br/>Only allow appropriate release branches
+        
+        alt Branch doesn't start with allowed patterns
+            A-->>U: Show invalid branch error
+            A-->>U: Require "release/", "hotfix/", or "fix/" prefix
+            A-->>U: Provide examples of valid branches
+            A-->>U: Terminate workflow
+            Note right of A: Workflow ends here
+        else Branch starts with allowed pattern
+            A-->>U: Confirm branch validation passed
+        end
+        
+        A->>P: Validate package.json
+        Note right of P: Check file exists, valid JSON,<br/>required fields (name, version),<br/>semantic versioning format
+        
+        alt Package.json validation fails
+            A-->>U: Show validation error
+            A-->>U: Provide specific error details
+            A-->>U: Terminate workflow
+            Note right of A: Workflow ends here
+        else Package.json validation passes
+            A-->>U: Confirm package.json validation passed
+        end
+        
         A->>G: Get current version from package.json
         G-->>A: Return current version
         
@@ -38,6 +63,12 @@ sequenceDiagram
         
         A->>A: Categorize changes
         Note right of A: Features, Bug Fixes,<br/>Breaking Changes, Other
+        
+        A->>A: Analyze non-conventional commits
+        Note right of A: Intelligent categorization based on<br/>message content and file changes<br/>- Feature keywords: add, new, implement<br/>- Fix keywords: fix, bug, issue, problem<br/>- Breaking keywords: remove, delete, deprecate<br/>- Docs keywords: doc, readme, comment
+        
+        A->>A: Combine conventional and non-conventional
+        Note right of A: Merge categorized commits<br/>for comprehensive analysis
         
         A->>A: Suggest version bump
         Note right of A: Major: Breaking changes<br/>Minor: New features<br/>Patch: Bug fixes
@@ -73,6 +104,17 @@ sequenceDiagram
         
         A->>C: Generate/update changelog.md
         Note right of C: Follow Keep a Changelog format<br/>- Unreleased section<br/>- Version history<br/>- Comparison links
+        
+        A->>A: Check existing changelog
+        Note right of A: Backup existing changelog.md<br/>Validate Keep a Changelog format<br/>Preserve existing content if valid
+        
+        alt Existing changelog with valid format
+            A->>A: Update unreleased section
+            Note right of A: Replace [Unreleased] content<br/>Preserve version history<br/>Maintain existing structure
+        else No existing changelog or invalid format
+            A->>C: Create new changelog
+            Note right of C: Generate complete changelog<br/>Include all version history<br/>Add comparison links
+        end
         
         A-->>U: Offer package.json version update
         U-->>A: Confirm version update
@@ -182,33 +224,39 @@ sequenceDiagram
    - **Risk**: Previously caused git tag creation to fail, breaking workflow
    - **Status**: ✅ Fixed - workflow now handles tag conflicts gracefully with multiple resolution options
 
-3. **Branch Protection Bypass**
+3. **Branch Protection Bypass** ✅ **RESOLVED**
    - **Issue**: Workflow allows releases from any non-main branch
-   - **Current Behavior**: Accepts any branch name
-   - **Risk**: Releases from inappropriate branches (e.g., `wip/experimental`)
-   - **Recommendation**: Validate branch naming conventions
+   - **Previous Behavior**: Accepted any branch name without validation
+   - **New Behavior**: Only allows releases from branches starting with "release/", "hotfix/", or "fix/"
+   - **Implementation**: Added strict branch validation with regex pattern matching for appropriate release branches
+   - **Risk**: Previously allowed releases from inappropriate branches (e.g., `wip/experimental`)
+   - **Status**: ✅ Fixed - workflow now enforces proper branch naming conventions for releases
+
+4. **Incomplete Commit Analysis** ✅ **RESOLVED**
+   - **Issue**: Only analyzes conventional commit messages, ignores non-conventional commits
+   - **Previous Behavior**: Missing important changes in release notes and changelog
+   - **New Behavior**: Intelligent categorization of non-conventional commits based on message content and file changes
+   - **Implementation**: Added comprehensive analysis with keyword matching and file change detection
+   - **Risk**: Previously missed important changes, leading to incomplete release documentation
+   - **Status**: ✅ Fixed - workflow now includes all commits with intelligent fallback categorization
+
+5. **Package.json Validation** ✅ **RESOLVED**
+   - **Issue**: No validation of package.json structure and content
+   - **Previous Behavior**: Assumes valid package.json exists and contains required fields
+   - **New Behavior**: Comprehensive validation of file existence, JSON syntax, required fields, and version format
+   - **Implementation**: Added validation checks for file existence, JSON parsing, required fields (name, version), and semantic versioning format
+   - **Risk**: Previously failed with unclear errors if package.json was malformed or missing fields
+   - **Status**: ✅ Fixed - workflow now validates package.json before proceeding with release
+
+6. **Changelog Overwrite** ✅ **RESOLVED**
+   - **Issue**: Completely regenerates changelog.md, losing manual edits and custom formatting
+   - **Previous Behavior**: Replaces entire file content without preserving existing structure
+   - **New Behavior**: Intelligently preserves existing changelog content and merges new changes
+   - **Implementation**: Added backup functionality, format validation, and smart merging of unreleased sections
+   - **Risk**: Previously lost manual edits, custom formatting, and existing changelog structure
+   - **Status**: ✅ Fixed - workflow now preserves existing changelog content while adding new changes
 
 ### 🟡 Medium Issues
-
-4. **Incomplete Commit Analysis**
-   - **Issue**: Only analyzes conventional commit messages
-   - **Current Behavior**: Ignores non-conventional commits
-   - **Risk**: Missing important changes in release notes
-   - **Recommendation**: Include all commits with fallback categorization
-
-5. **Package.json Validation**
-   - **Issue**: No validation of package.json structure
-   - **Current Behavior**: Assumes valid package.json exists
-   - **Risk**: Workflow fails if package.json is malformed
-   - **Recommendation**: Validate package.json before version updates
-
-6. **Changelog Overwrite**
-   - **Issue**: Completely regenerates changelog.md
-   - **Current Behavior**: Replaces entire file content
-   - **Risk**: Loss of manual edits or custom formatting
-   - **Recommendation**: Preserve existing changelog and append new entries
-
-### 🟢 Minor Issues
 
 7. **User Input Validation**
    - **Issue**: No validation of custom version format
