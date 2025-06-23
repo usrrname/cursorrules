@@ -1,0 +1,209 @@
+---
+description: This rule analyzes commits to determine if they should trigger a version bump. It categorizes conventional and non-conventional commits into Features, Bug Fixes, Breaking Changes, Documentation, and Other. It uses intelligent keyword matching for non-conventional commits and analyzes file changes to help categorize documentation commits. It provides comprehensive change summaries for version bump suggestions and handles cases where no commits exist since last tag.
+globs: package.json, package-lock.json
+alwaysApply: false
+---
+# Release Commit Analysis
+
+## Critical Rules
+
+- Must analyze both conventional and non-conventional commit messages
+- Must categorize commits into Features, Bug Fixes, Breaking Changes, Documentation, and Other
+- Must use intelligent keyword matching for non-conventional commits
+- Must analyze file changes to help categorize documentation commits
+- Must provide comprehensive change summaries for version bump suggestions
+- Must handle cases where no commits exist since last tag
+
+<rule>
+name: release-commit-analysis-auto
+
+filters:
+  - type: content
+    pattern: "(release|version|tag|bump|publish|deploy).*(create|make|generate|prepare|ready)"
+  - type: git_branch
+    pattern: "^(?!main$|master$).*$"
+  - type: event
+    pattern: "chat_start|chat_response"
+
+actions:
+  - type: generate
+    content: |
+
+    ## 📊 Commit Analysis Process
+      
+      I'll analyze your commits to categorize changes and suggest appropriate version bumps.
+      
+      1. **Check User Request for Version Bump**:
+         ```bash
+         # Check if user specified version bump in their request
+         if [[ "$USER_REQUEST" == *"major"* ]] || [[ "$USER_REQUEST" == *"Major"* ]]; then
+           VERSION_BUMP="major"
+           echo "User requested major version bump"
+         elif [[ "$USER_REQUEST" == *"minor"* ]] || [[ "$USER_REQUEST" == *"Minor"* ]]; then
+           VERSION_BUMP="minor"
+           echo "User requested minor version bump"
+         elif [[ "$USER_REQUEST" == *"patch"* ]] || [[ "$USER_REQUEST" == *"Patch"* ]]; then
+           VERSION_BUMP="patch"
+           echo "User requested patch version bump"
+         else
+           VERSION_BUMP=""
+           echo "No version bump specified by user"
+         fi
+         ```
+      
+      2. **Analyze Changes for Guidance**:
+         ```bash
+         # Get all commits since that tag with full details
+         COMMITS=$(git log --oneline --no-merges $LATEST_TAG..HEAD)
+         
+         # Get detailed commit information for better analysis
+         COMMIT_DETAILS=$(git log --format="%H%n%s%n%b" --no-merges $LATEST_TAG..HEAD)
+         
+         # Analyze conventional commit types for version bump suggestion
+         BREAKING_COUNT=$(echo "$COMMITS" | grep -c "BREAKING:" || echo "0")
+         FEAT_COUNT=$(echo "$COMMITS" | grep -c "feat:" || echo "0")
+         FIX_COUNT=$(echo "$COMMITS" | grep -c "fix:" || echo "0")
+         DOCS_COUNT=$(echo "$COMMITS" | grep -c "docs:" || echo "0")
+         STYLE_COUNT=$(echo "$COMMITS" | grep -c "style:" || echo "0")
+         REFACTOR_COUNT=$(echo "$COMMITS" | grep -c "refactor:" || echo "0")
+         PERF_COUNT=$(echo "$COMMITS" | grep -c "perf:" || echo "0")
+         TEST_COUNT=$(echo "$COMMITS" | grep -c "test:" || echo "0")
+         CHORE_COUNT=$(echo "$COMMITS" | grep -c "chore:" || echo "0")
+         
+         # Analyze non-conventional commits with intelligent categorization
+         NON_CONVENTIONAL_COMMITS=$(echo "$COMMITS" | grep -v "^(feat|fix|docs|style|refactor|perf|test|chore):" | grep -v "BREAKING:")
+         
+         if [ -n "$NON_CONVENTIONAL_COMMITS" ]; then
+           echo "🔍 Found non-conventional commits, analyzing content for categorization..."
+           
+           # Initialize counters for non-conventional commits
+           NC_FEAT_COUNT=0
+           NC_FIX_COUNT=0
+           NC_BREAKING_COUNT=0
+           NC_DOCS_COUNT=0
+           NC_OTHER_COUNT=0
+           
+           # Analyze each non-conventional commit
+           while IFS= read -r commit; do
+             HASH=$(echo "$commit" | cut -d' ' -f1)
+             MESSAGE=$(echo "$commit" | cut -d' ' -f2-)
+             
+             # Get files changed in this commit
+             FILES_CHANGED=$(git show --name-only --format="" "$HASH" 2>/dev/null)
+             
+             # Categorize based on message content and file changes
+             if [[ "$MESSAGE" =~ (add|new|implement|create|introduce|support|enable|feature) ]]; then
+               NC_FEAT_COUNT=$((NC_FEAT_COUNT + 1))
+               echo "  📝 Non-conventional commit categorized as FEATURE: $MESSAGE"
+             elif [[ "$MESSAGE" =~ (fix|bug|issue|problem|error|crash|fail|broken|resolve|correct) ]]; then
+               NC_FIX_COUNT=$((NC_FIX_COUNT + 1))
+               echo "  🐛 Non-conventional commit categorized as FIX: $MESSAGE"
+             elif [[ "$MESSAGE" =~ (BREAKING|breaking|remove|delete|drop|deprecate|change|update|upgrade|migrate) ]]; then
+               NC_BREAKING_COUNT=$((NC_BREAKING_COUNT + 1))
+               echo "  💥 Non-conventional commit categorized as BREAKING: $MESSAGE"
+             elif [[ "$MESSAGE" =~ (doc|readme|comment|example|guide|tutorial) ]] || echo "$FILES_CHANGED" | grep -q "\.md$\|\.txt$\|docs/\|README"; then
+               NC_DOCS_COUNT=$((NC_DOCS_COUNT + 1))
+               echo "  📚 Non-conventional commit categorized as DOCS: $MESSAGE"
+             else
+               NC_OTHER_COUNT=$((NC_OTHER_COUNT + 1))
+               echo "  🔧 Non-conventional commit categorized as OTHER: $MESSAGE"
+             fi
+           done <<< "$NON_CONVENTIONAL_COMMITS"
+           
+           # Add non-conventional counts to conventional counts
+           FEAT_COUNT=$((FEAT_COUNT + NC_FEAT_COUNT))
+           FIX_COUNT=$((FIX_COUNT + NC_FIX_COUNT))
+           BREAKING_COUNT=$((BREAKING_COUNT + NC_BREAKING_COUNT))
+           DOCS_COUNT=$((DOCS_COUNT + NC_DOCS_COUNT))
+           
+           echo "📊 Non-conventional commit analysis complete:"
+           echo "  - Features: $NC_FEAT_COUNT"
+           echo "  - Fixes: $NC_FIX_COUNT"
+           echo "  - Breaking: $NC_BREAKING_COUNT"
+           echo "  - Docs: $NC_DOCS_COUNT"
+           echo "  - Other: $NC_OTHER_COUNT"
+         fi
+         
+         # Determine version bump suggestion based on all analyzed commits
+         if [ "$BREAKING_COUNT" -gt 0 ]; then
+           SUGGESTED_BUMP="major"
+         elif [ "$FEAT_COUNT" -gt 0 ]; then
+           SUGGESTED_BUMP="minor"
+         elif [ "$FIX_COUNT" -gt 0 ]; then
+           SUGGESTED_BUMP="patch"
+         else
+           SUGGESTED_BUMP="patch"
+         fi
+         
+         echo "📈 Commit analysis summary:"
+         echo "  - Breaking changes: $BREAKING_COUNT"
+         echo "  - New features: $FEAT_COUNT"
+         echo "  - Bug fixes: $FIX_COUNT"
+         echo "  - Documentation: $DOCS_COUNT"
+         echo "  - Style/Refactor: $((STYLE_COUNT + REFACTOR_COUNT))"
+         echo "  - Performance: $PERF_COUNT"
+         echo "  - Tests: $TEST_COUNT"
+         echo "  - Chores: $CHORE_COUNT"
+         echo "  - Suggested version bump: $SUGGESTED_BUMP"
+         ```
+
+examples:
+  - input: |
+      User: "Create a release"
+      Commits: 2 feat commits, 1 fix commit, 3 non-conventional commits
+      Non-conventional: "Add new API endpoint", "Fix broken login", "Update docs"
+    output: |
+      ## 📊 Commit Analysis Process
+      
+      🔍 Found non-conventional commits, analyzing content for categorization...
+        📝 Non-conventional commit categorized as FEATURE: Add new API endpoint
+        🐛 Non-conventional commit categorized as FIX: Fix broken login
+        📚 Non-conventional commit categorized as DOCS: Update docs
+      
+      📊 Non-conventional commit analysis complete:
+        - Features: 1
+        - Fixes: 1
+        - Breaking: 0
+        - Docs: 1
+        - Other: 0
+      
+      📈 Commit analysis summary:
+        - Breaking changes: 0
+        - New features: 3 (2 conventional + 1 non-conventional)
+        - Bug fixes: 2 (1 conventional + 1 non-conventional)
+        - Documentation: 1 (0 conventional + 1 non-conventional)
+        - Suggested version bump: minor
+
+  - input: |
+      User: "Create a release"
+      Commits: 1 BREAKING commit, 2 feat commits
+    output: |
+      ## 📊 Commit Analysis Process
+      
+      📈 Commit analysis summary:
+        - Breaking changes: 1
+        - New features: 2
+        - Bug fixes: 0
+        - Documentation: 0
+        - Suggested version bump: major
+
+tests:
+  - input: "Create release with conventional commits only"
+    output: "Should categorize conventional commits and suggest version bump"
+  
+  - input: "Create release with mixed conventional and non-conventional commits"
+    output: "Should analyze both types and provide comprehensive summary"
+  
+  - input: "Create release with breaking changes"
+    output: "Should suggest major version bump"
+  
+  - input: "Create release with new features only"
+    output: "Should suggest minor version bump"
+  
+  - input: "Create release with bug fixes only"
+    output: "Should suggest patch version bump"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>
