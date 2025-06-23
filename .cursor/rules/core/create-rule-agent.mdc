@@ -31,6 +31,7 @@ The front matter section must always start the file and include all 3 fields, ev
 
 ## Critical Rules
 - Every cursor rule MUST start with YAML frontmatter at the very top of the file.
+- Every rule's front matter description MUST have an accurate and concise summary of the purpose of the rule and when it will take effect. 
 - Rule files will be located and named ALWAYS as: `.cursor/rules/{organizing-folder}/rule-name-{auto|agent|manual|always}.mdc`
 - Any cursor rule file must contain a concise list of rules 
 - Any cursor rule file should also state conditions that violate the rules
