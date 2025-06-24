@@ -95,7 +95,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Rule System** - Foundational rule system for code standards
 - **Package Structure** - Initial npm package structure and configuration
 
-[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.1.4...HEAD
+## [v0.2.1] - 2025-06-24
+
+### 🐛 Fixed
+- **Front matter description population** ([#27](https://github.com/usrrname/cursorrules/pull/27)) - Fixed inconsistent description field in generated rule front matter
+- **Publish workflow version validation** ([#25](https://github.com/usrrname/cursorrules/pull/25)) - Ensured package.json version is validated against release tags during publish workflow
+
+### 📚 Documentation
+- **Release documentation for v0.2.0** ([#24](https://github.com/usrrname/cursorrules/pull/24)) - Added comprehensive release notes and changelog updates for previous version
+
+---
+
+[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.2.1...HEAD
+[v0.2.1]: https://github.com/usrrname/cursorrules/compare/v0.2.0...v0.2.1
 [v0.1.4]: https://github.com/usrrname/cursorrules/compare/v0.1.3...v0.1.4
 [v0.1.3]: https://github.com/usrrname/cursorrules/compare/v0.1.2...v0.1.3
 [v0.1.2]: https://github.com/usrrname/cursorrules/compare/v0.1.1...v0.1.2
