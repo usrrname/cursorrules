@@ -6,69 +6,53 @@ alwaysApply: false
 # Git Commit Standards
 
 ## Critical Rules
-- This rule MUST be followed by ALL AI agents without exception
-- This rule should use `git status` to check what files are currently modified and/or staged so as not to:
-  - overwrite files
-  - push unintended files or changes to remote repository
-- Commits in Agent mode MUST follow the conventional-commit standard defined below
-- Always run `git add <filename>` from repository root when asked to commit code.
-- The committed files may be added from Cursor context.
-- Commits should use present tense ("add" not "added")
-- First line should not exceed 72 characters
-- Reference GitHub issue or ticket number with # if there is a ticketing system used.
-- Describe what and why, not how
-- Fixes should describe what error or problem was fixed or what behaviour no longer happens
-- Separate subject from body with blank line
-- Use imperative mood in subject line
-- Include the name of the specific custom agent (e.g. "Commit written by Spellchuck") at the end of commit
+
+- All AI agents MUST follow this rule
+- Use `git status` to check modified or staged files before committing
+- Never overwrite or push unintended files
+- Commits MUST follow the conventional-commit standard
+- Always run `git add <filename>` from repo root
+- Use present tense in commit subject ("add" not "added")
+- Subject ≤ 72 chars, imperative mood, blank line before body
+- Reference issue/ticket with # if used
+- Describe what or why, not how changes were made; fixes must state what was fixed
+- Include agent name in commit footer ("Commit written by <agent_name>")
 
 ### Commit Format
+```
+<type>(<scope>): <description> (#<issue-number>)
 
-The format of the commit MUST be as follows (NO EXCEPTIONS): 
+[optional body]
 
-  ```
-  <type>(<scope>): <description> (#<issue-number>)
+[optional footer]
 
-  [optional body]
+Commit written by <agent_name>
+```
 
-  [optional footer]
-
-  Commit written by <agent_name>
-  ```
-  If the user didn't specify any particular agent, the commit will just say it is written by "cursor agent"
-
-  The commit type must be one of:
-    - feat: A new feature
-    - fix: A bug fix
-    - docs: Documentation only changes
-    - style: Changes that don't affect the meaning of the code
-    - refactor: A code change that neither fixes a bug nor adds a feature
-    - perf: A code change that improves performance
-    - test: Adding missing tests or correcting existing tests
-    - chore: Changes to the build process or auxiliary tools
-    - ci: Changes to CI configuration files and scripts
-    - security: Changes made to codebase due to security threats or prevention of malicious attacks
+- If agent not specified, use "cursor agent"
+- Types: feat, fix, docs, style, refactor, perf, test, chore, ci, security
 
 ### Post-Commit Actions
 
-Post-commit actions (such as `npm run lint` or `git push origin <branch>`) are **not** to be included in the commit message text. These are commands intended to be run after the user approves the commit and wants to push the commit to the remote branch. The agent should suggest these actions separately after a successful commit.
+- Do NOT include post-commit commands (e.g., `npm run lint`, `git push`) in commit message
+- Suggest these actions separately after commit
 
-### AI Agent Enforcement
+### Agent Enforcement
 
-All AI agents must:
-1. Always check for existing changed files via `git status` before committing
-2. Never use generic commit messages like "update code" or "commit changes"
-3. Always identify the type of change according to conventional commit standards
-4. Include a meaningful scope that indicates which part of the codebase is affected
-5. Provide a clear, concise description in the imperative mood
-6. Add their agent name as the author in the commit footer
-7. Convert user instructions for commits into proper conventional commit format automatically
-8. If a user types simply "commit" or "gcm", the agent must prompt for or infer the appropriate conventional commit content
+- Always check `git status` before commit
+- Never use generic messages ("update code", "commit changes")
+- Identify change type per conventional commit
+- Commit body should be concise and brief, and should not exceed 50 words
+- Use meaningful scope (codebase area)
+- Clear, concise, imperative subject
+- Add agent name as author
+- Convert user commit instructions to proper format
+- If user types "commit"/"gcm", prompt or infer proper message
 
 <rule>
 name: git-commit
-description: This rule is crucial for keeping track of changes made by cursor agents, and should run whenever the user expresses they want to commit or push code changes made by the agent. It should also accept being invoked by the git aliases, "gpu" or "gc", "gcm" while asking the user if they would prefer to autoRun the command going forward.
 version: 1.0
+description: Enforces conventional commit standards for all agent commits and pushes. Invoked on commit/push requests or git aliases (gc, gcm, gpu). Prompts for or infers proper message if user input is vague.
 filters:
   - type: file_extension
     pattern: "COMMIT_EDITMSG$"
@@ -76,7 +60,7 @@ filters:
     pattern: "(pre_commit|post_commit)"
   - type: content
     pattern: "(commit|push|gc|gcm|gpu)"
-  
+
 examples:
   - input: |
       added new feature
@@ -88,9 +72,6 @@ examples:
       Breaking change: requires new environment variables for JWT secret
 
       Commit written by KawaiiSamurai
-
-    # Post-commit actions (not included in commit message):
-    # npm run lint && git push origin feature/auth
   - input: |
       fixing bug
     output: |
@@ -100,9 +81,6 @@ examples:
       - Add connection retry logic
 
       Commit written by SageDaddy
-
-    # Post-commit actions (not included in commit message):
-    # npm run lint && git push origin fix/timeout
   - input: |
       update docs
     output: |
@@ -111,9 +89,6 @@ examples:
       Make setup steps clearer for new contributors
 
       Commit written by Spellchuck
-
-    # Post-commit actions (not included in commit message):
-    # npm run lint && git push origin docs/readme-update
 
 tests:
   - input: "updated code"
