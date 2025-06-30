@@ -54,7 +54,7 @@ jobs:
           commits=$(gh pr view ${{ github.event.pull_request.number }} --json commits | jq -r '.commits[] | [.messageHeadline + .messageBody] | join("\n")' )
           
           # Get the existing PR body 
-          existing_description=$(gh pr view ${{ github.event.pull_request.number }} --json body | jq -r '.body + "\n\n" + "## Changes\n\n"')
+          existing_description=$(gh pr view ${{ github.event.pull_request.number }} --json body | jq -r '.body + "\n\n" + "## Changes" + "\n\n"')
           
           # Update the PR description
           gh pr edit ${{ github.event.pull_request.number }} --body "$existing_description  $commits"
