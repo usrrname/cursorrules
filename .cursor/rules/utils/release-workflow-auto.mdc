@@ -7,6 +7,7 @@ alwaysApply: false
 
 ## Critical Rules
 
+- The release notes file must always be titled RELEASE_NOTES.md (never versioned or otherwise)
 - Must only trigger when user asks to create a release (release, version, tag, etc.)
 - Must coordinate with specialized release rules for validation, analysis, versioning, and tag management
 - Must provide structured release notes and documentation
@@ -78,6 +79,7 @@ actions:
       4. **Generate Structured Release Notes**:
          ```bash
          RELEASE_DATE=$(date +%Y-%m-%d)
+         RELEASE_NOTES_FILE="RELEASE_NOTES.md"
          ```
          ```markdown
          # What's Changed in [PACKAGE_NAME] v[NEW_VERSION]
@@ -153,7 +155,7 @@ actions:
          echo "Once the PR is merged, the publishing Github Actions workflow will be triggered."
          echo ""
          echo "📁 Generated files:"
-         echo "- Release notes: RELEASE_NOTES_v$CURRENT_VERSION_to_v$NEW_VERSION.md"
+         echo "- Release notes: RELEASE_NOTES.md"
          echo "- Changelog: changelog.md"
          echo ""
          echo "🔗 Useful links:"
