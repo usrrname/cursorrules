@@ -7,23 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### 🚀 Added
-- **Enhanced Release Workflow System** ([4d55747](https://github.com/usrrname/cursorrules/commit/4d557478c9298381a515c374455a7aba721d0853)) - Comprehensive release workflow with branch validation, package.json validation, and structured changelog generation
-- **FairWitness Agent** ([fc530a5](https://github.com/usrrname/cursorrules/commit/fc530a5c4650dc2f068096b6128c2a907f2f3c70)) - Provides structured, objective analysis using five epistemological functions
-- **DependencyAnalysis Agent** ([fc530a5](https://github.com/usrrname/cursorrules/commit/fc530a5c4650dc2f068096b6128c2a907f2f3c70)) - Evaluates dependencies for maintenance frequency, security vulnerabilities, and popularity metrics
-- **SecurityScan Agent** ([fc530a5](https://github.com/usrrname/cursorrules/commit/fc530a5c4650dc2f068096b6128c2a907f2f3c70)) - Performs comprehensive security scanning, including CVE analysis and license compliance
-- **Branch Validation System** - Only allows releases from branches starting with "release/", "hotfix/", or "fix/"
-- **Intelligent Commit Analysis** - Enhanced commit categorization including non-conventional commits
+---
 
-### 💥 Changed
-- **Release Workflow Code Splitting** ([4d55747](https://github.com/usrrname/cursorrules/commit/4d557478c9298381a515c374455a7aba721d0853)) - Improved validation and structured documentation with specialized release rules
-- **Models Configuration Update** ([fc530a5](https://github.com/usrrname/cursorrules/commit/fc530a5c4650dc2f068096b6128c2a907f2f3c70)) - Updated to claude-4-sonnet for various agents and reorganized model categories
+## [v0.3.0] - 2025-01-12
+
+### 🚀 Added
+- **Cloudflare Workers Development Standards** ([0272363](https://github.com/usrrname/cursorrules/commit/0272363)) - Comprehensive standards for Cloudflare Workers development with general best practices
+- **Cloudflare Workers with Hono Framework** ([0272363](https://github.com/usrrname/cursorrules/commit/0272363)) - Specialized standards for using the Hono framework with Cloudflare Workers, including TypeScript integration and framework-specific patterns
+- **Enhanced Environment Security** ([1db2a6d](https://github.com/usrrname/cursorrules/commit/1db2a6d)) - Added varlock integration with environment schema and type definitions for TAVILY_API_KEY
+
+### 🔧 Technical Improvements
+- **Environment Schema Updates** ([1db2a6d](https://github.com/usrrname/cursorrules/commit/1db2a6d)) - Updated `.env.schema` to mark sensitive variables appropriately with proper documentation
+- **Type Definitions** ([1db2a6d](https://github.com/usrrname/cursorrules/commit/1db2a6d)) - Enhanced TypeScript definitions for better development experience and type safety
+- **Package Dependencies** ([1db2a6d](https://github.com/usrrname/cursorrules/commit/1db2a6d)) - Updated to support new security features and varlock integration
 
 ### 📚 Documentation
-- **Release Workflow Sequence Diagram** ([4d55747](https://github.com/usrrname/cursorrules/commit/4d557478c9298381a515c374455a7aba721d0853)) - New `release-workflow-sequence.md` illustrating automated release workflow process
-- **Updated Models Documentation** ([fc530a5](https://github.com/usrrname/cursorrules/commit/fc530a5c4650dc2f068096b6128c2a907f2f3c70)) - Enhanced `modes-format.md` with new model listings and improved organization
-- **Fixed CONTRIBUTING.md** ([fc530a5](https://github.com/usrrname/cursorrules/commit/fc530a5c4650dc2f068096b6128c2a907f2f3c70)) - Corrected broken link in contributing documentation
-- **Changelog for v0.1.4** ([83a838c](https://github.com/usrrname/cursorrules/commit/83a838c5451734bc06a014376ea17f4caa73d8ed)) - Added comprehensive changelog documentation
+- **Cloudflare Workers Guidelines** ([0272363](https://github.com/usrrname/cursorrules/commit/0272363)) - Comprehensive examples and usage guidelines for both general Workers development and Hono framework integration
+- **Environment Variable Documentation** ([1db2a6d](https://github.com/usrrname/cursorrules/commit/1db2a6d)) - Enhanced documentation for secure configuration management
 
 ---
 
@@ -106,7 +106,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/usrrname/cursorrules/compare/v0.2.2...v0.3.0
+[v0.2.2]: https://github.com/usrrname/cursorrules/compare/v0.2.1...v0.2.2
 [v0.2.1]: https://github.com/usrrname/cursorrules/compare/v0.2.0...v0.2.1
 [v0.1.4]: https://github.com/usrrname/cursorrules/compare/v0.1.3...v0.1.4
 [v0.1.3]: https://github.com/usrrname/cursorrules/compare/v0.1.2...v0.1.3
