@@ -1,0 +1,10 @@
+{
+  "terminals": [
+    {
+      "name": "default",
+      "command": "zsh"
+    }
+  ],
+
+  "install": "npm install"
+}
