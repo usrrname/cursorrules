@@ -1,0 +1,417 @@
+---
+description: Cloudflare Workers development standards and best practices
+globs: *.worker.{js,ts},**/workers/**/*.{js,ts},**/src/index.{js,ts},wrangler.{json,jsonc,toml}
+alwaysApply: false
+---
+
+# Cloudflare Workers Development Standards
+
+Enforces best practices for developing Cloudflare Workers including proper configuration, modern patterns, security, and performance optimization based on official Cloudflare documentation.
+
+## Critical Rules
+
+- Workers MUST use TypeScript by default unless JavaScript is specifically requested
+- Workers MUST use ES modules format exclusively (NEVER use Service Worker format)
+- Workers MUST use the modern `export default` pattern instead of `addEventListener`
+- Configuration MUST use `wrangler.jsonc` (not `wrangler.toml`)
+- Workers MUST import all methods, classes and types used in the code
+- Workers MUST keep all code in a single file unless otherwise specified
+- Workers MUST use official SDKs when available for external services
+- Workers MUST never bake secrets into the code
+- Workers MUST implement proper error handling and logging
+- Workers MUST use appropriate Cloudflare integrations for data storage
+- Workers MUST follow security best practices and input validation
+- Workers MUST use WebSocket Hibernation API for Durable Objects WebSockets
+
+<rule>
+name: cloudflare-workers-modern-pattern
+description: Enforce modern export default pattern over legacy addEventListener
+filters:
+  - type: content
+    pattern: "addEventListener\\s*\\(\\s*['\"]fetch['\"]"
+actions:
+  - type: suggest
+    message: |
+      Use modern export default pattern instead of legacy addEventListener:
+      ```typescript
+      export default {
+        async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+          return new Response('Hello World!', { status: 200 });
+        }
+      };
+      ```
+examples:
+  - input: |
+      addEventListener('fetch', event => {
+        event.respondWith(handleRequest(event.request));
+      });
+    output: |
+      export default {
+        async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+          return handleRequest(request);
+        }
+      };
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: cloudflare-workers-typescript-types
+description: Ensure proper TypeScript types and interfaces are used
+filters:
+  - type: file_extension
+    pattern: "\\.ts$"
+  - type: content
+    pattern: "(request|env|ctx)\\s*:"
+actions:
+  - type: validate
+    conditions:
+      - pattern: "async fetch\\([^)]*\\)\\s*:"
+        message: |
+          Define proper TypeScript types for fetch handler:
+          ```typescript
+          interface Env {
+            // Define your environment bindings here
+            MY_KV: KVNamespace;
+            MY_D1: D1Database;
+          }
+          
+          export default {
+            async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+              // Your code here
+            }
+          };
+          ```
+examples:
+  - input: |
+      export default {
+        async fetch(request, env, ctx) {
+          return new Response('Hello');
+        }
+      };
+    output: |
+      interface Env {
+        // Define your environment bindings here
+      }
+      
+      export default {
+        async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+          return new Response('Hello', { status: 200 });
+        }
+      };
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: cloudflare-workers-wrangler-config
+description: Enforce wrangler.jsonc configuration best practices
+filters:
+  - type: file_name
+    pattern: "wrangler\\.(json|jsonc|toml)$"
+actions:
+  - type: suggest
+    conditions:
+      - pattern: "\\.toml$"
+        message: |
+          Use wrangler.jsonc instead of wrangler.toml:
+          ```jsonc
+          {
+            "name": "my-worker",
+            "main": "src/index.ts",
+            "compatibility_date": "2025-02-11",
+            "compatibility_flags": ["nodejs_compat"],
+            "observability": {
+              "enabled": true
+            }
+          }
+          ```
+  - type: validate
+    conditions:
+      - pattern: "compatibility_date.*2024"
+        message: "Update compatibility_date to current date (2025-02-11 or later)"
+      - pattern: "(?!.*nodejs_compat)"
+        message: "Include nodejs_compat in compatibility_flags"
+      - pattern: "(?!.*observability)"
+        message: "Enable observability for logging"
+examples:
+  - input: |
+      # wrangler.toml
+      name = "my-worker"
+      main = "src/index.js"
+    output: |
+      // wrangler.jsonc
+      {
+        "name": "my-worker",
+        "main": "src/index.ts",
+        "compatibility_date": "2025-02-11",
+        "compatibility_flags": ["nodejs_compat"],
+        "observability": {
+          "enabled": true
+        }
+      }
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: cloudflare-workers-response-patterns
+description: Enforce proper Response object patterns
+filters:
+  - type: content
+    pattern: "new Response\\("
+actions:
+  - type: validate
+    conditions:
+      - pattern: "new Response\\([^)]*\\)(?![\\s\\S]*status\\s*:)"
+        message: |
+          Always include explicit status codes in Response objects:
+          ```typescript
+          return new Response('Success', { status: 200 });
+          return new Response('Not Found', { status: 404 });
+          return new Response('Internal Server Error', { status: 500 });
+          ```
+  - type: suggest
+    conditions:
+      - pattern: "throw new Error"
+        message: |
+          Return proper error responses instead of throwing:
+          ```typescript
+          // Bad
+          throw new Error('Something went wrong');
+          
+          // Good
+          return new Response('Internal Server Error', { status: 500 });
+          ```
+examples:
+  - input: |
+      return new Response('Hello');
+    output: |
+      return new Response('Hello', { 
+        status: 200,
+        headers: { 'Content-Type': 'text/plain' }
+      });
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+<rule>
+name: cloudflare-workers-url-handling
+description: Enforce proper URL parsing and handling
+filters:
+  - type: content
+    pattern: "request\\.url"
+actions:
+  - type: validate
+    conditions:
+      - pattern: "request\\.url(?![\\s\\S]*new URL\\()"
+        message: |
+          Parse URLs properly using URL constructor:
+          ```typescript
+          const url = new URL(request.url);
+          const pathname = url.pathname;
+          const searchParams = url.searchParams;
+          ```
+examples:
+  - input: |
+      const path = request.url.split('?')[0];
+    output: |
+      const url = new URL(request.url);
+      const pathname = url.pathname;
+      const searchParams = url.searchParams;
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+<rule>
+name: cloudflare-workers-websocket-hibernation
+description: Enforce WebSocket Hibernation API for Durable Objects
+filters:
+  - type: content
+    pattern: "(WebSocket|webSocket)"
+  - type: content
+    pattern: "DurableObject"
+actions:
+  - type: validate
+    conditions:
+      - pattern: "server\\.accept\\(\\)"
+        message: |
+          Use WebSocket Hibernation API instead of legacy WebSocket API:
+          ```typescript
+          // Bad
+          server.accept();
+          
+          // Good
+          this.ctx.acceptWebSocket(server);
+          ```
+  - type: suggest
+    conditions:
+      - pattern: "class.*DurableObject"
+        message: |
+          Implement webSocketMessage handler for WebSocket Hibernation:
+          ```typescript
+          class MyDurableObject {
+            async webSocketMessage(ws: WebSocket, message: string | ArrayBuffer) {
+              // Handle WebSocket messages here
+            }
+          }
+          ```
+examples:
+  - input: |
+      server.accept();
+    output: |
+      this.ctx.acceptWebSocket(server);
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: cloudflare-workers-security-headers
+description: Enforce security best practices and headers
+filters:
+  - type: content
+    pattern: "new Response\\("
+actions:
+  - type: suggest
+    conditions:
+      - pattern: "new Response\\([^)]*\\)(?![\\s\\S]*headers)"
+        message: |
+          Consider adding security headers:
+          ```typescript
+          return new Response('Hello', {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/plain',
+              'X-Content-Type-Options': 'nosniff',
+              'X-Frame-Options': 'DENY',
+              'X-XSS-Protection': '1; mode=block'
+            }
+          });
+          ```
+examples:
+  - input: |
+      return new Response('Hello', { status: 200 });
+    output: |
+      return new Response('Hello', {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/plain',
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY'
+        }
+      });
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+<rule>
+name: cloudflare-workers-imports
+description: Enforce proper imports for Cloudflare services
+filters:
+  - type: content
+    pattern: "import.*@cloudflare"
+actions:
+  - type: validate
+    conditions:
+      - pattern: "puppeteer"
+        message: |
+          Use official Cloudflare Puppeteer package:
+          ```typescript
+          import puppeteer from "@cloudflare/puppeteer";
+          ```
+examples:
+  - input: |
+      import puppeteer from "puppeteer";
+    output: |
+      import puppeteer from "@cloudflare/puppeteer";
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+## Cloudflare Service Integration Guidelines
+
+### Data Storage Services
+- **Workers KV**: Key-value storage for configuration, user profiles, A/B testing
+- **Durable Objects**: Strongly consistent state, multiplayer coordination, agent use-cases
+- **D1**: Relational data with SQL dialect
+- **R2**: Object storage for structured data, AI assets, images, uploads
+- **Hyperdrive**: Connect to existing PostgreSQL databases
+- **Queues**: Asynchronous processing and background tasks
+- **Vectorize**: Embeddings and vector search (with Workers AI)
+- **Analytics Engine**: User events, billing, metrics, analytics
+- **Workers AI**: Default AI API for inference requests
+
+### Configuration Template
+```jsonc
+{
+  "name": "my-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-02-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "ENVIRONMENT": "production"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "MY_KV",
+      "id": "your-kv-namespace-id"
+    }
+  ]
+}
+```
+
+tests:
+  - input: |
+      addEventListener('fetch', event => {
+        event.respondWith(new Response('Hello'));
+      });
+    output: |
+      export default {
+        async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+          return new Response('Hello', { status: 200 });
+        }
+      };
+
+  - input: |
+      export default {
+        async fetch(request, env, ctx) {
+          const url = request.url;
+          return new Response('Hello');
+        }
+      };
+    output: |
+      interface Env {
+        // Define your environment bindings here
+      }
+      
+      export default {
+        async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+          const url = new URL(request.url);
+          return new Response('Hello', { status: 200 });
+        }
+      };
+
+  - input: |
+      server.accept();
+    output: |
+      this.ctx.acceptWebSocket(server);
+
+  - input: |
+      throw new Error('Failed to process');
+    output: |
+      return new Response('Internal Server Error', { status: 500 });
+description:
+globs:
+alwaysApply: false
+---
