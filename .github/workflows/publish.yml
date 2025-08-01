@@ -5,8 +5,8 @@ on:
     types: [created, edited]  # Trigger on release creation or edit
   pull_request:               # Trigger on merge to main
     types: [closed]
-    branches: [main]                      # Trigger on push to tags
-
+    branches: [main]          # Trigger on push to tags
+  workflow_dispatch:
 jobs:
   prepare-version:
     runs-on: ubuntu-latest
