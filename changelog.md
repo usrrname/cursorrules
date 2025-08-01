@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.4.0] - 2025-01-23
+
+### ⚡ Performance
+- **Token Efficiency Optimization** ([dce194b](https://github.com/usrrname/cursorrules/commit/dce194bb4369b31efb56f5a6a5d876891f86d9e5)) - Shortened fair witness, TypeScript standards and agent-communication rules for improved token efficiency (#36)
+
+### 🐛 Fixed
+- **Publish Workflow Exit Handling** ([8e31890](https://github.com/usrrname/cursorrules/commit/8e31890b3872c5a2ca664752c90a0da87e3ef4a3)) - Updated publish workflow to allow non-tag events to exit gracefully
+
+### 🔧 Technical Improvements
+- **CI Workflow Enhancement** ([5168d7b](https://github.com/usrrname/cursorrules/commit/5168d7bf27a5a7cf6953b1cb94317fd5e5a3f6af)) - Added condition to check if package.json version is extracted in publish workflow
+- **Environment and Dependencies Update** ([c4c8568](https://github.com/usrrname/cursorrules/commit/c4c85686debef46dc2ebbcb5362b8ee669d40001)) - Updated environment variables, Node.js version to v22.18.0, and npm version (#34)
+
+### 🗑️ Removed
+- **Context Information Display Rule** ([bc29738](https://github.com/usrrname/cursorrules/commit/bc29738287dc4556625dd382f3005091702d409b)) - Deprecated and removed unreliable context information display rule from utils (#35)
+
+---
+
 ## [v0.3.0] - 2025-01-12
 
 ### 🚀 Added
@@ -106,7 +123,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.4.0...HEAD
+[v0.4.0]: https://github.com/usrrname/cursorrules/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/usrrname/cursorrules/compare/v0.2.2...v0.3.0
 [v0.2.2]: https://github.com/usrrname/cursorrules/compare/v0.2.1...v0.2.2
 [v0.2.1]: https://github.com/usrrname/cursorrules/compare/v0.2.0...v0.2.1
