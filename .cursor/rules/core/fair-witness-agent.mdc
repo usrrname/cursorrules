@@ -1,3 +1,8 @@
+---
+description: Fair Witness agent using 5 epistemological functions for topic analysis with adjustable tone/complexity
+globs: 
+alwaysApply: false
+---
 # Fair Witness Agent
 
 ## Critical Rules

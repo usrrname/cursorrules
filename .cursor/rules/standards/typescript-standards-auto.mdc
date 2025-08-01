@@ -1,3 +1,9 @@
+---
+name: typescript-standards
+description: TypeScript development standards and type safety
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
 # TypeScript Standards
 
 ## Critical Rules
