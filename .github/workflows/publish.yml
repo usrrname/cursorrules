@@ -42,6 +42,7 @@ jobs:
           fi
       
       - name: Check if package.json version matches tag
+        if: steps.extract-version.outputs.version != ''
         run: | 
           # configure git user
           git config user.name "github-actions[bot]"
