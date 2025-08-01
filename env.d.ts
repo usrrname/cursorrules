@@ -17,7 +17,7 @@ export type CoercedEnvSchema = {
 
 declare module 'varlock/env' {
   export interface TypedEnvSchema extends CoercedEnvSchema {}
-  export interface PublicTypedEnvSchema extends Pick<CoercedEnvSchema, ''> {}
+  export interface PublicTypedEnvSchema extends Pick<CoercedEnvSchema, never> {}
 }
 
 
