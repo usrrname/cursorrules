@@ -9,7 +9,7 @@
 - **Product Name:** {product name}
 - **Product Version:** {product version}
 - **Feature Name:** {feature name}
-- **Product Line Portfolio:** {product line portfolio}
+- **Product Line Portfolio:** {product line portfolio - optional}
 
 ### PROJECT DESCRIPTION
 
@@ -29,6 +29,7 @@
 
 ### Unit Test Cases
 
+{starting condition of test case}
 | \#  | OBJECTIVE | INPUT | EXPECTED RESULTS | TEST DELIVERABLES | Date | Status |
 | --- | --------- | ----- | ---------------- | ----------------- | ---- | ------ |
 | 1   |           |       |                  |                   |      |  {ToDo | In Progress | Pass | Fail | Aborted }    |
