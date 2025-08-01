@@ -1,6 +1,6 @@
 {
   "name": "@usrrname/cursorrules",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A wicked npx-able lib of cursorrules with Otaku AI agents, optional lean workflow",
   "type": "module",
   "bin": {
