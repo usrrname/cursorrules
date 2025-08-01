@@ -88,6 +88,10 @@ EOF
     
     # Find all .mdc files and analyze them
     while IFS= read -r -d '' file; do
+        if [[ ! -r "$file" ]]; then
+            echo -e "${YELLOW}Warning: Skipping unreadable file: $file${NC}"
+            continue
+        fi
         local size=$(get_file_size "$file")
         total_size=$((total_size + size))
         file_count=$((file_count + 1))
