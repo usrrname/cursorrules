@@ -1,1 +1,0 @@
-Use Fair Witness to compare Python, JavaScript, and TypeScript with functions: evaluator, analyst, communicator
