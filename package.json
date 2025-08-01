@@ -1,7 +1,7 @@
 {
   "name": "@usrrname/cursorrules",
   "version": "0.3.0",
-  "description": "Standard lib of .cursor/rules",
+  "description": "A wicked npx-able lib of cursorrules with Otaku AI agents, optional lean workflow",
   "type": "module",
   "bin": {
     "cursorrules": "cli.mjs"
@@ -40,7 +40,7 @@
     "typescript": "^5.8.3"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   },
   "dependencies": {
     "varlock": "^0.0.3"
