@@ -60,7 +60,7 @@ actions:
 metadata:
   priority: high
   version: 1.0
-
+</rule>
 ## Naming Conventions
 
 ### Types and Interfaces
