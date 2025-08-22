@@ -13,7 +13,7 @@ In the name of the Moon, this workflow guides the process of discovering and cra
 - Every user story MUST follow the standard format: "As a [role], I want [goal] so that [benefit]"
 - Stories MUST be independent, negotiable, valuable, estimable, small, and testable
 - Every story MUST have clear requirements and acceptance criteria
-- The user story MUST be saved in `.ai/` with the format `story-title.md`
+- The user story MUST be saved in `.cursor/.ai/` with the format `story-title.md`
 - The story should be updated as new insights, constraints and decisions
 - Stories MUST be discoverable through semantic search
 - Stories MUST link to related architecture decisions, spike documents or technical constraints
@@ -30,7 +30,7 @@ filters:
   - type: content
     pattern: "As a .*, I want .* so that .*"
   - type: path
-    pattern: "\\.ai/backlog/\\d{4}-.*\\.md"
+    pattern: "\\.cursor/\\.ai/backlog/\\d{4}-.*\\.md"
 
 metadata:
   priority: high
@@ -115,7 +115,7 @@ Checkpoint: the user is asked to review the document progress so far, suggest or
    - SailorScrum validates INVEST criteria
    - Team consensus on estimation
    - Story is ready for sprint planning and status is updated to "Status: ToDo"
-   - Blocked, Rejected or Dropped stories should have Status updated to `Dropped` and moved into `.ai/backlog/`. The story should be updated with a 1 sentence description of why it could not proceed to development.
+   - Blocked, Rejected or Dropped stories should have Status updated to `Dropped` and moved into `.cursor/.ai/backlog/`. The story should be updated with a 1 sentence description of why it could not proceed to development.
 
 ## Story States
 

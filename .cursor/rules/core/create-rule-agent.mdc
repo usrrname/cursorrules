@@ -136,17 +136,17 @@ All folders within PROJECT_ROOT/.cursor/rules should follow the following conven
 - Multiple extensions: *.js, *.ts, *.tsx
 - Multiple patterns: dist/**/*.*, docs/**/*.md, *test*.*
 
-In projects that use the custom agents and their workflows, an .ai/ folder will be created at the root level of the repository if it doesn't already exist.
+In projects that use the custom agents and their workflows, a `.cursor/.ai/` folder will be created inside the `.cursor/` directory if it doesn't already exist.
 
 ### Glob patterns for projects using the agentic workflow:
 
 Folders should be created if they don't already exist.
 
-- User stories (PBIs): .ai/*.md
-- Dropped or Completed user stories: .ai/backlog/done/*.md
-- Architecture: .ai/architecture/*.md
-- Architecture decision records (ADR): .ai/architecture/decision-records/*.md
-- bugs: .ai/bugs/
+- User stories (PBIs): .cursor/.ai/*.md
+- Dropped or Completed user stories: .cursor/.ai/backlog/done/*.md
+- Architecture: .cursor/.ai/architecture/*.md
+- Architecture decision records (ADR): .cursor/.ai/architecture/decision-records/*.md
+- bugs: .cursor/.ai/bugs/
 - NEVER create a nested folder with the same name as its parent
 
 <example type="invalid">
@@ -214,7 +214,7 @@ For cursor rules:
     - type: validate
       conditions:
       - pattern: "^\\.\\/\\.cursor\\/rules\\/[\\w-]+\\/[a-z0-9]+(?:-[a-z0-9]+)*-(?:auto|agent|manual|always)\\.mdc$"
-        message: "Filenames inside `.ai/ of cursor rules should follow the format `{organizing-folder}/rule-name-{type}.mdc`"
+        message: "Filenames inside `.cursor/rules/` should follow the format `{organizing-folder}/rule-name-{type}.mdc`"
   actions:
     - type: reject
       conditions:

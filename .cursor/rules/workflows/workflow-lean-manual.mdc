@@ -1,15 +1,15 @@
 ---
-description: This rule is responsible for triggering the lean workflow in any Cursor chat mode. It begins by creating a new user story or task. It will always look for a .ai/ folder inside the project and pick up from where the most recent task left off. It should identify the correct agents for completing the task.
+description: This rule is responsible for triggering the lean workflow in any Cursor chat mode. It begins by creating a new user story or task. It will always look for a `.cursor/.ai/` folder inside the project and pick up from where the most recent task left off. It should identify the correct agents for completing the task.
 globs:
 alwaysApply: false
 ---
 # Lean Workflow and core memory procedure RULES that MUST be followed EXACTLY!
 
-Cursor's memory resets completely between sessions. After each reset, agents should use files in `.ai/*` to understand the project and continue work effectively.
+Cursor's memory resets completely between sessions. After each reset, agents should use files in `.cursor/.ai/*` to understand the project and continue work effectively.
 
 <critical-rules>
-- First, a user story that is NOT of `Status: Done` exists in `.ai/` a .md file. If an incomplete one or none or none exists, work with the user to create one so you know in full detail what the project is about.
-- This workflow rule is critical to your memory systems, all retention of what is planned or what has been completed or changed will be recorded in the `.ai` folder.
+- First, a user story that is NOT of `Status: Done` exists in `.cursor/.ai/` a .md file. If an incomplete one or none or none exists, work with the user to create one so you know in full detail what the project is about.
+- This workflow rule is critical to your memory systems, all retention of what is planned or what has been completed or changed will be recorded in the `.cursor/.ai` folder.
 - It is critical that this information be retained in top quality and kept up to date.
 - When you are unsure, reference the pm-story (PBI), architecture, current and previous stories as needed to guide you. If still unsure, don't ever guess - ask the user for help.
 - Checkpoints are included in workflows to request input, decisions and approval from the user to provide technical and strategic direction and ensure the quality and correctness of the delivered outcome. 
@@ -17,23 +17,23 @@ Cursor's memory resets completely between sessions. After each reset, agents sho
 - All changes made to this document or any workflow in `.cursor/rules/workflows` should be reflected in the sequence diagram
 </critical-rules>
 
-1. When coming online, SailorScrum will first check if a `.ai/story-#.story.md` file exists. If it doesn't, work with the user to create one so all agents will understand what the project is about.
-2. If the user story is not  of `Status: Approved`, you will ONLY have the goal of helping improve the `.ai/user-story.md` file as needed and getting it approved by the user to ensure it is the best possible document including the following:
+1. When coming online, SailorScrum will first check if a `.cursor/.ai/story-#.story.md` file exists. If it doesn't, work with the user to create one so all agents will understand what the project is about.
+2. If the user story is not  of `Status: Approved`, you will ONLY have the goal of helping improve the `.cursor/.ai/user-story.md` file as needed and getting it approved by the user to ensure it is the best possible document including the following:
    - Detailed Purpose, problems solved, and task sequence.
    - Detailed Architecture patterns and key technical decisions, mermaid diagrams to help visualize the architecture.
    - Detailed Technologies, setup, and constraints.
    - Unknowns, assumptions, and risks.
    - It must be formatted and include everything outlined in the `.cursor/templates/user-story.md`
-3. Once the .ai/user-story.md file is created and the status is approved, SageDaddy will generate the architecture document .ai/archtecture.md draft - which also needs to be approved.
+3. Once the `.cursor/.ai/user-story.md` file is created and the status is approved, SageDaddy will generate the architecture document `.cursor/.ai/archtecture.md` draft - which also needs to be approved.
    - The template `.cursor/templates/architecture.md` must be used and include all sections.
    - At any point, the user may ask the agent(s) to perform a spike as part of technical discovery or validation of feasibility of a solution approach. The agent will reference `.cursor/rules/workflows/dev-spike.mdc` to complete their task.
-4. When the `.ai/high-level-architecture.md` is approved by the user, create the draft of the first story in the `.ai` folder.
-5. Always use the `.cursor/templates/template-story.md` file as a template for the story. The story will be named `<story-or-task-><N>.story.md and be added to the `.ai/` folder
-   - Example: .ai/story-1.story.md or `.ai/task-1.story.md`
+4. When the `.cursor/.ai/high-level-architecture.md` is approved by the user, create the draft of the first story in the `.cursor/.ai` folder.
+5. Always use the `.cursor/templates/template-story.md` file as a template for the story. The story will be named `<story-or-task-><N>.story.md and be added to the `.cursor/.ai/` folder
+   - Example: `.cursor/.ai/story-1.story.md` or `.cursor/.ai/task-1.story.md`
 6. ALWAYS wait for approval of the story before proceeding to do any coding or work on the story.
 7. You are a TDD Master, so you will run tests and ensure tests pass before going to the next subtask or story.
 8. You will update the story file as subtasks are completed.
-9. Once a Story is complete, you will update the story with `Status: Done` and move it to `.ai/backlog/done`.
+9. Once a Story is complete, you will update the story with `Status: Done` and move it to `.cursor/.ai/backlog/done`.
 
 ### During Development
 
