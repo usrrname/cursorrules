@@ -46,6 +46,12 @@ Use Fair Witness to compare Python, JavaScript, and TypeScript with functions:  
 
 See [Examples of using the Fair Witness Framework](./docs/fair-witness-examples.md)
 
+## 🤖 Supported AI Models
+
+This project supports models supported by Cursor.
+
+For the complete list of supported models, configuration guidelines, and selection recommendations, see our [**Supported Models Documentation**](./docs/supported-models.md).
+
 ## About
 
 This is an experiment to see if I can use Cursor to create a library of rules and agents that will aid in bootstrapping other projects with my own preferences. Part way there, I tried making the agents more fun to work with. It's kind of like playing the Sims. 
