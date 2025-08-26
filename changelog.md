@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 💥 Changed
+- Directory location for project memory moved from `.ai/` to `.cursor/.ai/` across rules, templates, and documentation ([43f3d68](https://github.com/usrrname/cursorrules/commit/43f3d681de665c3c4e58b19171a49ae412d1208f))
+
+### 🔧 Technical Improvements
+- Updated `.gitignore` to include `.cursor/.ai/**` and `.envrc` for improved file management ([e45af5a](https://github.com/usrrname/cursorrules/commit/e45af5a1384af83a51094174332100cae275c8f6))
+- Refreshed package metadata and structure in `package.json` ([1348153](https://github.com/usrrname/cursorrules/commit/13481532b7626fa99f58be4ab4d188b4417fff10))
+- CI: Added manual trigger option to publish workflow ([5411cb3](https://github.com/usrrname/cursorrules/commit/5411cb37939fbc59c2e8c7cf0eb47d8f9187966b))
+
+### 🗑️ Removed
+- Deleted obsolete automated package release user story document ([711738f](https://github.com/usrrname/cursorrules/commit/711738f3e92834726fcf27acd2ddb7f12740ce8f))
+
 ---
 
 ## [v0.4.0] - 2025-01-23

@@ -39,6 +39,7 @@
             ],
             "autoApplyEdits": true,
             "autoRun": true,
+            "autoRunLint": true,
             "autoFixErrors": true
         },
         {

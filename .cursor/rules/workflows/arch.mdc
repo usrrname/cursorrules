@@ -1,6 +1,6 @@
 ---
 description: This rule defines the workflow for AI architect agents to analyze user stories and propose multiple architectural solutions. The workflow emphasizes thorough analysis, consideration of trade-offs, and alignment with business goals. This rule runs when: 1. the user asks the agent to create or brainstorm an architectural solution, 2. the user requests creation of an architectural decision record 3. the lean workflow is being run.
-globs: .ai/architecture/*.md
+globs: .cursor/.ai/architecture/*.md
 alwaysApply: false
 ---
 
@@ -13,7 +13,7 @@ This rule defines the workflow for AI architect agents to analyze user stories a
 - Propose multiple viable solutions (minimum 3 unless constrained)
 - Consider both functional and non-functional requirements
 - Evaluate trade-offs systematically
-- Consider impact on existing architecture, if there are any existing .ai/architecture/ files.
+- Consider impact on existing architecture, if there are any existing `.cursor/.ai/architecture/` files.
 - Validate solutions against system constraints
 - Include implementation complexity assessment
 - Consider security implications from the start
@@ -21,7 +21,7 @@ This rule defines the workflow for AI architect agents to analyze user stories a
 - Document architectural decisions (ADRs) using `.cursor/rules/templates/architecture-decision-record.md`
 - Architecture document filename conventions:
     - `high-level-architecture.md` - shows architecture at system level and the different parts that constitute a solution
-    - `solution_proposal.md` - should be created as part of a spike task and stored in .ai/spikes/.
+    - `solution_proposal.md` - should be created as part of a spike task and stored in `.cursor/.ai/spikes/`.
 
 ### Workflow Phases
 

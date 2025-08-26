@@ -10,7 +10,7 @@ This rule defines the workflow for AI agents to follow when implementing feature
 
 ## Critical Rules
 
-- AI agents should read from the latest user story in `.ai/` that is not of "Done" or "Blocked" status.
+- AI agents should read from the latest user story in `.cursor/.ai/` that is not of "Done" or "Blocked" status.
 - No more than 2 stories or spikes can be in progress at any time.
 - Break down complex problems into a manageable task list and update the relevant user story or task with this list
 - Check off tasks one by one as they are completed

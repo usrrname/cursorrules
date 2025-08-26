@@ -7,7 +7,7 @@ sequenceDiagram
     participant U as User
     participant SS as SailorScrum
     participant SD as SageDaddy
-    participant AI as .ai/ Directory
+    participant AI as .cursor/.ai/ Directory
     participant CR as .cursor/rules/
     participant T as Tests
 
@@ -17,7 +17,7 @@ sequenceDiagram
         SS->>CR: Reference user story template
         SS->>U: Request to create user story
         U->>SS: Provide story details
-        SS->>AI: Create .ai/story-#.md
+        SS->>AI: Create .cursor/.ai/story-#.md
     end
 
     Note over U,CR: Story Refinement
@@ -33,7 +33,7 @@ sequenceDiagram
     Note over U,CR: Architecture Planning
     SS->>SD: Notify story approved
     SD->>CR: Reference architecture template
-    SD->>AI: Generate .ai/high-level-architecture.md draft
+    SD->>AI: Generate .cursor/.ai/high-level-architecture.md draft
     SD->>U: Present architecture for review
     
     loop Until Architecture Approved
@@ -71,7 +71,7 @@ sequenceDiagram
     SD->>T: Verify ALL tests pass
     T->>SD: Confirm test status
     SD->>AI: Update story status to Done
-    SD->>AI: Move to .ai/backlog/done
+    SD->>AI: Move to .cursor/.ai/backlog/done
     SD->>U: Notify story completion
 
     Note over U,CR: Memory Retention
@@ -85,9 +85,21 @@ sequenceDiagram
 1. **User**: Provides requirements, feedback, and approvals throughout the process.
 2. **SailorScrum**: Manages user story creation, refinement, and memory retention.
 3. **SageDaddy**: Handles architecture planning, implementation, and TDD process.
-4. **.ai/ Directory**: Core memory system storing all project documentation and stories.
+4. **.cursor/.ai/ Directory**: Core memory system storing all project documentation and stories.
 5. **.cursor/rules/**: Contains templates and workflow rules.
 6. **Tests**: Ensures code quality through TDD practices.
+
+### AI Model Selection for Workflow Agents
+
+Different workflow phases benefit from different AI models:
+
+- **Story Creation & Refinement**: `claude-4-sonnet`, `gpt-4o`, `claude-3.5-sonnet`
+- **Architecture Planning**: `claude-4-opus`, `o1`, `gemini-2.5-pro-max`
+- **Implementation**: `claude-3.5-sonnet`, `gpt-4o`, `deepseek-v3`, `cursor-fast`
+- **Testing & Quality**: `qwoof` with `grok-2` or `claude-4-sonnet`
+- **Documentation**:  `claude-3.5-sonnet`, `gpt-4o`, `gemini-2.0-pro-exp`
+
+For complete model information and selection guidelines, see [Supported Models Documentation](./supported-models.md).
 
 ## Process Phases
 
