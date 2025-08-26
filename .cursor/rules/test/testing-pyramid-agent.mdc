@@ -1,6 +1,6 @@
 ---
 description: Enforces testing standards based on the testing pyramid principle
-globs: "*.test.{js,ts,jsx,tsx}"
+globs: **/*.test.{js|ts|jsx|tsx}
 alwaysApply: false
 ---
 <rule>
