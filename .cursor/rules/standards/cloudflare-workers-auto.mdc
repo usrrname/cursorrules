@@ -1,6 +1,6 @@
 ---
 description: Cloudflare Workers development standards and best practices
-globs: *.worker.{js,ts},**/workers/**/*.{js,ts},**/src/index.{js,ts},wrangler.{json,jsonc,toml}
+globs: *.worker.{js|ts},**/workers/**/*.{js|ts},**/src/index.{js|ts},wrangler.{json|jsonc|toml}
 alwaysApply: false
 ---
 
