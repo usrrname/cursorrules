@@ -33,16 +33,9 @@
     "agent"
   ],
   "license": "ISC",
-  "bugs": [
-    {
-      "type": "link",
-      "url": "https://github.com/usrrname/cursorrules/issues"
-    },
-    {
-      "type": "link",
-      "url": "https://github.com/usrrname/cursorrules/issues"
-    }
-  ],
+  "bugs": {
+    "url": "https://github.com/usrrname/cursorrules/issues"
+  },
   "homepage": "https://github.com/usrrname/cursorrules#readme",
   "devDependencies": {
     "@types/node": "22.14.0",
