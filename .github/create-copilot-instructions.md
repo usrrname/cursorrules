@@ -72,5 +72,4 @@ contents of the README, the contents of any key source files, the list of files 
 - Document any other steps or information that the agent can use to reduce time spent exploring or trying and failing to run bash commands.
 - Finally, explicitly instruct the agent to trust the instructions and only perform a search if the information in the instructions is incomplete or found to be in error.
 </StepsToFollow>
-   - Document any errors encountered as well as the steps taken to work-around them.
 
