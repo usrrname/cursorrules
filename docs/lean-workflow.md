@@ -89,6 +89,18 @@ sequenceDiagram
 5. **.cursor/rules/**: Contains templates and workflow rules.
 6. **Tests**: Ensures code quality through TDD practices.
 
+### AI Model Selection for Workflow Agents
+
+Different workflow phases benefit from different AI models:
+
+- **Story Creation & Refinement**: `claude-4-sonnet`, `gpt-4o`, `claude-3.5-sonnet`
+- **Architecture Planning**: `claude-4-opus`, `o1`, `gemini-2.5-pro-max`
+- **Implementation**: `claude-3.5-sonnet`, `gpt-4o`, `deepseek-v3`, `cursor-fast`
+- **Testing & Quality**: `qwoof` with `grok-2` or `claude-4-sonnet`
+- **Documentation**:  `claude-3.5-sonnet`, `gpt-4o`, `gemini-2.0-pro-exp`
+
+For complete model information and selection guidelines, see [Supported Models Documentation](./supported-models.md).
+
 ## Process Phases
 
 1. **Workflow Initialization**: Ensures a proper user story exists with all required sections.
