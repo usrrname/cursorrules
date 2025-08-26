@@ -2,7 +2,6 @@
   "name": "@usrrname/cursorrules",
   "version": "0.4.0",
   "description": "A wicked npx-able lib of cursorrules with Otaku AI agents, optional lean workflow",
-  "main": "cli.mjs",
   "author": {
     "name": "jen chan"
   },
@@ -35,6 +34,10 @@
   ],
   "license": "ISC",
   "bugs": [
+    {
+      "type": "link",
+      "url": "https://github.com/usrrname/cursorrules/issues"
+    },
     {
       "type": "link",
       "url": "https://github.com/usrrname/cursorrules/issues"
