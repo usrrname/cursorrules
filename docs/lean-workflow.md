@@ -7,7 +7,7 @@ sequenceDiagram
     participant U as User
     participant SS as SailorScrum
     participant SD as SageDaddy
-    participant AI as .ai/ Directory
+    participant AI as .cursor/.ai/ Directory
     participant CR as .cursor/rules/
     participant T as Tests
 
@@ -17,7 +17,7 @@ sequenceDiagram
         SS->>CR: Reference user story template
         SS->>U: Request to create user story
         U->>SS: Provide story details
-        SS->>AI: Create .ai/story-#.md
+        SS->>AI: Create .cursor/.ai/story-#.md
     end
 
     Note over U,CR: Story Refinement
@@ -33,7 +33,7 @@ sequenceDiagram
     Note over U,CR: Architecture Planning
     SS->>SD: Notify story approved
     SD->>CR: Reference architecture template
-    SD->>AI: Generate .ai/high-level-architecture.md draft
+    SD->>AI: Generate .cursor/.ai/high-level-architecture.md draft
     SD->>U: Present architecture for review
     
     loop Until Architecture Approved
@@ -71,7 +71,7 @@ sequenceDiagram
     SD->>T: Verify ALL tests pass
     T->>SD: Confirm test status
     SD->>AI: Update story status to Done
-    SD->>AI: Move to .ai/backlog/done
+    SD->>AI: Move to .cursor/.ai/backlog/done
     SD->>U: Notify story completion
 
     Note over U,CR: Memory Retention
@@ -85,7 +85,7 @@ sequenceDiagram
 1. **User**: Provides requirements, feedback, and approvals throughout the process.
 2. **SailorScrum**: Manages user story creation, refinement, and memory retention.
 3. **SageDaddy**: Handles architecture planning, implementation, and TDD process.
-4. **.ai/ Directory**: Core memory system storing all project documentation and stories.
+4. **.cursor/.ai/ Directory**: Core memory system storing all project documentation and stories.
 5. **.cursor/rules/**: Contains templates and workflow rules.
 6. **Tests**: Ensures code quality through TDD practices.
 

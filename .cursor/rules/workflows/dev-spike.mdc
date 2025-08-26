@@ -12,11 +12,11 @@ A guide for conducting time-boxed technical investigations (spikes) to reduce un
 - Spikes MUST be time-boxed (typically 1-2 hours)
 - Spikes MUST have clear investigation goals
 - Spikes MUST produce documented findings
-- Spike documents containing information about the spike MUST be saved in `.ai/spikes/` with format `spike-<N>-story-<#>.md` where the digits represent the user story number.
+- Spike documents containing information about the spike MUST be saved in `.cursor/.ai/spikes/` with format `spike-<N>-story-<#>.md` where the digits represent the user story number.
 - Spike outcomes MUST inform architectural or implementation decisions
 - The agent will check out a spike branch formatted `spike/spike-story-name` and use that branch to commit and push code changes.
 - Code produced during spikes MUST be treated as disposable code for proving whether an approach is viable.
-- Findings MUST be shared with the team and updated on the `.ai/architecture.md`.
+- Findings MUST be shared with the team and updated on the `.cursor/.ai/architecture.md`.
 - The user story for the spike must be updated with the decision selected by the user.
 - Any web search results that were referenced should be included as links in the spike document.
 
@@ -28,7 +28,7 @@ filters:
   - type: file_extension
     pattern: "\\.md$"
   - type: path
-    pattern: "\\.ai/spikes/\\d{4}-.*\\.md"
+    pattern: "\\.cursor/\\.ai/spikes/\\d{4}-.*\\.md"
   - type: content
     pattern: "## Investigation Goals"
 
