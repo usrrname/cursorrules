@@ -1,6 +1,6 @@
----
+--- 
 description: adds fun emojis to console logs
-globs: *.(js|ts|jsx|tsx|mjs)
+globs: **/*.{js|ts|jsx|tsx|mjs}
 alwaysApply: true
 ---
 
