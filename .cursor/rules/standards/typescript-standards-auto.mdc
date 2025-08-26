@@ -1,23 +1,32 @@
 ---
 name: typescript-standards
 description: TypeScript development standards and type safety
-globs: "**/*.{ts|tsx}"
+globs: **/*.{ts|tsx}
 alwaysApply: false
 ---
 # TypeScript Standards
 
 ## Critical Rules
 
+- Refer to https://www.typescriptlang.org/tsconfig when tsconfig.json values are changed.
 - Use strict mode with `"strict": true` in tsconfig.json
+- Remind user the limitations of using esModuleInterop and allowSyntheticDefaultImports in tsconfig.json https://www.typescriptlang.org/tsconfig/#Interop_Constraints_6252
 - Explicitly declare types for function parameters and return values
-- Avoid using `any` type unless absolutely necessary
+- Avoid using `any` type unless absolutely necessary. Use `unknown` instead.
 - Use interfaces for object type definitions
 - Use enums for fixed sets of values
 - Use type aliases to simplify complex types
-- Follow consistent naming conventions
-- Document public APIs with JSDoc comments
-- Use async/await over raw promises
+- Document APIs with JSDoc comments
 - Maintain proper error handling with typed errors
+- Use type guards and type narrowing to improve type safety
+- Use type literals and unions to define the exact allowed values.
+- Use type assertions and annotations when necessary. They are unnecessary if type inference is possible.
+- Use type unions and intersections to combine types.
+- Export types from modules using the `export type` syntax
+- If using an existing library with types, import the types using the `import type` syntax
+- Declare types for file extensions that aren't supported by the compiler using the `declare module` syntax
+- If using node 23+, use `node --experimental-strip-types` in package.json scripts to strip types when running the code locally
+- Use utility types as much as possible to avoid type duplication.
 
 <rule>
 name: typescript-standards
@@ -33,6 +42,10 @@ filters:
     pattern: "type\\s+[A-Z][a-zA-Z]*"
   - type: content
     pattern: "enum\\s+[A-Z][a-zA-Z]*"
+  - type: content
+    pattern: "import\\s+type\\s+[A-Z][a-zA-Z]*"
+  - type: content
+    pattern: "export\\s+type\\s+[A-Z][a-zA-Z]*"
 
 actions:
   - type: validate
@@ -43,6 +56,7 @@ actions:
       3. Proper error handling
       4. Documentation
       5. Consistent naming
+      6. Proper use of primitives and utility types to reduce duplication and increase type safety
 
   - type: lint
     rules:
@@ -61,11 +75,13 @@ metadata:
   priority: high
   version: 1.0
 </rule>
+
 ## Naming Conventions
 
 ### Types and Interfaces
 - Use PascalCase for type names and interface names
 - Prefix interfaces with 'I' only when required by project convention
+- Follow consistent naming conventions
 
 ```typescript
 interface UserData {
@@ -81,6 +97,11 @@ type ApiResponse<T> = {
 
 ### Variables and Functions
 - Use camelCase for variable names and function names
+- Use PascalCase for class names
+- Function signatures should have return types
+
+### Classes
+
 - Use PascalCase for class names
 
 ```typescript

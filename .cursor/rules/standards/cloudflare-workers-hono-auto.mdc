@@ -493,7 +493,5 @@ tests:
       
       app.route('/authors', authors)
       app.route('/books', books)
-description:
-globs:
-alwaysApply: false
----
+
+</rule>

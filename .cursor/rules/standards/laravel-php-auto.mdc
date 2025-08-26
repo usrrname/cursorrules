@@ -1,6 +1,6 @@
 ---
 description: Laravel and PHP Development Standards
-globs: "**/*.{php}"
+globs: **/*.{php}
 alwaysApply: false
 ---
 

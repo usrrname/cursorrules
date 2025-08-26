@@ -1,6 +1,6 @@
 ---
 description: This rule provides comprehensive security scanning for dependencies, complementing the dependency analysis rule with deep security insights including CVE analysis, license compliance, and supply chain risk assessment.
-globs: (package.json|package-lock.json|yarn.lock|pnpm-lock.yaml|bun.lockb)
+globs: package.json, package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb
 alwaysApply: false
 ---
 # Security Scan Agent

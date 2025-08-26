@@ -1,6 +1,6 @@
 ---
 description: This rule runs whenever a developer wants to create an AI agent or wants to edit an existing one in Cursor.
-globs: [".cursor/modes.json", ".cursor/templates/mode-format.md"]
+globs: .cursor/modes.json, @/docs/modes-format.md
 alwaysApply: false
 ---
 
@@ -91,7 +91,7 @@ actions:
          For complete model descriptions and selection guidelines, see [docs/supported-models.md](../../docs/supported-models.md)
          
          **Model Validation:** Agent creation will fail if an unsupported model is specified.
-
+         
       5. Tool Access:
          - Only grant tools necessary for the agent's role
          - Consider security implications
