@@ -1,6 +1,6 @@
 ---
 description: This rule runs whenever a developer wants to create an AI agent or wants to edit an existing one in Cursor.
-globs: [".cursor/modes.json", ".cursor/templates/mode-format.md"]
+globs: .cursor/modes.json, @/docs/modes-format.md
 alwaysApply: false
 ---
 
@@ -99,7 +99,7 @@ actions:
          - gpt-3.5-turbo
          - o1-preview
          - o1-mini
-         - Others as listed in modes-format.md
+         - Others as listed in ../../../docs/modes-format.md
 
       5. Tool Access:
          - Only grant tools necessary for the agent's role
