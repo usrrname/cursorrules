@@ -1,6 +1,6 @@
 ---
 description: Cloudflare Workers with Hono framework development standards and best practices
-globs: *.worker.{js,ts},**/workers/**/*.{js,ts},**/src/**/*.{js,ts},wrangler.{json,jsonc}
+globs: *.worker.{js|ts},**/workers/**/*.{js|ts},**/src/**/*.{js|ts},wrangler.{json|jsonc}
 alwaysApply: false
 ---
 
