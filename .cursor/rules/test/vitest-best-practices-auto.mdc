@@ -1,6 +1,6 @@
 ---
 description: Enforces best practices for Vitest unit tests
-globs: *.{test}.{js,ts,jsx,tsx}
+globs: **/*.test.{js|ts|jsx|tsx}
 alwaysApply: false
 ---
 # Vitest Unit Testing Best Practices
@@ -17,7 +17,7 @@ This rule enforces and suggests best practices when writing Vitest unit tests to
 - Avoid global state – never rely on test execution order.
 - For asynchronous code, always `await` promises and/or use `expect.assertions(n)`.
 - Do not snapshot complex objects blindly; snapshot only stable, meaningful output.
-- Use `vi.useFakeTimers()` cautiously and always restore real timers afterwards.
+- Use `vi.useFakeTimers()` cautiously and always restore real timers with `vi.useRealTimers()` afterwards.
 - Do not disable tests with `test.skip`/`it.skip`; instead, fix or remove them.
 - Keep test files co-located with source or in a dedicated `__tests__` folder.
 - Ensure each test has at least one `expect` call (or uses `.resolves`/`.rejects`).
