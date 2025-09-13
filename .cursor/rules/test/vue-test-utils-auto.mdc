@@ -1,0 +1,274 @@
+---
+description: @vue/test-utils Standards for Vue 3 components and Vitest
+globs: *.test.{ts,js},*.spec.{ts,js},__tests__/**/*
+alwaysApply: false
+---
+
+# Vue Test Utils Standards
+
+Comprehensive testing standards for Vue 3 components using @vue/test-utils with TypeScript support.
+
+## Critical Rules
+
+- Use @vue/test-utils with TypeScript for type-safe component testing
+- Test component props, emits, slots, and user interactions thoroughly
+- Mock composables and external dependencies appropriately
+- Use data-testid attributes for reliable element selection
+- Test component behavior, not implementation details
+- Provide proper TypeScript types for test props and mocks
+
+<rule>
+name: vue-test-utils-typescript
+description: Standards for Vue component testing with @vue/test-utils and TypeScript
+filters:
+  - type: file_extension
+    pattern: "\\.(test|spec)\\.(ts|js)$"
+  - type: content
+    pattern: "mount|shallowMount|@vue/test-utils"
+actions:
+  - type: suggest
+    message: |
+      Use @vue/test-utils with proper TypeScript typing:
+      
+      ✅ Good component test structure:
+      import { mount, VueWrapper } from "@vue/test-utils"
+      import { describe, it, expect, vi, beforeEach } from "vitest"
+      import UserProfile from "@/components/UserProfile.vue"
+      import type { User } from "@/types/user"
+      
+      describe("UserProfile.vue", () => {
+        let wrapper: VueWrapper<any>
+        const mockUser: User = {
+          id: 1,
+          name: "John Doe",
+          email: "john@example.com"
+        }
+        
+        beforeEach(() => {
+          wrapper = mount(UserProfile, {
+            props: { user: mockUser }
+          })
+        })
+        
+        it("renders user information correctly", () => {
+          expect(wrapper.find('[data-testid="user-name"]').text()).toBe("John Doe")
+          expect(wrapper.find('[data-testid="user-email"]').text()).toBe("john@example.com")
+        })
+        
+        it("emits update event when edited", async () => {
+          await wrapper.find('[data-testid="edit-button"]').trigger("click")
+          expect(wrapper.emitted("update")).toBeTruthy()
+        })
+      })
+      
+      ❌ Avoid untyped tests and unclear selectors:
+      const wrapper = mount(UserProfile)
+      expect(wrapper.find(".user-name").text()).toBe("John")
+examples:
+  - input: |
+      import { mount } from "@vue/test-utils"
+      const wrapper = mount(UserProfile)
+      expect(wrapper.find(".user-name").text()).toBe("John")
+    output: |
+      import { mount, VueWrapper } from "@vue/test-utils"
+      import type { User } from "@/types/user"
+      
+      const mockUser: User = { id: 1, name: "John Doe", email: "john@example.com" }
+      const wrapper: VueWrapper<any> = mount(UserProfile, {
+        props: { user: mockUser }
+      })
+      expect(wrapper.find('[data-testid="user-name"]').text()).toBe("John Doe")
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: vue-test-composables-mocking
+description: Standards for mocking composables and external dependencies
+filters:
+  - type: file_extension
+    pattern: "\\.(test|spec)\\.(ts|js)$"
+  - type: content
+    pattern: "vi\\.mock|mockReturnValue|use[A-Z]\\w+"
+actions:
+  - type: suggest
+    message: |
+      Mock composables and dependencies properly:
+      
+      ✅ Good composable mocking:
+      import { vi } from "vitest"
+      import type { UseUserReturn } from "@/composables/useUser"
+      
+      // Mock the composable
+      vi.mock("@/composables/useUser", () => ({
+        useUser: vi.fn((): UseUserReturn => ({
+          user: ref({ id: 1, name: "Test User" }),
+          loading: ref(false),
+          fetchUser: vi.fn(),
+          updateUser: vi.fn()
+        }))
+      }))
+      
+      // Mock external libraries
+      vi.mock("vue-router", () => ({
+        useRouter: () => ({
+          push: vi.fn(),
+          replace: vi.fn()
+        })
+      }))
+      
+      ❌ Avoid untyped mocks:
+      vi.mock("@/composables/useUser")
+      const mockUseUser = useUser as any
+examples:
+  - input: |
+      vi.mock("@/composables/useUser")
+      const mockRouter = { push: vi.fn() }
+    output: |
+      import type { UseUserReturn } from "@/composables/useUser"
+      
+      vi.mock("@/composables/useUser", () => ({
+        useUser: vi.fn((): UseUserReturn => ({
+          user: ref(null),
+          loading: ref(false),
+          fetchUser: vi.fn()
+        }))
+      }))
+      
+      vi.mock("vue-router", () => ({
+        useRouter: () => ({ push: vi.fn() })
+      }))
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: vue-test-slots-events
+description: Testing Vue component slots and events properly
+filters:
+  - type: file_extension
+    pattern: "\\.(test|spec)\\.(ts|js)$"
+  - type: content
+    pattern: "slots|emitted|trigger"
+actions:
+  - type: suggest
+    message: |
+      Test slots and events with proper typing:
+      
+      ✅ Good slot and event testing:
+      // Testing slots
+      const wrapper = mount(DialogComponent, {
+        slots: {
+          default: '<p data-testid="slot-content">Custom content</p>',
+          header: '<h2 data-testid="header">Custom Header</h2>'
+        }
+      })
+      expect(wrapper.find('[data-testid="slot-content"]').exists()).toBe(true)
+      
+      // Testing events with payload
+      await wrapper.find('[data-testid="submit-button"]').trigger("click")
+      const updateEvents = wrapper.emitted("update") as Array<[string]>
+      expect(updateEvents).toHaveLength(1)
+      expect(updateEvents[0][0]).toBe("expected-payload")
+      
+      // Testing v-model
+      const input = wrapper.find('input[data-testid="name-input"]')
+      await input.setValue("New Value")
+      const modelEvents = wrapper.emitted("update:modelValue") as Array<[string]>
+      expect(modelEvents[0][0]).toBe("New Value")
+examples:
+  - input: |
+      await wrapper.find("button").trigger("click")
+      expect(wrapper.emitted("update")).toBeTruthy()
+    output: |
+      await wrapper.find('[data-testid="submit-button"]').trigger("click")
+      const updateEvents = wrapper.emitted("update") as Array<[any]>
+      expect(updateEvents).toHaveLength(1)
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+## Testing Patterns
+
+### Component Props Testing
+
+```typescript
+interface TestProps {
+  user: User;
+  isVisible?: boolean;
+}
+
+const defaultProps: TestProps = {
+  user: { id: 1, name: "Test User", email: "test@example.com" },
+  isVisible: true,
+};
+
+const wrapper = mount(Component, { props: defaultProps });
+```
+
+### Async Testing
+
+```typescript
+it("handles async operations", async () => {
+  const wrapper = mount(AsyncComponent);
+
+  // Wait for async operation
+  await flushPromises();
+
+  // Or wait for next tick
+  await wrapper.vm.$nextTick();
+
+  expect(wrapper.find('[data-testid="result"]').text()).toBe("Loaded");
+});
+```
+
+### Global Plugins Testing
+
+```typescript
+const wrapper = mount(Component, {
+  global: {
+    plugins: [router, pinia],
+    provide: {
+      [UserKey]: mockUser,
+    },
+    stubs: {
+      "router-link": true,
+      "heavy-component": true,
+    },
+  },
+});
+```
+
+tests:
+
+- input: |
+  const wrapper = mount(UserCard)
+  expect(wrapper.find(".name").text()).toBe("John")
+  output: |
+  const mockUser: User = { id: 1, name: "John Doe", email: "john@example.com" }
+  const wrapper: VueWrapper<any> = mount(UserCard, {
+  props: { user: mockUser }
+  })
+  expect(wrapper.find('[data-testid="user-name"]').text()).toBe("John Doe")
+- input: |
+  vi.mock("@/composables/useAuth")
+  const mockAuth = useAuth as any
+  output: |
+  import type { UseAuthReturn } from "@/composables/useAuth"
+  vi.mock("@/composables/useAuth", () => ({
+  useAuth: vi.fn((): UseAuthReturn => ({
+  user: ref(null),
+  isAuthenticated: ref(false),
+  login: vi.fn()
+  }))
+  }))
+- input: |
+  await wrapper.find("button").trigger("click")
+  expect(wrapper.emitted("save")).toBeTruthy()
+  output: |
+  await wrapper.find('[data-testid="save-button"]').trigger("click")
+  const saveEvents = wrapper.emitted("save") as Array<[any]>
+  expect(saveEvents).toHaveLength(1)

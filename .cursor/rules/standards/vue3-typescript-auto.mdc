@@ -1,0 +1,358 @@
+---
+description: Vue 3 with TypeScript Standards
+globs: *.vue,*.ts
+alwaysApply: false
+---
+
+# Vue 3 with TypeScript Standards
+
+Modern Vue 3 development with TypeScript, emphasizing type safety, Composition API, and performance.
+
+## Critical Rules
+
+- Use Composition API with `<script setup lang="ts">` syntax
+- Type all props, emits, reactive data, and composables explicitly
+- Use `defineModel()` for 2 way binding v-model and `defineSlots()` for slot typing
+- Follow PascalCase naming for components
+- Use proper provide/inject typing with injection keys
+- Type watchers explicitly and ensure proper cleanup
+- Optimize performance with computed properties and shallow reactivity
+
+<rule>
+name: vue3-typescript-essentials
+description: Core Vue 3 TypeScript standards for components and reactivity
+filters:
+  - type: file_extension
+    pattern: "\\.vue$"
+  - type: content
+    pattern: "export default \\{|defineProps|defineEmits|defineModel|defineSlots|ref\\(|reactive\\(|computed\\("
+actions:
+  - type: suggest
+    message: |
+      Follow Vue 3 TypeScript best practices:
+      
+      ✅ Use Composition API with proper typing:
+      <script setup lang="ts">
+      interface Props {
+        title: string
+        count?: number
+      }
+      interface Emits {
+        (e: 'update', value: number): void
+      }
+      interface Slots {
+        default(props: { item: string }): any
+        header(): any
+      }
+      
+      const props = defineProps<Props>()
+      const emit = defineEmits<Emits>()
+      const slots = defineSlots<Slots>()
+      const model = defineModel<string>()
+      const count = ref<number>(0)
+      const doubleCount = computed<number>(() => count.value * 2)
+      </script>
+      
+      ❌ Avoid Options API and untyped refs:
+      const props = defineProps(['title'])
+      const count = ref(0)
+examples:
+  - input: |
+      const props = defineProps(['title'])
+      const model = defineModel()
+      const count = ref(0)
+    output: |
+      interface Props {
+        title: string
+      }
+      const props = defineProps<Props>()
+      const model = defineModel<string>()
+      const count = ref<number>(0)
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: vue3-models
+description: Proper typing for defineModel() and v-model bindings
+filters:
+  - type: file_extension
+    pattern: "\\.vue$"
+  - type: content
+    pattern: "defineModel|v-model"
+actions:
+  - type: suggest
+    message: |
+      ✅ Type v-model bindings properly:
+      
+      // Single v-model
+      const modelValue = defineModel<string>()
+      
+      // Named v-models
+      const isOpen = defineModel<boolean>('isOpen')
+      const selectedId = defineModel<number>('selectedId')
+      
+      // Optional v-model with default
+      const theme = defineModel<'light' | 'dark'>('theme', { default: 'light' })
+      
+      ❌ Avoid untyped models:
+      const modelValue = defineModel()
+      const isOpen = defineModel('isOpen')
+examples:
+  - input: |
+      const modelValue = defineModel()
+      const isVisible = defineModel('isVisible')
+    output: |
+      const modelValue = defineModel<string>()
+      const isVisible = defineModel<boolean>('isVisible')
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: vue3-slots
+description: Proper typing for defineSlots() and slot definitions
+filters:
+  - type: file_extension
+    pattern: "\\.vue$"
+  - type: content
+    pattern: "defineSlots|<slot"
+actions:
+  - type: suggest
+    message: |
+      ✅ Type slots with proper interfaces:
+      
+      // Basic slots
+      interface Slots {
+        default(): any
+        header(): any
+        footer(): any
+      }
+      
+      // Slots with typed props
+      interface Slots {
+        default(props: { user: User; isActive: boolean }): any
+        item(props: { item: Product; index: number }): any
+        empty(): any
+      }
+      
+      const slots = defineSlots<Slots>()
+      
+      ❌ Avoid untyped slots:
+      const slots = defineSlots()
+examples:
+  - input: |
+      const slots = defineSlots()
+    output: |
+      interface Slots {
+        default(props: { item: any }): any
+      }
+      const slots = defineSlots<Slots>()
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: vue3-composables-naming
+description: Standards for composables and component naming with TypeScript
+filters:
+  - type: file_extension
+    pattern: "\\.(vue|ts)$"
+  - type: content
+    pattern: "use[A-Z]\\w+|<template>"
+actions:
+  - type: suggest
+    message: |
+      ✅ Composable structure:
+      export interface UseCounterReturn {
+        count: Ref<number>
+        increment: () => void
+      }
+      
+      export function useCounter(initial = 0): UseCounterReturn {
+        const count = ref<number>(initial)
+        const increment = (): void => { count.value++ }
+        return { count, increment }
+      }
+      
+      ✅ Component naming: UserProfile.vue, TheHeader.vue
+      ❌ Avoid: userProfile.vue, user_profile.vue
+examples:
+  - input: |
+      export function useCounter() {
+        const count = ref(0)
+        return { count }
+      }
+    output: |
+      export interface UseCounterReturn {
+        count: Ref<number>
+      }
+      export function useCounter(): UseCounterReturn {
+        const count = ref<number>(0)
+        return { count }
+      }
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+<rule>
+name: vue3-watchers
+description: Best practices for watch and watchEffect with TypeScript
+filters:
+  - type: file_extension
+    pattern: "\\.(vue|ts)$"
+  - type: content
+    pattern: "watch\\(|watchEffect\\(|watchPostEffect|watchSyncEffect"
+actions:
+  - type: suggest
+    message: |
+      ✅ Use watchers properly with TypeScript:
+      
+      // watch() for specific reactive sources
+      watch(
+        () => user.value?.id,
+        (newId: number | undefined, oldId: number | undefined) => {
+          if (newId) {
+            fetchUserData(newId)
+          }
+        },
+        { immediate: true }
+      )
+      
+      // watch multiple sources
+      watch(
+        [() => props.userId, searchQuery],
+        async ([userId, query]: [number | undefined, string]) => {
+          if (userId && query) {
+            await searchUserData(userId, query)
+          }
+        }
+      )
+      
+      // watchEffect for side effects
+      watchEffect(() => {
+        if (user.value && isLoggedIn.value) {
+          analytics.track('user_active', { userId: user.value.id })
+        }
+      })
+      
+      // Cleanup watchers
+      const stopWatcher = watch(data, callback)
+      onUnmounted(() => stopWatcher())
+      
+      ❌ Avoid untyped watchers and missing cleanup:
+      watch(user, (newVal, oldVal) => { ... })
+      watchEffect(() => { ... }) // without cleanup consideration
+examples:
+  - input: |
+      watch(user, (newVal, oldVal) => {
+        console.log('User changed')
+      })
+    output: |
+      watch(
+        user,
+        (newUser: User | null, oldUser: User | null) => {
+          if (newUser) {
+            console.log('User changed:', newUser.name)
+          }
+        }
+      )
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+<rule>
+name: vue3-advanced-patterns
+description: Type-safe provide/inject and performance optimization
+filters:
+  - type: file_extension
+    pattern: "\\.(vue|ts)$"
+  - type: content
+    pattern: "provide\\(|inject\\(|shallowRef|defineAsyncComponent"
+actions:
+  - type: suggest
+    message: |
+      ✅ Type-safe dependency injection:
+      // types/keys.ts
+      export const UserKey: InjectionKey<Ref<User | null>> = Symbol('user')
+      
+      // Usage
+      provide(UserKey, currentUser)
+      const user = inject(UserKey)
+      
+      ✅ Performance patterns:
+      const largeList = shallowRef<Item[]>([])
+      const filtered = computed(() => items.value.filter(item => item.active))
+      const AsyncComp = defineAsyncComponent(() => import('./Heavy.vue'))
+examples:
+  - input: |
+      provide('user', currentUser)
+      const user = inject('user')
+    output: |
+      export const UserKey: InjectionKey<Ref<User | null>> = Symbol('user')
+      provide(UserKey, currentUser)
+      const user = inject(UserKey)
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+## File Structure
+
+```
+src/
+├── components/         # Reusable components
+├── composables/        # Vue composables
+├── layouts/            # Vue layouts
+├── stores/             # Vue stores
+├── utils/              # Vue utils
+├── types/              # TypeScript definitions
+└── pages/              # Page components
+
+```
+
+### Import Order
+
+```typescript
+// 1. Vue core
+import { ref, computed } from "vue";
+// 2. Vue ecosystem
+import { useRouter } from "vue-router";
+// 3. Third-party
+import axios from "axios";
+// 4. Local
+import UserCard from "@/components/UserCard.vue";
+```
+
+tests:
+
+- input: |
+    <script>
+    export default {
+      props: ['user'],
+      model: { prop: 'value', event: 'input' },
+      data() { return { count: 0 } }
+    }
+    </script>
+  output: |
+    <script setup lang="ts">
+    interface Props { user: User }
+    interface Slots {
+      default(): any
+    }
+    const props = defineProps<Props>()
+    const slots = defineSlots<Slots>()
+    const modelValue = defineModel<string>()
+    const count = ref<number>(0)
+    </script>
+- input: "const modelValue = defineModel()"
+  output: "const modelValue = defineModel<string>()"
+- input: "provide('theme', 'dark')"
+  output: |
+  export const ThemeKey: InjectionKey<string> = Symbol('theme')
+  provide(ThemeKey, 'dark')
