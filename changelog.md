@@ -7,33 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### 💥 Changed
-- Directory location for project memory moved from `.ai/` to `.cursor/.ai/` across rules, templates, and documentation ([43f3d68](https://github.com/usrrname/cursorrules/commit/43f3d681de665c3c4e58b19171a49ae412d1208f))
-
-### 🔧 Technical Improvements
-- Updated `.gitignore` to include `.cursor/.ai/**` and `.envrc` for improved file management ([e45af5a](https://github.com/usrrname/cursorrules/commit/e45af5a1384af83a51094174332100cae275c8f6))
-- Refreshed package metadata and structure in `package.json` ([1348153](https://github.com/usrrname/cursorrules/commit/13481532b7626fa99f58be4ab4d188b4417fff10))
-- CI: Added manual trigger option to publish workflow ([5411cb3](https://github.com/usrrname/cursorrules/commit/5411cb37939fbc59c2e8c7cf0eb47d8f9187966b))
-
-### 🗑️ Removed
-- Deleted obsolete automated package release user story document ([711738f](https://github.com/usrrname/cursorrules/commit/711738f3e92834726fcf27acd2ddb7f12740ce8f))
+No unreleased changes.
 
 ---
 
-## [v0.4.0] - 2025-01-23
+## [v0.4.1] - 2025-01-16
+
+### 🔧 Technical Improvements
+- **Package Version Bump** ([b883001](https://github.com/usrrname/cursorrules/commit/b883001)) - Updated package version to 0.4.1
+
+---
+
+## [v0.4.0] - 2025-01-16
+
+### 🚀 Added
+- **Vue 3 and TypeScript Standards Rules** ([09181b0](https://github.com/usrrname/cursorrules/commit/09181b0375587b9ec173129ff152a192cc896064)) - Added comprehensive Vue 3 with TypeScript development standards and best practices rules for improved development practices (#43)
+
+### 🐛 Fixed
+- **Rule Globs Field Population** ([84e28a2](https://github.com/usrrname/cursorrules/commit/84e28a2e8102ed865c171267303b2a24e644b6bf)) - Fixed rule globs to properly populate cursor rules "apply to specific files" fields, improved glob syntax across multiple rules (#39)
+- **Cursor Memory Folder Location** ([6de6118](https://github.com/usrrname/cursorrules/commit/6de6118a915bef5611729aa80b52f3449565ccb7)) - Fixed cursor memory folder location from `.ai/` to `.cursor/.ai/` for consistency across documentation and workflows (#38)
+- **Publish Workflow Exit Handling** ([8e31890](https://github.com/usrrname/cursorrules/commit/8e31890b3872c5a2ca664752c90a0da87e3ef4a3)) - Updated publish workflow to allow non-tag events to exit gracefully
 
 ### ⚡ Performance
 - **Token Efficiency Optimization** ([dce194b](https://github.com/usrrname/cursorrules/commit/dce194bb4369b31efb56f5a6a5d876891f86d9e5)) - Shortened fair witness, TypeScript standards and agent-communication rules for improved token efficiency (#36)
 
-### 🐛 Fixed
-- **Publish Workflow Exit Handling** ([8e31890](https://github.com/usrrname/cursorrules/commit/8e31890b3872c5a2ca664752c90a0da87e3ef4a3)) - Updated publish workflow to allow non-tag events to exit gracefully
+### 💥 Changed
+- **Context Information Display Rule Removal** ([bc29738](https://github.com/usrrname/cursorrules/commit/bc29738287dc4556625dd382f3005091702d409b)) - Removed unreliable context information display rule from utils due to reliability issues (#35)
+
+### 📚 Documentation
+- **AI Model Support Information** ([deeef1f](https://github.com/usrrname/cursorrules/commit/deeef1ff3a2c5c637ba69e9fba555cf677fe45a1)) - Updated supported models section, added new supported models documentation including autoRunLint option (#40)
 
 ### 🔧 Technical Improvements
 - **CI Workflow Enhancement** ([5168d7b](https://github.com/usrrname/cursorrules/commit/5168d7bf27a5a7cf6953b1cb94317fd5e5a3f6af)) - Added condition to check if package.json version is extracted in publish workflow
+- **Manual Trigger for Publish Workflow** ([5411cb3](https://github.com/usrrname/cursorrules/commit/5411cb37939fbc59c2e8c7cf0eb47d8f9187966b)) - Updated publish workflow to include manual trigger option
 - **Environment and Dependencies Update** ([c4c8568](https://github.com/usrrname/cursorrules/commit/c4c85686debef46dc2ebbcb5362b8ee669d40001)) - Updated environment variables, Node.js version to v22.18.0, and npm version (#34)
-
-### 🗑️ Removed
-- **Context Information Display Rule** ([bc29738](https://github.com/usrrname/cursorrules/commit/bc29738287dc4556625dd382f3005091702d409b)) - Deprecated and removed unreliable context information display rule from utils (#35)
 
 ---
 
@@ -134,7 +141,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.4.1...HEAD
+[v0.4.1]: https://github.com/usrrname/cursorrules/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/usrrname/cursorrules/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/usrrname/cursorrules/compare/v0.2.2...v0.3.0
 [v0.2.2]: https://github.com/usrrname/cursorrules/compare/v0.2.1...v0.2.2

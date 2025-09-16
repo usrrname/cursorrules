@@ -1,73 +1,48 @@
-# Release Notes v0.4.0
+# What's Changed in @usrrname/cursorrules v0.4.1
 
-## 🎯 Overview
+**Release Date**: 2025-01-16
+**Previous Version**: 0.4.0
+**Version Bump**: MINOR - New features, performance improvements, and bug fixes
+**Branch**: main
 
-This minor release focuses on **performance optimization**, **workflow reliability**, and **maintenance improvements** to enhance the overall developer experience with CursorRules.
+## 🚀 New Features
+- **Vue 3 and TypeScript Standards Rules** ([09181b0](https://github.com/usrrname/cursorrules/commit/09181b0375587b9ec173129ff152a192cc896064)) - Added comprehensive Vue 3 with TypeScript development standards and best practices rules for improved development practices (#43)
 
-## 🌟 Key Highlights
+## 🐛 Bug Fixes  
+- **Rule Globs Field Population** ([84e28a2](https://github.com/usrrname/cursorrules/commit/84e28a2e8102ed865c171267303b2a24e644b6bf)) - Fixed rule globs to properly populate cursor rules "apply to specific files" fields, improved glob syntax across multiple rules (#39)
+- **Cursor Memory Folder Location** ([6de6118](https://github.com/usrrname/cursorrules/commit/6de6118a915bef5611729aa80b52f3449565ccb7)) - Fixed cursor memory folder location from `.ai/` to `.cursor/.ai/` for consistency across documentation and workflows (#38)
+- **Publish Workflow Exit Handling** ([8e31890](https://github.com/usrrname/cursorrules/commit/8e31890b3872c5a2ca664752c90a0da87e3ef4a3)) - Fixed publish workflow to allow non-tag events to exit gracefully
 
-### ⚡ Performance Enhancements
-- **Significant Token Efficiency Improvements**: Optimized core rules (Fair Witness, TypeScript standards, and agent communication) to reduce token usage while preserving full functionality
-- **Streamlined Rule Processing**: Enhanced processing efficiency for better performance during rule execution
+## ⚡ Performance Improvements
+- **Token Efficiency Optimization** ([dce194b](https://github.com/usrrname/cursorrules/commit/dce194bb4369b31efb56f5a6a5d876891f86d9e5)) - Shortened fair witness, typescript standards and agent-communication rules for token efficiency (#36)
 
-### 🛠️ Reliability Improvements  
-- **Robust CI/CD Pipeline**: Enhanced publish workflow with better error handling and version validation
-- **Graceful Workflow Exits**: Fixed workflow exit handling to prevent unnecessary error states
-- **Environment Modernization**: Updated to Node.js v22.18.0 for improved performance and security
+## 💥 Breaking Changes
+- **Context Information Display Rule Removal** ([bc29738](https://github.com/usrrname/cursorrules/commit/bc29738287dc4556625dd382f3005091702d409b)) - Removed unreliable context information display rule from utils - this rule was causing inconsistent behavior (#35)
 
-### 🧹 Code Quality
-- **Deprecated Feature Removal**: Removed unreliable context information display rule to improve system stability
-- **Environment Management**: Enhanced environment variable handling and documentation
+## 📚 Documentation
+- **AI Model Support Information** ([deeef1f](https://github.com/usrrname/cursorrules/commit/deeef1ff3a2c5c637ba69e9fba555cf677fe45a1)) - Updated supported models section, added new supported models documentation including autoRunLint option (#40)
+- **Release Notes and Changelog** ([9aafe7b](https://github.com/usrrname/cursorrules/commit/9aafe7b65eef390cf4eb6ea36c7c2976131e4225)) - Comprehensive release notes for v0.4.0 with performance optimizations, workflow improvements, and removal of deprecated features (#37)
 
-## 📋 Detailed Changes
+## 🔧 Other Changes
+- **CI/CD Improvements** ([5411cb3](https://github.com/usrrname/cursorrules/commit/5411cb37939fbc59c2e8c7cf0eb47d8f9187966b)) - Updated publish workflow to include manual trigger option
+- **Package Validation Enhancement** ([5168d7b](https://github.com/usrrname/cursorrules/commit/5168d7bf27a5a7cf6953b1cb94317fd5e5a3f6af)) - Added condition to check if package.json version is extracted in publish workflow
+- **Environment Maintenance** ([c4c8568](https://github.com/usrrname/cursorrules/commit/c4c85686debef46dc2ebbcb5362b8ee669d40001)) - Updated environment variables, Node.js version to v22.18.0, and npm version maintenance (#34)
 
-### ⚡ Performance
-- **Token Efficiency Optimization** - Shortened fair witness, TypeScript standards and agent-communication rules for improved token efficiency without losing functionality (#36)
+## 📋 Migration Notes
 
-### 🐛 Fixed
-- **Publish Workflow Exit Handling** - Updated publish workflow to allow non-tag events to exit gracefully, preventing false error states
+### Breaking Changes
+- **Context Information Display**: If you were relying on the context information display rule, please note it has been removed due to reliability issues. Consider implementing your own context tracking if needed.
 
-### 🔧 Technical Improvements
-- **CI Workflow Enhancement** - Added condition to check if package.json version is extracted in publish workflow for better validation
-- **Environment and Dependencies Update** - Updated environment variables, Node.js version to v22.18.0, and npm version for improved performance and security (#34)
+### Directory Structure Changes
+- **Memory Folder Location**: Projects using the agentic workflow should update references from `.ai/` to `.cursor/.ai/` for user stories, architecture documents, and project memory.
 
-### 🗑️ Removed
-- **Context Information Display Rule** - Deprecated and removed unreliable context information display rule from utils to improve system stability (#35)
+## 🎯 Release Summary
+- **Total Commits**: 12 commits analyzed
+- **New Features**: 1 (Vue 3 + TypeScript standards)
+- **Bug Fixes**: 3 (rule globs, memory location, CI/CD)
+- **Performance Improvements**: 1 (token efficiency)
+- **Breaking Changes**: 1 (context display rule removal)
+- **Documentation Updates**: 2 (AI models, release notes)
+- **Other Improvements**: 3 (CI/CD enhancements, maintenance)
 
-## 🚀 Impact
-
-### For Users
-- **Faster Rule Processing**: Reduced token usage means faster AI responses and lower costs
-- **More Reliable Workflows**: Enhanced CI/CD reliability reduces failed deployments
-- **Better Performance**: Node.js v22.18.0 brings performance improvements and security updates
-
-### For Developers
-- **Cleaner Codebase**: Removal of unreliable features improves maintainability
-- **Enhanced CI/CD**: More robust publish workflow with better error handling
-- **Modern Environment**: Updated dependencies and Node.js version for better development experience
-
-## 🔄 Migration Notes
-
-- **No Breaking Changes**: This release maintains full backward compatibility
-- **Automatic Benefits**: Performance improvements are automatically applied
-- **No Action Required**: All enhancements work transparently with existing setups
-
-## 📊 Stats
-
-- **5 commits** since v0.3.0
-- **1 performance enhancement**
-- **1 bug fix** 
-- **2 technical improvements**
-- **1 feature removal** (unreliable feature)
-- **0 breaking changes**
-
-## 🙏 Credits
-
-Special thanks to all contributors who helped make this release possible:
-- Enhanced performance optimizations
-- Improved workflow reliability
-- Better development environment setup
-
----
-
-**Version v0.4.0 Ready for Release** 🚀
+This patch release focuses on improving development standards, fixing critical bugs, optimizing performance, and enhancing the overall developer experience while maintaining backward compatibility where possible.
