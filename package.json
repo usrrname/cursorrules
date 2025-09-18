@@ -39,12 +39,14 @@
   "homepage": "https://github.com/usrrname/cursorrules#readme",
   "devDependencies": {
     "@types/node": "22.14.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "viteval": "^0.5.6"
   },
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
+    "dotenv": "^17.2.2",
     "varlock": "^0.0.3"
   }
 }
