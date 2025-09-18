@@ -75,12 +75,13 @@ const version = () => console.log(`${packageJson.name} v${packageJson.version}`)
 
 /**
  * Scan available rules from standards and test directories
- * @returns {Promise<Object>} Object with categorized rules
+ * @returns {Promise<Record<string, Array<{name: string, path: string, fullPath: string}>>>} Object with categorized rules
  */
 const scanAvailableRules = async () => {
   const rulesPath = url.fileURLToPath(url.resolve(import.meta.url, baseFolder + 'rules'));
 
   const categories = ['standards', 'test', 'utils'];
+  /** @type {Record<string, Array<{name: string, path: string, fullPath: string}>>} */
   let rules = {}
 
   for (const category of categories) {
@@ -104,8 +105,8 @@ const scanAvailableRules = async () => {
 
 /**
  * Simple text-based selection fallback for non-TTY environments
- * @param {Array<string>} allRules - All available rules
- * @returns {Promise<Array<string>} Selected rule paths
+ * @param {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} allRules - All available rules
+ * @returns {Promise<Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>>} Selected rule objects
  */
 const simpleTextSelection = async (allRules) => {
   const rl = readline.createInterface({
@@ -113,6 +114,7 @@ const simpleTextSelection = async (allRules) => {
     output: process.stdout
   });
 
+  /** @param {string} query */
   const question = (query) => new Promise((resolve) => rl.question(query, resolve));
 
   console.log('\n🎯 Rule Selection Mode (Text Input) ✨');
@@ -157,7 +159,7 @@ const simpleTextSelection = async (allRules) => {
 
     default:
       // Parse comma-separated numbers
-      const indices = answer.split(',').map(s => parseInt(s.trim()) - 1);
+      const indices = answer.split(',').map(/** @param {string} s */ s => parseInt(s.trim()) - 1);
       for (const index of indices) {
         if (index >= 0 && index < allRules.length) {
           selectedRules.push(allRules[index]);
@@ -188,14 +190,21 @@ const simpleTextSelection = async (allRules) => {
  *    selected: boolean
  * }>}
  */
+/**
+ * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules
+ * @returns {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>}
+ */
 const prepareMenu = (rules) => {
+  /** @type {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} */
   let allRules = [];
   // Flatten all rules for display in interactive mode
   for (const [category, categoryRules] of Object.entries(rules)) {
     for (const rule of categoryRules) {
       allRules.push({
-        ...rule,
-        category,
+        name: rule.name,
+        path: rule.path,
+        fullPath: rule.fullPath,
+        category: /** @type {"standards" | "test" | "utils"} */ (category),
         displayName: `[${category}] ${rule.name}`,
         selected: false
       });
@@ -206,10 +215,11 @@ const prepareMenu = (rules) => {
 
 /**
  * Create interactive selection interface with keyboard navigation
- * @param {Object} rules - Available rules by category
- * @returns {Promise<Array<string|undefined>>} Selected rule paths
+ * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules - Available rules by category
+ * @returns {Promise<Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>>} Selected rule objects
  */
 const interactiveSelection = async (rules) => {
+  /** @type {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} */
   let allRules = prepareMenu(rules)
 
   if (allRules.length < 1) {
@@ -257,6 +267,7 @@ const interactiveSelection = async (rules) => {
 
   return new Promise((resolve) => {
 
+    /** @param {string} key */
     const handleKeyPress = (key) => {
       if (skipRenderMenu) return;
       switch (key) {
@@ -288,7 +299,9 @@ const interactiveSelection = async (rules) => {
           if (selectedRules.length > 0) {
             console.log('\n\n✅ Selected Rules:');
             selectedRules.forEach(rule => {
-              console.log(`  • ${rule.displayName}`);
+              if (typeof rule === 'object' && rule.displayName) {
+                console.log(`  • ${rule.displayName}`);
+              }
             });
           } else {
             console.log('\n\n⚠️  No rules selected');
@@ -382,7 +395,7 @@ const downloadFiles = async (dirname) => {
 /**
  * Download selected rules only
  * @param {string} dirname - output folder relative path
- * @param {Array<string>} selectedRules - Array of selected rule objects
+ * @param {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} selectedRules - Array of selected rule objects
  */
 const downloadSelectedFiles = async (dirname, selectedRules) => {
   if (!dirname) throw new Error('Output directory is required');
