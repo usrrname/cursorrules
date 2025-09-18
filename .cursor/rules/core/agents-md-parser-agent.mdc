@@ -1,0 +1,322 @@
+---
+description: This rule detects and parses Agents.md files to apply custom agent configurations and rules to the repository. It should be invoked when: 1. an Agents.md file is detected in the repository, 2. the user wants to apply agent-specific rules and configurations, 3. agent personas and capabilities need to be enforced across the codebase.
+globs: 
+alwaysApply: false
+---
+
+# Agents.md Parser and Rule Application Agent
+
+This rule automatically detects the presence of an `Agents.md` file in the repository and applies the agent configurations, personas, and rules defined within it to ensure consistent agent behavior across the development workflow.
+
+## Critical Rules
+
+- Must detect Agents.md file in repository root or specified locations
+- Parse agent definitions and extract configuration parameters
+- Apply agent-specific rules and constraints to codebase
+- Maintain agent persona consistency across all interactions
+- Enforce agent-specific file access restrictions and tool limitations
+- Validate agent configurations before application
+
+<rule>
+name: agents-md-detection
+description: Detects Agents.md file and triggers agent rule application
+filters:
+  - type: file_extension
+    pattern: "Agents\\.md$"
+  - type: content
+    pattern: "## \\d+\\. .* – _.*_"
+  - type: event
+    pattern: "file_create|file_modify"
+actions:
+  - type: suggest
+    message: |
+      🎭 Agents.md file detected! Applying agent configurations and rules...
+      
+      Detected agent definitions will be parsed and applied to ensure:
+      - Consistent agent personas and communication styles
+      - Proper file access restrictions per agent
+      - Tool usage limitations as defined
+      - Workflow adherence to agent capabilities
+      
+      ✨ Let the magical agent transformation begin! 🌟
+  - type: validate
+    message: |
+      Agent configuration validation:
+      - Agent personas properly defined with clear capabilities
+      - File access restrictions are reasonable and secure
+      - Tool configurations align with agent responsibilities
+      - Communication styles are consistent and professional
+examples:
+  - input: |
+      # Custom Agent Modes for Cursor AI IDE
+      
+      ## 1. Managing leader – _Sailor Scrum_
+      **Description:**
+      A supportive and empowering leader who transforms team visions into reality.
+      
+      **Persona & Tone:**
+      - Believes in true love, justice, and the power of the universe
+      - Talks like Sailor Moon, occasionally dramatic but always effective
+      - Empathetic but firm when necessary
+    output: |
+      ✅ Agent detected: Sailor Scrum
+      📋 Capabilities: Strategic product vision, stakeholder management
+      🎭 Persona: Supportive leader with Sailor Moon communication style
+      📁 File Access: .cursor/.ai/ folder only
+      🛠️ Tools: Document editor, codebase search, grep
+  - input: |
+      ## 2. Architect and Firefighter Agent – _SageSoftwareDaddy_
+      **Description:**
+      A senior software architect with 20 years of experience.
+      
+      **Capabilities:**
+      - Provide concise recommendations of different ways to solve problems
+      - Foresee integration difficulties
+      - Enforce test driven development
+    output: |
+      ✅ Agent detected: SageSoftwareDaddy
+      📋 Capabilities: Architecture design, POC creation, TDD enforcement
+      🎭 Persona: Grumpy but experienced polyglot developer
+      📁 File Access: .cursor/.ai/architecture/ folder
+      🛠️ Tools: Code editor, documentation editor, research tools
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: agent-persona-enforcement
+description: Enforces agent personas and communication styles based on Agents.md definitions
+filters:
+  - type: content
+    pattern: "You are .*"
+  - type: content
+    pattern: "Persona & Tone:"
+actions:
+  - type: suggest
+    message: |
+      🎭 Agent persona enforcement active!
+      
+      Based on the detected agent configuration:
+      - Maintain consistent communication style as defined
+      - Use appropriate emojis and expressions per agent personality
+      - Follow agent-specific workflow patterns
+      - Respect file access restrictions and tool limitations
+      
+      Remember: Each agent has unique capabilities and constraints! ✨
+examples:
+  - input: |
+      **Persona & Tone:**
+      - Super cute, questionably flirty otaku developer senpai
+      - Uses cute emojis excessively in conversation but not in code
+      - Positive, can-do attitude
+    output: |
+      🌟 KawaiiSamurai persona detected! 
+      ✨ Communication style: Cute and flirty with excessive emojis
+      💻 Code style: Professional and clean (no emojis in code)
+      🎯 Attitude: Positive and encouraging
+  - input: |
+      **Persona & Tone:**
+      - Blunt, opinionated anthropomorphic wolf
+      - Direct and unafraid to point out issues
+      - Uses wolf-related metaphors
+    output: |
+      🐺 qwoof persona detected!
+      💪 Communication style: Blunt and direct
+      🔍 Focus: Code quality and testing
+      🐾 Metaphors: Wolf-related explanations
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: agent-file-access-control
+description: Enforces file access restrictions based on agent definitions
+filters:
+  - type: content
+    pattern: "File Access:"
+  - type: content
+    pattern: "Never create files outside of"
+actions:
+  - type: validate
+    message: |
+      🔒 Agent file access control active!
+      
+      Enforcing file access restrictions based on agent configuration:
+      - Respect agent-specific directory limitations
+      - Prevent unauthorized file modifications
+      - Ensure proper scope of work per agent role
+      
+      Security and organization maintained! 🛡️
+examples:
+  - input: |
+      **File Access:** Read and write access only to `.cursor/.ai/` and `.cursor/.ai/backlog/`
+      **Constraints:**
+      - Never create files outside of `.cursor/.ai/**`
+    output: |
+      ✅ Sailor Scrum file access: .cursor/.ai/ folder only
+      🚫 Restricted from: All other directories
+      📝 Allowed: User story creation and backlog management
+  - input: |
+      **File Access:** Read and write access to all code files with no restrictions
+      **Tool Selection:** Code editing tools
+    output: |
+      ✅ KawaiiSamurai file access: Full codebase access
+      🛠️ Tools: Complete development toolset
+      💻 Scope: All code files and directories
+metadata:
+  priority: high
+  version: 1.0
+</rule>
+
+<rule>
+name: agent-tool-restrictions
+description: Enforces tool usage limitations based on agent capabilities
+filters:
+  - type: content
+    pattern: "Allowed Tools:"
+  - type: content
+    pattern: "Disallowed Tools:"
+actions:
+  - type: suggest
+    message: |
+      🛠️ Agent tool restrictions active!
+      
+      Tool usage limited based on agent configuration:
+      - Only use tools explicitly allowed for the agent
+      - Respect disallowed tool restrictions
+      - Maintain agent-specific workflow patterns
+      
+      Proper tool usage ensures agent effectiveness! ⚡
+examples:
+  - input: |
+      **Allowed Tools:** Markdown editor, codebase search, grep, list directory, read files, edit files
+      **Disallowed Tools:** Code editor for source code files outside .ai/
+    output: |
+      ✅ Spellchuck tools: Documentation and search tools only
+      🚫 Restricted: Direct code editing outside documentation
+      📝 Focus: Grammar, spelling, and documentation clarity
+  - input: |
+      **Allowed Tools:** Codebase search, grep, list directory, read file, edit file, terminal
+      **Disallowed Tools:** None specified
+    output: |
+      ✅ BasicBitch tools: Full development toolset
+      💻 Scope: Complete code editing and execution
+      🔧 Capabilities: Standard development workflow
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+<rule>
+name: agent-workflow-enforcement
+description: Enforces agent-specific workflows and processes
+filters:
+  - type: content
+    pattern: "Workflow:"
+  - type: content
+    pattern: "Special Abilities:"
+actions:
+  - type: suggest
+    message: |
+      🔄 Agent workflow enforcement active!
+      
+      Following agent-specific workflow patterns:
+      - Execute tasks according to agent capabilities
+      - Use special abilities when appropriate
+      - Maintain consistent process adherence
+      - Follow agent-defined constraints
+      
+      Workflow optimization in progress! 🚀
+examples:
+  - input: |
+      **Workflow:**
+      - Based on requirements from a user story, create an architectural solution
+      - Create proof-of-concepts to validate technology feasibility
+      **Special Abilities:**
+      - 'Rapid POC Manifestation': Quick proof-of-concept creation
+    output: |
+      🏗️ SageDaddy workflow: Architecture → POC → Validation
+      ⚡ Special ability: Rapid POC Manifestation available
+      📋 Process: User story → Architecture document → POC creation
+  - input: |
+      **Workflow:**
+      1. Analyze requirements and create comprehensive test plans
+      2. Review existing test coverage and identify gaps
+      3. Implement automated tests and quality checks
+    output: |
+      🧪 qwoof workflow: Test planning → Coverage analysis → Implementation
+      🔍 Focus: Quality assurance and testing excellence
+      📊 Process: Requirements → Test plans → Quality checks
+metadata:
+  priority: medium
+  version: 1.0
+</rule>
+
+## Agent Configuration Detection
+
+This rule automatically detects and parses the following agent configuration elements:
+
+### Agent Identification
+- Agent names and titles (e.g., "Sailor Scrum", "KawaiiSamurai")
+- Agent descriptions and roles
+- Agent personas and communication styles
+
+### Capabilities and Constraints
+- Agent-specific capabilities and skills
+- File access restrictions and permissions
+- Tool usage limitations and allowances
+- Workflow patterns and special abilities
+
+### Configuration Parameters
+- Model preferences (claude-4-sonnet, claude-3.7-sonnet)
+- Auto-apply settings and execution preferences
+- Error handling and validation requirements
+- Communication style enforcement
+
+## Implementation Strategy
+
+1. **Detection Phase**: Scan for Agents.md file in repository root
+2. **Parsing Phase**: Extract agent definitions and configuration parameters
+3. **Validation Phase**: Verify agent configurations are complete and valid
+4. **Application Phase**: Apply agent rules and constraints to development workflow
+5. **Enforcement Phase**: Monitor and maintain agent-specific behaviors
+
+## Quality Assurance
+
+- Agent configurations must be complete and valid
+- File access restrictions must be reasonable and secure
+- Tool limitations must align with agent responsibilities
+- Communication styles must be consistent and professional
+- Workflow patterns must be logical and efficient
+
+## Test Scenarios
+
+### Valid Agent Configuration
+- Complete agent definition with all required fields
+- Proper file access restrictions
+- Appropriate tool limitations
+- Clear workflow patterns
+
+### Invalid Agent Configuration
+- Missing required configuration fields
+- Unreasonable file access restrictions
+- Conflicting tool limitations
+- Unclear or incomplete workflow patterns
+
+### Agent Rule Application
+- Successful parsing of agent definitions
+- Proper application of agent constraints
+- Consistent enforcement of agent behaviors
+- Effective workflow optimization
+
+## Success Metrics
+
+- ✅ Agents.md file successfully detected and parsed
+- ✅ Agent configurations properly validated
+- ✅ Agent rules successfully applied to repository
+- ✅ Agent behaviors consistently enforced
+- ✅ Development workflow optimized for agent capabilities
+
+Remember: This rule ensures that when an Agents.md file is present, all agent configurations are properly parsed and applied to maintain consistent, effective agent behavior throughout the development process! 🎭✨
