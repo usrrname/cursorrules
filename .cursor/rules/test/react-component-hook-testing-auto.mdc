@@ -1,6 +1,6 @@
 ---
 description: Enforces best practices for unit testing React components and custom hooks using React Testing Library and Vitest.
-globs: "*.test.{js,ts,tsx},*.spec.{js,ts,jsx,tsx}"
+globs: "*.test.{js,ts,jsx,tsx},*.spec.{js,ts,jsx,tsx}"
 alwaysApply: false
 ---
 
