@@ -1,6 +1,6 @@
 ---
 description: This rule checks the current version in package.json and offers to update it to a new version. It also offers to commit the version change and push the commit. It runs when users request release creation, version bumping, or package publishing.
-globs: package.json, package-lock.json
+globs: package.json,*-lock.json,*.lock
 alwaysApply: false
 ---
 # Release Package Version Management
