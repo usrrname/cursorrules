@@ -204,7 +204,7 @@ const interactiveCategorySelection = async (rules) => {
       switch (key) {
         case '\u0003': // Ctrl+C
         case '\u001b': // Escape
-        case key.name === 'left': // Left Arrow
+        case '\u001b[D': // Left Arrow
           process.stdin.setRawMode(false);
           process.stdin.pause();
           process.stdin.removeListener('data', handleKeyPress);
