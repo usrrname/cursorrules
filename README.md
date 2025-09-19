@@ -76,6 +76,7 @@ But if you're inside the root of a project folder, running `npx @usrrname/cursor
 | Flag | Description |
 |------|-------------|
 | `-h, --help` | Display help instructions |
+| `-i, --interactive` | Interactive Rule Selection |
 | `-f, --flat` | Install without parent directory |
 | `-o, --output` | Set output directory (Default: `./output`) |
 | `-v, --version` | Show package version |
@@ -255,4 +256,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Contributing
 
 Contributions are welcome! Check out [CONTRIBUTING.md](./CONTRIBUTING.md)
-
