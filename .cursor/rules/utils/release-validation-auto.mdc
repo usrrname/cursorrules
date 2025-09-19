@@ -1,6 +1,6 @@
 ---
 description: This rule validates release prerequisites including branch naming conventions and package.json structure. It runs when users request release creation, version bumping, or package publishing. The rule ensures releases only occur from appropriate branches (release/, hotfix/, fix/) and validates package.json exists with proper structure, required fields, and semantic versioning format. This prevents accidental releases from inappropriate branches and ensures package.json is ready for version updates.
-globs: package.json, package-lock.json
+globs: package.json,package-lock.json,*-lock.json,*.lock
 alwaysApply: false
 ---
 # Release Validation
