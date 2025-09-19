@@ -48,12 +48,11 @@ const config = {
 const help = () => {
   const repository = packageJson.repository.url.replace('git+', '').replace('.git', '');
   const version = packageJson.version;
-  return console.info(`
+  console.info(`
 ╔══════════════════════════════════════╗
 ║  @usrrname/cursorrules v${version}   ║
 ╚══════════════════════════════════════╝
-A standard library of Cursor Rules 
-...with otaku vibes (✿ᴗ͈ˬᴗ͈)⁾⁾
+A standard library of Cursor Rules ...with otaku vibes (✿ᴗ͈ˬᴗ͈)⁾⁾
 
 Usage:
 =======================================
@@ -63,7 +62,7 @@ Options:
 -f, --flat: Install without parent directory
 -h, --help: Help instructions <----- You are here
 -i, --interactive: Interactive rule selection mode
--o, --output: Set output directory (Default: ./output)
+-o, --output: Set output directory (Default: .cursor/)
 -v, --version: Show package version
 
 ${repository}
@@ -448,7 +447,6 @@ async function main() {
         downloadFiles(values[key]?.toString() ??
           `${process.cwd()}/output/.cursor`);
         break;
-      case 'flat':
       default:
         console.log(`~~~~ 📂 Flattening rules ~~~~`);
         downloadFiles(path.join(process.cwd(), '.cursor'))

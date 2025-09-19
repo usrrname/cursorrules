@@ -78,7 +78,7 @@ But if you're inside the root of a project folder, running `npx @usrrname/cursor
 | `-h, --help` | Display help instructions |
 | `-i, --interactive` | Interactive Rule Selection |
 | `-f, --flat` | Install without parent directory |
-| `-o, --output` | Set output directory (Default: `./output`) |
+| `-o, --output` | Set output directory (Default: `.cursor/`) |
 | `-v, --version` | Show package version |
 
 
