@@ -1,0 +1,122 @@
+---
+description: Enforces best practices for unit testing React components and custom hooks using React Testing Library and Vitest.
+globs: "*.test.{js,ts,jsx,tsx},*.spec.{js,ts,jsx,tsx}"
+alwaysApply: false
+---
+
+# React Unit Testing Standards
+
+## Critical Rules
+
+- Use `@testing-library/react` for rendering components; avoid shallow rendering or testing implementation details.
+- Prefer accessibility queries (`getByRole`, `getByLabelText`, etc.) over `getByTestId` or CSS selectors.
+- Simulate user interactions with `userEvent` instead of firing raw DOM events.
+- Each test must contain at least one assertion using `expect`.
+- Group related tests in `describe` blocks with descriptive titles.
+- Avoid querying private DOM nodes with `container.querySelector`.
+- Do not snapshot the entire DOM tree for dynamic components; assert specific, stable text/attributes.
+- For hooks, use `@testing-library/react`'s `renderHook` or equivalent utilities.
+- Always test custom hooks in isolation and with all relevant edge cases.
+- Mock external dependencies and context providers as needed for hooks.
+- Avoid using `any` in test or hook typings; always use explicit types.
+- Clean up side-effects after each test (rely on library auto-cleanup or call `cleanup()`).
+- Do not use `.skip` or `.only` in committed test code.
+
+<rule>
+name: react-component-hook-testing
+version: 1.0
+description: Enforces best practices for testing React components and custom hooks with React Testing Library and Vitest
+filters:
+  - type: file_extension
+    pattern: "\\.(test|spec)\\.(js|ts|jsx|tsx)$"
+  - type: content
+    pattern: "(render|renderHook|screen|getBy|userEvent|fireEvent)"
+actions:
+  - type: suggest
+    message: |
+      Use React Testing Library for rendering and userEvent for interactions. Prefer accessibility queries and always assert user-visible output.
+  - type: suggest
+    pattern: "container\\.querySelector"
+    message: |
+      Avoid querying DOM directly. Use queries like `screen.getByRole` or `screen.getByText` to reflect real user interactions.
+  - type: suggest
+    pattern: "fireEvent\\."
+    message: |
+      Use `userEvent` to simulate real user behaviour instead of `fireEvent`, e.g. `await userEvent.click(button)`.
+  - type: suggest
+    pattern: "\.skip|\.only"
+    message: |
+      Do not commit tests with `.skip` or `.only`. All tests should run in CI.
+  - type: suggest
+    message: |
+      Each test must contain at least one assertion (`expect`).
+examples:
+  - input: |
+      it('renders', () => {
+        const { container } = render(<Login />)
+        container.querySelector('button[type="submit"]')
+      })
+    output: |
+      it('renders submit button', () => {
+        render(<Login />)
+        expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+      })
+  - input: |
+      it('calls onClick', async () => {
+        render(<Button onClick={mockFn} />)
+        fireEvent.click(screen.getByText('Click me'))
+      })
+    output: |
+      it('calls onClick', async () => {
+        render(<Button onClick={mockFn} />)
+        await userEvent.click(screen.getByRole('button', { name: /click me/i }))
+        expect(mockFn).toHaveBeenCalled()
+      })
+  - input: |
+      it('should use custom hook', () => {
+        const { result } = renderHook(() => useCustomHook())
+        expect(result.current.value).toBe(0)
+      })
+    output: |
+      it('should use custom hook with initial value', () => {
+        const { result } = renderHook(() => useCustomHook({ initial: 0 }))
+        expect(result.current.value).toBe(0)
+      })
+  - input: |
+      test.skip('unimplemented', () => {})
+    output: |
+      // Remove .skip or implement the test
+  - input: |
+      it('should update value', () => {
+        const { result } = renderHook(() => useCounter())
+        act(() => {
+          result.current.increment()
+        })
+        expect(result.current.count).toBe(1)
+      })
+    output: |
+      it('should increment count when increment is called', () => {
+        const { result } = renderHook(() => useCounter())
+        act(() => {
+          result.current.increment()
+        })
+        expect(result.current.count).toBe(1)
+      })
+tests:
+  - input: "it('short', () => { render(<Btn />) })"
+    output: "Suggest rewriting title and adding assertion"
+  - input: "container.querySelector('div')"
+    output: "Suggest replacing direct querySelector with RTL queries"
+  - input: "fireEvent.click(button)"
+    output: "Suggest using userEvent instead of fireEvent"
+  - input: "test.skip('unimplemented', () => {})"
+    output: "Suggest removing .skip or implementing the test"
+  - input: |
+      const { result } = renderHook(() => useCustomHook())
+      expect(result.current.value).toBe(0)
+    output: |
+      Passes – hook tested in isolation with assertion
+metadata:
+  priority: high
+  version: 1.0
+</rule>
