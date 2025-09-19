@@ -385,7 +385,7 @@ const downloadSelectedFiles = async (dirname, selectedRules) => {
 
       // Copy the rule file
       await fs.copyFile(sourcePath, destPath);
-      console.log(`  🫥 Copied: ${rule.displayName}`);
+      console.log(`  📄 Copied: ${rule.displayName}`);
     }
 
     console.log(`\n🎉 Success! ${selectedRules.length} selected rules saved to ${outputDir}`);
