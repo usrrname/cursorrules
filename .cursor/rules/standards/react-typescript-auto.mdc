@@ -1,0 +1,73 @@
+---
+description: This rule enforces best practices for building React 18+ applications with TypeScript, ensuring type safety, maintainability, and consistency.
+globs: "*.ts,*.tsx"
+alwaysApply: false
+---
+
+# React and TypeScript Standards
+
+## Critical Rules
+
+- All React components MUST be defined as functional components using `const` and arrow functions – except for Error Boundaries.
+- ALWAYS define explicit types or interfaces for component props and state.
+- EVERY element in a list rendered by `map()` MUST have a unique `key` prop.
+- Hooks (`useState`, `useEffect`, `useContext`, etc.) MUST only be called at the top level of a functional component or custom hook.
+- Component filenames MUST use PascalCase (e.g., `MyComponent.tsx`).
+- Prefix custom hooks with "use" (ie. "useUserAuth")
+- Prefix event handlers with "handle" (ie. "handleClick")
+- Prefix boolean values with verbs (ie. isLoading for loading state, or canSubmit for ability to submit)
+
+## React Hooks
+
+- Only call hooks at the top level of React function components or custom hooks (never inside loops, conditions, or nested functions).
+- Always start custom hook names with `use` (e.g., `useFetchData`).
+- Extract reusable logic into custom hooks to avoid duplication.
+- Specify all dependencies in hook dependency arrays (e.g., `useEffect`, `useCallback`, `useMemo`).
+- Avoid using `any` in hook return types or parameters; always type your hooks.
+- Use `useCallback` and `useMemo` to optimize performance only when necessary.
+- Document the purpose and expected usage of custom hooks.
+
+### Best Practices for useEffect
+
+The `useEffect` hook is used for side effects in functional components, such as data fetching, subscriptions, or manually changing the DOM. To avoid bugs and performance issues, follow these best practices:
+
+- Always specify all external dependencies in the dependency array. Missing dependencies can cause stale values or unexpected behavior.
+- Avoid using `any` in effect callbacks or dependencies.
+- Use cleanup functions to prevent memory leaks, especially for subscriptions or timers.
+- Prefer splitting effects by purpose rather than combining unrelated logic in a single effect.
+- Avoid side effects that synchronously update state in a way that triggers another render loop.
+- For async logic, define the async function inside the effect and call it, rather than making the effect callback itself async.
+
+## State Management Guidance
+
+Effective state management is crucial for building scalable and maintainable React applications. Choose the right state management approach based on the scope and complexity of your state:
+
+- Use `useState` for simple, local component state.
+- Use `useReducer` for complex local state logic or when state transitions depend on previous state.
+- Use React Context for sharing state that is truly global to a subtree (e.g., theme, authentication, user preferences), but avoid using it for frequently changing or large state.
+- For large, shared, or highly dynamic state, consider external libraries such as Redux, Zustand, Jotai, or Recoil.
+- Always define explicit types for state and actions when using TypeScript.
+- Avoid prop drilling by lifting state up only as much as necessary or using context appropriately.
+
+## When to use React Context
+
+React Context is ideal for passing data that can be considered "global" for a tree of React components, such as the current authenticated user, theme, or preferred language. It helps avoid "prop drilling" (passing props down through many nested components).
+
+### Best Practices for Context:
+
+- Define an explicit type for the context value.
+- Create a provider component that manages the context's state and value.
+- Use `useContext` hook to consume the context in functional components.
+- AVOID using context for highly dynamic or frequently updated state that causes many re-renders across the component tree. For such cases, consider state management libraries like Redux or Zustand.
+
+## Suspense:
+
+- Use `<Suspense>` to wrap components that use React.lazy for code-splitting or that rely on data fetching libraries supporting Suspense (e.g., Relay, React Query experimental).
+- Provide a meaningful fallback UI (e.g., spinner, skeleton loader) to indicate loading state.
+- Avoid wrapping your entire app in a single Suspense; scope it to the smallest subtree that benefits from loading boundaries.
+
+## Error Boundaries:
+
+- Use Error Boundaries to catch and display errors in the render phase of React components, preventing the entire app from crashing.
+- Place Error Boundaries around critical UI sections (e.g., main content, widgets) to isolate failures.
+- Error Boundaries must be class components, but you can wrap them in functional components for convenience.
