@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import * as readline from 'node:readline';
 import * as url from 'node:url';
 import { parseArgs } from 'node:util';
 
@@ -104,84 +103,6 @@ const scanAvailableRules = async () => {
 };
 
 /**
- * Simple text-based selection fallback for non-TTY environments
- * @param {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} allRules - All available rules
- * @returns {Promise<Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>>} Selected rule objects
- */
-const simpleTextSelection = async (allRules) => {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  /** @param {string} query */
-  const question = (query) => new Promise((resolve) => rl.question(query, resolve));
-
-  console.log('\n🎯 Rule Selection Mode (Text Input) ✨');
-  console.log('=====================================\n');
-
-  // Display available rules
-  console.log('📋 Available Rules:');
-  allRules.forEach((rule, index) => {
-    console.log(`  ${index + 1}. ${rule.displayName}`);
-  });
-
-  console.log('\n💡 Selection Options:');
-  console.log('  • Enter numbers separated by commas (e.g., 1,3,5)');
-  console.log('  • Enter "all" to select everything');
-  console.log('  • Enter "standards" to select all standards rules');
-  console.log('  • Enter "test" to select all test rules');
-  console.log('  • Press Enter to skip selection\n');
-
-  const answer = await question('🎯 Select rules to install: ');
-
-  if (answer.trim() === '') {
-    console.log('⏭️  Skipping rule selection');
-    rl.close();
-    return [];
-  }
-
-  const selectedRules = [];
-
-  switch (answer.toLowerCase()) {
-
-    case "all":
-      selectedRules.push(...allRules);
-      break;
-
-    case "standards":
-      selectedRules.push(...allRules.filter(rule => rule.category === 'standards'));
-      break;
-
-    case 'test':
-      selectedRules.push(...allRules.filter(rule => rule.category === 'test'));
-      break;
-
-    default:
-      // Parse comma-separated numbers
-      const indices = answer.split(',').map(/** @param {string} s */ s => parseInt(s.trim()) - 1);
-      for (const index of indices) {
-        if (index >= 0 && index < allRules.length) {
-          selectedRules.push(allRules[index]);
-        }
-      }
-      break;
-  }
-
-  if (selectedRules?.length > 0) {
-    console.log('\n✅ Selected Rules:');
-    selectedRules.forEach(rule => {
-      console.log(`  • ${rule.displayName}`);
-    });
-  } else {
-    console.log('\n⚠️  No valid rules selected');
-  }
-
-  rl.close();
-  return selectedRules;
-};
-
-/**
  * Finds all rules in category and prepares them for display in menu
  * @param  {Object} rules - Available rules by category
  * @returns {Array<{
@@ -214,62 +135,146 @@ const prepareMenu = (rules) => {
 }
 
 /**
- * Create interactive selection interface with keyboard navigation
- * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules - Available rules by category
- * @returns {Promise<Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>>} Selected rule objects
+ * Utility to render a menu with highlighting and indicators
+ * @param {Object} opts
+ * @param {string} opts.title - Menu title
+ * @param {string[]} opts.items - Array of item display strings
+ * @param {number} opts.currentIndex - Index of currently highlighted item
+ * @param {string[]} [opts.footerLines] - Array of footer lines
  */
-const interactiveSelection = async (rules) => {
-  /** @type {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} */
-  let allRules = prepareMenu(rules)
-
-  if (allRules.length < 1) {
-    console.log('❌ No rules found in standards or test directories');
-    return [];
+function createMenu({ title, items, currentIndex, footerLines = [] }) {
+  process.stdout.write('\x1B[2J\x1B[0f');
+  if (title) {
+    console.log(title);
+    console.log('='.repeat(title.length) + '\n');
   }
+  items.forEach((item, idx) => {
+    const isCurrent = idx === currentIndex;
+    const indicator = isCurrent ? '▶ ' : '  ';
+    const highlight = isCurrent ? '\x1B[7m' : '';
+    const reset = '\x1B[0m';
+    console.log(`${highlight}${indicator}${item}${reset}`);
+  });
+  if (footerLines.length) {
+    footerLines.forEach(line => console.log(line));
+  }
+}
 
-  // Fallback to simple text input if not in TTY
-  if (!process.stdin.isTTY) return await simpleTextSelection(allRules);
-
-  let currentIndex = 0;
-  let selectedCount = 0;
-
-  // Set up raw mode for keyboard input
+/**
+ * Utility to set up interactive input for a menu
+ * @param {function(string):void} handleKeyPress
+ */
+function setupInteractiveInput(handleKeyPress) {
   process.stdin.setRawMode(true);
   process.stdin.resume();
   process.stdin.setEncoding('utf8');
+  process.stdin.on('data', handleKeyPress);
+}
 
-  const renderMenu = () => {
-    // Clear screen and move cursor to top
-    process.stdout.write('\x1B[2J\x1B[0f');
-
-    console.log('🎯 Interactive Rule Selection Mode ✨');
-    console.log('=====================================\n');
-    console.log('📋 Available Rules (Use ↑↓ arrows, Space to select, Enter to confirm):\n');
-
-    allRules.forEach((rule, index) => {
-      const isSelected = rule.selected;
-      const isCurrent = index === currentIndex;
-      const indicator = isCurrent ? '▶ ' : '  ';
-      const checkbox = isSelected ? '☑' : '☐';
-      const highlight = isCurrent ? '\x1B[7m' : '';
-      const reset = '\x1B[0m';
-
-      console.log(`${highlight}${indicator}${checkbox} ${rule.displayName}${reset}`);
-    });
-
-    console.log(`\n📊 Selected: ${selectedCount}/${allRules?.length} rules`);
-    console.log('\n💡 Controls:');
-    console.log('  ↑↓ - Navigate  Space - Toggle selection  Enter - Confirm  Esc - Cancel');
-    console.log('  A - Select All  S - Standards Only  T - Tests Only  C - Clear All');
-  };
-
-  let skipRenderMenu = false;
+/**
+ * Interactive category selection
+ * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules
+ * @returns {Promise<string|null>} Selected category or null if cancelled
+ */
+const interactiveCategorySelection = async (rules) => {
+  const categories = Object.keys(rules).filter(cat => rules[cat].length > 0);
+  if (categories.length === 0) {
+    console.log('❌ No rule categories found');
+    return null;
+  }
+  let currentIndex = 0;
 
   return new Promise((resolve) => {
+    const renderMenu = () => {
+      const items = categories.concat(['🌈 Save Rules']);
+      createMenu({
+        title: '⌨ Select rules by category',
+        items,
+        currentIndex,
+        footerLines: [
+          '\n↑↓ - Navigate | Enter - Select | Esc - Cancel'
+        ]
+      });
+    };
 
-    /** @param {string} key */
+    /**
+     * @param {*} key 
+     */
     const handleKeyPress = (key) => {
-      if (skipRenderMenu) return;
+      switch (key) {
+        case '\u0003': // Ctrl+C
+        case '\u001b': // Escape
+        case '\u001b[D': // Left Arrow
+          process.stdin.setRawMode(false);
+          process.stdin.pause();
+          process.stdin.removeListener('data', handleKeyPress);
+          console.log('\n❌ Category selection cancelled');
+          resolve(null);
+          break;
+        case '\r': // Enter
+        case '\n':
+          process.stdin.setRawMode(false);
+          process.stdin.pause();
+          process.stdin.removeListener('data', handleKeyPress);
+          if (currentIndex === categories.length) {
+            // Finish selection
+            resolve('FINISH');
+          } else {
+            resolve(categories[currentIndex]);
+          }
+          break;
+        case '\u001b[A': // Up arrow
+          if (currentIndex > 0) {
+            currentIndex--;
+            renderMenu();
+          }
+          break;
+        case '\u001b[B': // Down arrow
+          if (currentIndex < categories.length) {
+            currentIndex++;
+            renderMenu();
+          }
+          break;
+      }
+    };
+
+    setupInteractiveInput(handleKeyPress);
+    renderMenu();
+  });
+};
+
+/**
+ * Displays menu of different cursor rule types
+ * @param {Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} rulesInCategory
+ * @returns {Promise<Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>>}
+ */
+const selectRuleCategory = async (rulesInCategory) => {
+  let allRules = rulesInCategory;
+  let currentIndex = 0;
+  let selectedCount = allRules.filter(r => r.selected).length;
+
+  const renderMenu = () => {
+    const items = allRules.map(rule => {
+      const checkbox = rule.selected ? '☑' : '☐';
+      return `${checkbox} ${rule.displayName}`;
+    });
+    createMenu({
+      title: `🎯 [${allRules[0]?.category}] Rule Selection Mode ✨`,
+      items,
+      currentIndex,
+      footerLines: [
+        `\n☑️ Selected: ${selectedCount}/${allRules.length} rules`,
+        '\n↑↓ - Navigate | Space - Toggle selection | Enter - Confirm | Esc - Go Back'
+      ]
+    });
+  };
+
+  let skipMenu = false;
+
+  return new Promise((resolve) => {
+    /** @param key {string} */
+    const handleKeyPress = (key) => {
+      if (skipMenu) return;
       switch (key) {
         case '\u0003': // Ctrl+C
         case '\u001b': // Escape
@@ -278,37 +283,20 @@ const interactiveSelection = async (rules) => {
           }
           process.stdin.pause();
           process.stdin.removeListener('data', handleKeyPress);
-          console.log('\n\n❌ Selection cancelled');
-          resolve([]);
-          process.exit(1);
+          // Return current state (persist selections)
+          resolve(allRules);
           break;
-
         case '\r': // Enter
-        case '\n': // Enter
-          // hard return adds a new line with every input 
-          // which will cause this function to run again
-          skipRenderMenu = true;
+        case '\n':
+          skipMenu = true;
           if (process.stdin.isTTY) {
             process.stdin.setRawMode(false);
           }
           process.stdin.pause();
           process.stdin.removeListener('data', handleKeyPress);
-
-          const selectedRules = allRules.filter(rule => rule.selected);
-
-          if (selectedRules.length > 0) {
-            console.log('\n\n✅ Selected Rules:');
-            selectedRules.forEach(rule => {
-              if (typeof rule === 'object' && rule.displayName) {
-                console.log(`  • ${rule.displayName}`);
-              }
-            });
-          } else {
-            console.log('\n\n⚠️  No rules selected');
-          }
-          resolve(selectedRules);
+          resolve(allRules);
           break;
-        case ' ': // Spacebar
+        case ' ':
           const currentRule = allRules[currentIndex];
           if (currentRule) {
             currentRule.selected = !currentRule.selected;
@@ -316,54 +304,24 @@ const interactiveSelection = async (rules) => {
             renderMenu();
           }
           break;
-
         case '\u001b[A': // Up arrow
           if (currentIndex > 0) {
             currentIndex--;
             renderMenu();
           }
           break;
-
         case '\u001b[B': // Down arrow
           if (currentIndex < allRules.length - 1) {
             currentIndex++;
             renderMenu();
           }
           break;
-
-        case 'a': // Quick select all
-          allRules.forEach(rule => rule.selected = true);
-          selectedCount = allRules.length;
-          renderMenu();
-          break;
-
-        case 's': // Quick select standards
-          allRules.forEach(rule => {
-            rule.selected = rule.category === 'standards';
-          });
-          selectedCount = allRules.filter(rule => rule.category === 'standards').length;
-          renderMenu();
-          break;
-
-        case 't': // Quick select test
-          allRules.forEach(rule => {
-            rule.selected = rule.category === 'test';
-          });
-          selectedCount = allRules.filter(rule => rule.category === 'test').length;
-          renderMenu();
-          break;
-
-        case 'c': // Clear all
-          allRules.forEach(rule => rule.selected = false);
-          selectedCount = 0;
-          renderMenu();
-          break;
       }
     };
 
-    process.stdin.on('data', handleKeyPress);
+    setupInteractiveInput(handleKeyPress);
     renderMenu();
-  })
+  });
 };
 
 /**
@@ -395,7 +353,7 @@ const downloadFiles = async (dirname) => {
 /**
  * Download selected rules only
  * @param {string} dirname - output folder relative path
- * @param {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} selectedRules - Array of selected rule objects
+ * @param {Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} selectedRules - Array of selected rule objects
  */
 const downloadSelectedFiles = async (dirname, selectedRules) => {
   if (!dirname) throw new Error('Output directory is required');
@@ -427,7 +385,7 @@ const downloadSelectedFiles = async (dirname, selectedRules) => {
 
       // Copy the rule file
       await fs.copyFile(sourcePath, destPath);
-      console.log(`  ✅ Copied: ${rule.displayName}`);
+      console.log(`  📄 Copied: ${rule.displayName}`);
     }
 
     console.log(`\n🎉 Success! ${selectedRules.length} selected rules saved to ${outputDir}`);
@@ -456,17 +414,41 @@ async function main() {
         await help();
         break;
       case 'interactive':
-          console.log('🎯 Starting interactive mode...');
-          const rules = await scanAvailableRules();
-          const selectedRules = await interactiveSelection(rules);
-        const outputDir = values.output?.toString() ?? `${process.cwd()}/.cursor/`;
-          if (selectedRules.length > 0)
-            return await downloadSelectedFiles(outputDir, selectedRules);
+        console.log('🎯 Starting interactive mode...');
+        const rules = await scanAvailableRules();
+        // Prepare persistent selection state for each category
+        const categories = Object.keys(rules).filter(cat => rules[cat].length > 0);
+        /** @type {Record<string, Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>>} */
+        let persistentSelections = {};
+        for (const cat of categories) {
+          persistentSelections[cat] = prepareMenu({ [cat]: rules[cat] });
+        }
+        while (true) {
+          const selectedCategory = await interactiveCategorySelection(rules);
+          if (!selectedCategory) break;
+          if (selectedCategory === 'FINISH') {
+            // Combine all selected rules from all categories
+            const allSelectedRules = Object.values(persistentSelections)
+              .flat()
+              .filter(rule => rule.selected);
+            const outputDir = values.output?.toString() ?? `${process.cwd()}/.cursor/`;
+            if (allSelectedRules.length > 0)
+              return await downloadSelectedFiles(outputDir, allSelectedRules);
+            else
+              console.log('⚠️  No rules selected');
+            break;
+          }
+          // Show rule selection for the chosen category, with persistent state
+          persistentSelections[selectedCategory] = await selectRuleCategory(
+            persistentSelections[selectedCategory]
+          );
+        }
         break;
       case 'output':
         downloadFiles(values[key]?.toString() ??
           `${process.cwd()}/output/.cursor`);
         break;
+      case 'flat':
       default:
         console.log(`~~~~ 📂 Flattening rules ~~~~`);
         downloadFiles(path.join(process.cwd(), '.cursor'))
@@ -474,7 +456,6 @@ async function main() {
     }
   }
 }
-
 
 try {
   await main();
