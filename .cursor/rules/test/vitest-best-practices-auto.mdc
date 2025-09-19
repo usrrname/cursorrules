@@ -10,6 +10,7 @@ This rule enforces and suggests best practices when writing Vitest unit tests to
 ## Critical Rules
 
 - Tests must use clear and descriptive names (`it`/`test` strings).
+- Use "Arrange, Act, Assert" pattern for writing unit tests.
 - Use `describe` blocks to group related tests logically.
 - Use `beforeEach`/`afterEach` for shared setup/teardown instead of duplicating code.
 - Cleanup side-effects using `vi.resetAllMocks()` or `vi.restoreAllMocks()`.
