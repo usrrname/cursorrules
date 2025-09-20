@@ -163,7 +163,7 @@ function createMenu({ title, items, currentIndex, footerLines = [] }) {
  * Utility to set up interactive input for a menu
  * @param {function(string):void} handleKeyPress
  */
-function setupInteractiveInput(handleKeyPress) {
+function setupInput(handleKeyPress) {
   process.stdin.setRawMode(true);
   process.stdin.resume();
   process.stdin.setEncoding('utf8');
@@ -191,7 +191,7 @@ const interactiveCategorySelection = async (rules) => {
         items,
         currentIndex,
         footerLines: [
-          '\n↑↓ - Navigate | Enter - Select | Esc - Cancel'
+          '\n↑↓ - Navigate | Enter ⏎ - Select | Esc - Cancel'
         ]
       });
     };
@@ -237,17 +237,17 @@ const interactiveCategorySelection = async (rules) => {
       }
     };
 
-    setupInteractiveInput(handleKeyPress);
+    setupInput(handleKeyPress);
     renderMenu();
   });
 };
 
 /**
- * Displays menu of different cursor rule types
+ * Displays menu containing rules in a category
  * @param {Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} rulesInCategory
  * @returns {Promise<Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>>}
  */
-const selectRuleCategory = async (rulesInCategory) => {
+const selectRules = async (rulesInCategory) => {
   let allRules = rulesInCategory;
   let currentIndex = 0;
   let selectedCount = allRules.filter(r => r.selected).length;
@@ -318,7 +318,7 @@ const selectRuleCategory = async (rulesInCategory) => {
       }
     };
 
-    setupInteractiveInput(handleKeyPress);
+    setupInput(handleKeyPress);
     renderMenu();
   });
 };
@@ -417,11 +417,13 @@ async function main() {
         const rules = await scanAvailableRules();
         // Prepare persistent selection state for each category
         const categories = Object.keys(rules).filter(cat => rules[cat].length > 0);
+
         /** @type {Record<string, Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>>} */
         let persistentSelections = {};
         for (const cat of categories) {
           persistentSelections[cat] = prepareMenu({ [cat]: rules[cat] });
         }
+
         while (true) {
           const selectedCategory = await interactiveCategorySelection(rules);
           if (!selectedCategory) break;
@@ -438,7 +440,7 @@ async function main() {
             break;
           }
           // Show rule selection for the chosen category, with persistent state
-          persistentSelections[selectedCategory] = await selectRuleCategory(
+          persistentSelections[selectedCategory] = await selectRules(
             persistentSelections[selectedCategory]
           );
         }
