@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import * as url from 'node:url';
 import { parseArgs } from 'node:util';
 
+const projectRoot = process.cwd()
 const baseFolder = '.cursor/';
 
 const packageJson = JSON.parse(
@@ -323,6 +324,44 @@ const selectRules = async (rulesInCategory) => {
   });
 };
 
+/** 
+ * Security: validate output directory name
+ * @param outputDir {string} 
+ *   Regex to match invalid characters common across OS:
+ * / (forward slash) - path separator
+ * \ (backward slash) - path separator
+ * : (colon) - used in Windows drive letters and alternate data streams
+ * * (asterisk) - wildcard
+ * ? (question mark) - wildcard
+ * " (double quote) - often for quoting paths
+ *  < (less than) - redirection
+ *  > (greater than) - redirection
+ *  | (pipe) - piping
+ *  control characters (ASCII 0-31) and sometimes leading/trailing spaces
+ */
+const validateDirname = (outputDir) => {
+  if (outputDir.startsWith('=')) outputDir = outputDir.split('=')[1].trim();
+
+  const invalidCharsRegex = /[<>:"\\|?*\x00-\x1F]/g;
+
+  if (invalidCharsRegex.test(outputDir)) {
+    console.error(`❌ ERROR: Output directory name ${outputDir} contains invalid characters`)
+    process.exit(1)
+  }
+
+  const resolvedOutputDir = path.resolve(projectRoot, outputDir);
+  const normalizedOutputDir = path.normalize(resolvedOutputDir);
+
+  // Verify that the resolved path is within the project root
+  if (!normalizedOutputDir.startsWith(projectRoot + path.sep) && normalizedOutputDir !== projectRoot) {
+    console.error(`❌ ERROR: Output directory path is invalid.`);
+    process.exit(1)
+  }
+
+  // Use the validated and normalized path
+  return url.fileURLToPath(url.pathToFileURL(normalizedOutputDir));
+}
+
 /**
  * @param {string} dirname - output folder relative path
  */
@@ -331,9 +370,7 @@ const downloadFiles = async (dirname) => {
 
   console.info('📥 Downloading all rules...');
 
-  if (dirname.startsWith('=')) dirname = dirname.split('=')[1];
-
-  const outputDir = url.fileURLToPath(url.resolve(import.meta.url, dirname.trim()))
+  const outputDir = validateDirname(dirname);
 
   try {
     // copy whole folder
@@ -351,21 +388,21 @@ const downloadFiles = async (dirname) => {
 
 /**
  * Download selected rules only
- * @param {string} dirname - output folder relative path
+ * @param {string} folderName - output folder relative path
  * @param {Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} selectedRules - Array of selected rule objects
  */
-const downloadSelectedFiles = async (dirname, selectedRules) => {
-  if (!dirname) throw new Error('Output directory is required');
+const downloadSelectedFiles = async (folderName, selectedRules) => {
+  if (!folderName) throw new Error('Output directory is required');
+
   if (!selectedRules || selectedRules.length === 0) {
     console.log('⏭️  No rules selected, skipping download');
+    await help();
     return;
   }
 
   console.info('📥 Downloading selected rules...');
 
-  if (dirname.startsWith('=')) dirname = dirname.split('=')[1];
-
-  const outputDir = url.fileURLToPath(url.resolve(import.meta.url, dirname.trim()));
+  const outputDir = validateDirname(folderName)
   const sourceRulesPath = url.fileURLToPath(url.resolve(import.meta.url, baseFolder + 'rules'));
 
   try {
@@ -432,7 +469,7 @@ async function main() {
             const allSelectedRules = Object.values(persistentSelections)
               .flat()
               .filter(rule => rule.selected);
-            const outputDir = values.output?.toString() ?? `${process.cwd()}/.cursor/`;
+            const outputDir = values.output?.toString() ?? `${projectRoot}/.cursor/`;
             if (allSelectedRules.length > 0)
               return await downloadSelectedFiles(outputDir, allSelectedRules);
             else
@@ -447,11 +484,11 @@ async function main() {
         break;
       case 'output':
         downloadFiles(values[key]?.toString() ??
-          `${process.cwd()}/output/.cursor`);
+          `${projectRoot}/output/.cursor`);
         break;
       default:
         console.log(`~~~~ 📂 Flattening rules ~~~~`);
-        downloadFiles(path.join(process.cwd(), '.cursor'))
+        downloadFiles(path.join(projectRoot, '.cursor'))
         break;
     }
   }
