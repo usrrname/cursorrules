@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as assert from 'node:assert';
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -5,19 +6,20 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { after, afterEach, beforeEach, describe, test } from 'node:test';
 import { promisify } from 'node:util';
+import { projectRoot } from '../cli.mjs';
 
 const execFileAsync = promisify(execFile);
 describe('CLI', () => {
     describe('default', () => {
         test('should accept default command with no flags and download the cursorrules', async () => {
             const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs']);
-            if (existsSync(path.join(process.cwd(), 'output', '.cursor/rules'))) {
+            if (existsSync(path.join(projectRoot, 'output', '.cursor/rules'))) {
                 assert.ok(stdout.includes('Success'));
             }
         });
         after(async () => {
             try {
-                await fs.rm(path.join(process.cwd(), 'output'), { recursive: true, force: true });
+                await fs.rm(path.join(projectRoot, 'output'), { recursive: true, force: true });
             } catch (err) {
                 console.error(`Error: ${err}`);
             }
@@ -53,19 +55,31 @@ describe('CLI', () => {
         test('should accept -o flag for output directory and download the cursorrules', async () => {
             const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs', '-o', 'output']);
 
-            if (existsSync(path.join(process.cwd(), 'output'))) {
+            if (existsSync(path.join(projectRoot, 'output'))) {
                 assert.ok(stdout.includes('Success'));
             }
         })
+
+        test('should reject empty output directory name if -o flag provided', async () => {
+            try {
+                await execFileAsync('node', ['./cli.mjs', '-o', '']);
+                assert.fail('Expected command to fail for empty output directory');
+            } catch (error) {
+                assert.ok(error.message.includes('Output directory is required'));
+                assert.strictEqual(error.code, 1);
+            }
+        });
+
         test('should handle output flag with valid directory', async () => {
 
-            const outputDir = path.join(process.cwd(), 'valid-output');
+            const outputDir = path.join(projectRoot, 'valid-output');
 
             const { stdout } = await execFileAsync('node', ['./cli.mjs', '-o', outputDir]);
 
             // Should successfully create output directory
             assert.ok(stdout.includes('Success'));
             assert.ok(existsSync(outputDir));
+
             await fs.rm(outputDir, { recursive: true, force: true });
         });
 
@@ -81,20 +95,81 @@ describe('CLI', () => {
             // Cleanup
             await fs.rm(outputDir, { recursive: true, force: true });
         });
+
         after(async () => {
             try {
-                if (existsSync(path.join(process.cwd(), 'output'))) {
-                    await fs.rm(path.join(process.cwd(), 'output'), { recursive: true, force: true });
+                if (existsSync(path.join(projectRoot, 'output'))) {
+                    await fs.rm(path.join(projectRoot, 'output'), { recursive: true, force: true });
                 }
             } catch (err) {
                 console.error(`Error: ${err}`);
             }
         })
+        describe('output directory Validation', () => {
+            const testBaseDir = path.join(projectRoot, 'test-output-validation');
 
+            beforeEach(async () => {
+                await fs.mkdir(testBaseDir, { recursive: true });
+            });
+
+            afterEach(async () => {
+                if (existsSync(testBaseDir)) {
+                    await fs.rm(testBaseDir, { recursive: true, force: true });
+                }
+            });
+
+            test('should accept a valid output directory name within project root', async () => {
+                const validDir = testBaseDir;
+                const { stdout } = await execFileAsync('node', ['./cli.mjs', '-o', validDir]);
+                assert.ok(stdout.includes('Success'));
+                assert.ok(existsSync(validDir));
+            });
+
+            test('should reject path traversal attempts (e.g., ../)', async () => {
+                const maliciousDir = '../evil-lair';
+                try {
+                    await execFileAsync('node', ['./cli.mjs', '-o', maliciousDir]);
+                    assert.fail('Expected command to fail for path traversal');
+                } catch (error) {
+                    assert.ok(error.stderr.includes(`Output directory contains invalid characters`));
+
+                }
+            });
+
+
+            const invalidCharFolderNames = ['folder:name', '{{something}}.com', '!folder', '@something']
+
+            invalidCharFolderNames.forEach(item => {
+
+                test(`should reject ${item} as output dir name`, async (ctx) => {
+                    const invalidCharDir = 'folder:name';
+                    try {
+                        await execFileAsync('node', ['./cli.mjs', '-o', invalidCharDir]);
+                    } catch (error) {
+                        assert.ok(error.stderr.includes(`Output directory contains invalid characters`));
+                        assert.strictEqual(error.code, 1);
+                        assert.ok(!existsSync(path.join(projectRoot, invalidCharDir)))
+                    }
+                })
+            })
+
+
+            test('should reject absolute paths outside the project root', async () => {
+                // This assumes /tmp is outside the project root
+                const absoluteMaliciousPath = '/tmp/pwned-folder';
+                try {
+                    await execFileAsync('node', ['./cli.mjs', '-o', absoluteMaliciousPath]);
+                    assert.fail('Expected command to fail for absolute path outside root');
+                } catch (error) {
+                    assert.ok(error.stderr.includes('Output directory path is invalid.'));
+                    assert.strictEqual(error.code, 1);
+                }
+            });
+        });
     })
 
     describe('interactive mode', () => {
-        const testDir = path.join(process.cwd(), 'test-interactive');
+        const testDir = path.join(projectRoot, 'test-interactive');
         const testRulesDir = path.join(testDir, '.cursor', 'rules');
 
         beforeEach(async () => {

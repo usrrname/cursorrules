@@ -4,8 +4,8 @@ import * as path from 'node:path';
 import * as url from 'node:url';
 import { parseArgs } from 'node:util';
 
-const projectRoot = process.cwd()
-const baseFolder = '.cursor/';
+export const projectRoot = process.cwd()
+export const baseFolder = '.cursor/';
 
 const packageJson = JSON.parse(
   await fs.readFile(
@@ -327,26 +327,34 @@ const selectRules = async (rulesInCategory) => {
 /** 
  * Security: validate output directory name
  * @param outputDir {string} 
- *   Regex to match invalid characters common across OS:
- * / (forward slash) - path separator
- * \ (backward slash) - path separator
- * : (colon) - used in Windows drive letters and alternate data streams
- * * (asterisk) - wildcard
- * ? (question mark) - wildcard
- * " (double quote) - often for quoting paths
- *  < (less than) - redirection
- *  > (greater than) - redirection
- *  | (pipe) - piping
- *  control characters (ASCII 0-31) and sometimes leading/trailing spaces
  */
 const validateDirname = (outputDir) => {
+  const attemptedPath = outputDir;
   if (outputDir.startsWith('=')) outputDir = outputDir.split('=')[1].trim();
+  /**
+    *  Regex to match invalid characters common across OS:
+    * / (forward slash) - path separator
+    * \ (backward slash) - path separator
+    * : (colon) - used in Windows drive letters and alternate data streams
+    * * (asterisk) - wildcard
+    * ? (question mark) - wildcard
+    * " (double quote) - often for quoting paths
+    *  < (less than) - redirection
+    *  > (greater than) - redirection
+    *  | (pipe) - piping
+    *  control characters (ASCII 0-31) and sometimes leading/trailing spaces
+   */
+  const forbiddenChars = /[<>:"\\|?*@{}!\x00-\x1F]/g;
+  const segments = outputDir.split(path.sep);
+  for (const segment of segments) {
+    if (segment.includes('..')) console.error(`❌ ERROR: Output directory contains invalid characters in segment '${segment}'.\nAttempted path: ${attemptedPath}`);
 
-  const invalidCharsRegex = /[<>:"\\|?*\x00-\x1F]/g;
+    if (segment.startsWith('./') || segment.startsWith('.') || segment.startsWith('_')) continue; // skip empty/current/parent
 
-  if (invalidCharsRegex.test(outputDir)) {
-    console.error(`❌ ERROR: Output directory name ${outputDir} contains invalid characters`)
-    process.exit(1)
+    if (forbiddenChars.test(segment)) {
+      console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.\nAttempted path: ${attemptedPath}`);
+      process.exit(1);
+    }
   }
 
   const resolvedOutputDir = path.resolve(projectRoot, outputDir);
