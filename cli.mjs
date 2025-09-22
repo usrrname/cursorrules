@@ -341,7 +341,7 @@ const validateDirname = (outputDir) => {
   const segments = outputDir.split(/[\\/]+/);
 
   // Forbidden characters in a segment (colon handled separately)
-  const forbiddenChars = /[<>\"\\|?*@{}!\x00-\x1F]/g;
+  const forbiddenChars = /[<>\"|?*@{}!\x00-\x1F]/g;
 
   segments.forEach((segment, idx) => {
     if (!segment) return;
