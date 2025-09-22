@@ -1,6 +1,6 @@
 {
   "name": "@usrrname/cursorrules",
-  "version": "0.5.0-alpha",
+  "version": "0.5.0-beta",
   "description": "A wicked npx-able lib of cursorrules with Otaku AI agents, optional lean workflow",
   "author": {
     "name": "jen chan"
