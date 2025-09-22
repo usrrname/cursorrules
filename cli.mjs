@@ -353,11 +353,12 @@ const validateDirname = (outputDir) => {
 
     // Allow drive letter only in the first segment if present on a windows env
     if (idx === 0 && hasWindowsDrivePrefix) {
-      if (!/^[A-Za-z]:$/.test(segment)) {
-        console.error(`❌ ERROR: Invalid Windows drive segment '${segment}'. Expected like 'C:'.\nAttempted path: ${attemptedPath}`);
+      // Validate Windows absolute path root like "C:\"
+      const winRoot = path.win32.parse(attemptedPath).root;
+      if (!/^[A-Za-z]:[\\/]+$/.test(winRoot)) {
+        console.error(`❌ ERROR: Invalid Windows root '${winRoot}'. Expected like 'C:\\'.\nAttempted path: ${attemptedPath}`);
         process.exit(1);
       }
-      return; // skip further checks on the drive segment
     }
 
     if (segment.includes(':') || forbiddenChars.test(segment)) {
