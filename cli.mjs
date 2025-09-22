@@ -347,7 +347,10 @@ const validateDirname = (outputDir) => {
   const forbiddenChars = /[<>:"\\|?*@{}!\x00-\x1F]/g;
   const segments = outputDir.split(path.sep);
   for (const segment of segments) {
-    if (segment.includes('..')) console.error(`❌ ERROR: Output directory contains invalid characters in segment '${segment}'.\nAttempted path: ${attemptedPath}`);
+    if (segment.includes('..')) {
+      console.error(`❌ ERROR: Output directory contains invalid characters in segment '${segment}'.\nAttempted path: ${attemptedPath}`);
+      process.exit(1);
+    }
 
     if (segment.startsWith('./') || segment.startsWith('.') || segment.startsWith('_')) continue; // skip empty/current/parent
 
