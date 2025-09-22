@@ -15,9 +15,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
       - run: npm ci
@@ -29,10 +29,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
       - run: npm ci
@@ -56,11 +57,8 @@ jobs:
           # Get the commit messages from the PR
           commits=$(gh pr view ${{ github.event.pull_request.number }} --json commits | jq -r '.commits[] | [.messageHeadline + .messageBody] | join("\n")' )
           
-          # Get the existing PR body 
-          existing_description=$(gh pr view ${{ github.event.pull_request.number }} --json body | jq -r '.body + "\n\n" + "## Changes" + "\n\n"')
-          
           # Update the PR description
-          gh pr edit ${{ github.event.pull_request.number }} --body "$existing_description  $commits"
+          gh pr edit ${{ github.event.pull_request.number }} --body "$commits"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           description: ${{ github.event.pull_request.body }}

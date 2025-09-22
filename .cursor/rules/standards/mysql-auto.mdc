@@ -1,0 +1,156 @@
+---
+description: This rule enforces MySQL-specific best practices to enhance readability, performance, security, and maintainability. It targets MySQL features (e.g., storage engines, character sets) and common pitfalls, and adds concrete guidance for schema design and creation.
+globs: *.sql
+alwaysApply: false
+---
+
+# MySQL Best Practices Auto Rule
+
+## Critical Rules
+
+- **Naming Conventions**: Use descriptive, snake_case names for databases, tables, columns, indexes, and constraints (e.g., `user_profiles`, `fk_user_profiles_user_id`). Avoid abbreviations and reserved keywords; if unavoidable, use backticks (e.g., `` `order` ``).
+- **SELECT Specificity**: Avoid `SELECT *`. Always specify required columns.
+- **Security**: Prefer parameterized queries (driver-level). Do not build SQL via string concatenation. Use prepared statements to prevent SQL injection.
+- **Performance**: Index columns used in JOIN and WHERE predicates. Prefer `INNER JOIN` over correlated subqueries when possible.
+- **Engine/Charset**: Use `ENGINE=InnoDB` for transactional tables and set `DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci` (or `utf8mb4_0900_ai_ci` on MySQL 8.0+).
+- **Transactions**: Group related writes in transactions. Avoid implicit autocommit for multi-statement operations.
+- **Data Types**: Use precise types (`INT UNSIGNED` for identifiers, `DECIMAL(precision,scale)` for money). Avoid `TEXT`/`LONGTEXT` unless necessary. Prefer `BOOLEAN` (TINYINT(1)) for flags.
+- **Timestamps**: Use `TIMESTAMP`/`DATETIME` with `DEFAULT CURRENT_TIMESTAMP` and `ON UPDATE CURRENT_TIMESTAMP` where appropriate.
+- **Joins**: Use explicit `JOIN` syntax; avoid implicit comma joins.
+- Keep migrations idempotent and forward-only; include rollback plans where feasible.
+
+## Schema Creation
+
+Design schemas for correctness first, then performance. Apply the following when creating or altering schemas:
+
+- **Version-Specific Charset/Collation**
+
+  - MySQL 8.0+: Prefer `utf8mb4` with `utf8mb4_0900_ai_ci` (or `_as_cs` for case-sensitive needs). Avoid legacy collations like `utf8_general_ci`.
+  - MySQL 5.7: Prefer `utf8mb4` with `utf8mb4_unicode_ci`. Avoid `utf8` (3-byte) and `latin1` unless strictly required for legacy data.
+  - Suggest migration to `utf8`/`latin1` schemas to `utf8mb4` proactively to support full Unicode and emojis.
+  - If a project already has MySQL setup, keep the collation and charset choices of the project
+
+- **Table Creation Defaults**
+
+  - Always specify: `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC` (omit `_0900_` on <8.0).
+  - Define a primary key; use surrogate keys (`BIGINT UNSIGNED AUTO_INCREMENT`) when natural keys are composite/unwieldy.
+  - Define `NOT NULL` where appropriate; avoid nullable columns unless required by domain logic.
+  - Use consistent ID column naming: `id` for primary key, `<entity>_id` for foreign keys.
+
+- **Keys and Constraints**
+
+  - Create foreign keys with `ON DELETE`/`ON UPDATE` actions explicitly (`RESTRICT`, `CASCADE`, or `SET NULL`) aligned to business rules.
+  - Create supporting indexes for foreign keys and for frequent predicates; use composite indexes with leftmost prefix ordering that matches queries (e.g., `(user_id, created_at)`).
+  - Name constraints and indexes explicitly: `pk_<table>`, `fk_<table>_<column>`, `uk_<table>_<columns>`, `idx_<table>_<columns>`.
+
+- **Column Types**
+
+  - Identifiers: `BIGINT UNSIGNED` (or `INT UNSIGNED` if you are certain about bounds). Foreign keys must match referenced type/unsignedness.
+  - Monetary: Avoid `FLOAT/DOUBLE` for currency.
+  - Strings: `VARCHAR(n)` sized to realistic max; avoid `TEXT` unless storing large content.
+  - Booleans: `TINYINT(1)` with `CHECK (col IN (0,1))` on 8.0+.
+
+- **Temporal Columns**
+
+  - Use `created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP`.
+  - Use `updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`.
+  - Store times in UTC; handle localization at the application layer.
+
+### Example: Recommended Table Definition
+
+```sql
+CREATE TABLE `users` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `status` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_users` PRIMARY KEY (`id`),
+  CONSTRAINT `uk_users_email` UNIQUE KEY (`email`),
+  INDEX `idx_users_status_created_at` (`status`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+```
+
+### Example: Foreign Key With Index and Action
+
+```sql
+CREATE TABLE `orders` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `total_cents` DECIMAL(19,4) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `pk_orders` PRIMARY KEY (`id`),
+  CONSTRAINT `fk_orders_user_id` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  INDEX `idx_orders_user_id_created_at` (`user_id`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
+
+## Migration Scripts
+
+Design and execute migrations to be safe, repeatable, and observable:
+
+- Idempotency and Ordering
+
+  - Use timestamped, ordered filenames (e.g., `20250922_1200_add_users_table.sql`).
+  - Write scripts so re-running is safe: `CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`, `DROP COLUMN IF EXISTS` on MySQL 8.0+.
+  - Record applied migrations in a migrations table (version, checksum, applied_at, success).
+
+- Transactionality and Locking
+
+  - Wrap related DDL/DML in transactions where supported. Note: some DDL is non-transactional; plan for partial failure.
+  - Avoid long metadata locks; prefer online DDL with `ALGORITHM=INPLACE`/`INSTANT` and `LOCK=NONE` when available (MySQL 8.0+).
+
+- Backwards-Compatible, Zero/Low-Downtime Strategy
+
+  - Avoid destructive changes in one step. Use expand-and-contract:
+    - Add nullable column → backfill in batches → set default → enforce `NOT NULL`.
+    - Add new index concurrently; switch reads/writes; drop old index later.
+  - For large tables, use online schema change tools like gh-ost or pt-online-schema-change.
+  - Batch backfills (e.g., `UPDATE ... LIMIT 1000` with keyset pagination) with sleeps to reduce load.
+
+- Data Safety and Rollback
+
+  - Take backups or snapshots before risky changes; verify restore procedures.
+  - Provide rollback scripts or compensating changes when possible.
+  - Validate with `EXPLAIN` and compare plans before/after.
+
+- Environment Discipline
+  - Test migrations in staging with production-like data volumes.
+  - Gate production runs behind approvals and maintenance windows when needed.
+  - Emit logs/metrics; fail fast on errors; ensure scripts are non-interactive.
+
+### Example: Safe Add NOT NULL Column
+
+```sql
+-- 1) Add column nullable
+ALTER TABLE `users`
+  ADD COLUMN `country_code` VARCHAR(2) NULL;
+
+-- 2) Backfill in batches
+UPDATE `users`
+  SET `country_code` = 'US'
+  WHERE `country_code` IS NULL
+  ORDER BY `id`
+  LIMIT 1000;
+-- Repeat step 2 until no rows remain
+
+-- 3) Set default
+ALTER TABLE `users`
+  ALTER `country_code` SET DEFAULT 'US';
+
+-- 4) Enforce NOT NULL
+ALTER TABLE `users`
+  MODIFY `country_code` VARCHAR(2) NOT NULL DEFAULT 'US';
+```
+
+### References
+
+- [MySQL 8.0 Reference Manual — Character Sets and Collations](https://dev.mysql.com/doc/refman/8.0/en/charset.html)
+- [MySQL 8.0 Reference Manual — InnoDB Storage Engine](https://dev.mysql.com/doc/refman/8.0/en/innodb-storage-engine.html)
+- [MySQL 8.0 Reference Manual — CREATE TABLE Syntax](https://dev.mysql.com/doc/refman/8.0/en/create-table.html)
+- [MySQL 8.0 Reference Manual — Data Types](https://dev.mysql.com/doc/refman/8.0/en/data-types.html)
+- [MySQL 8.0 Reference Manual — SQL Modes](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html)
+- [MySQL 8.0 Reference Manual — EXPLAIN Output](https://dev.mysql.com/doc/refman/8.0/en/explain-output.html)
+- [MySQL 8.0 Reference Manual — Online DDL](https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html)
+- [OWASP — SQL Injection Prevention Cheat Sheet](https://owasp.org/www-project-cheat-sheets/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
