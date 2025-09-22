@@ -323,53 +323,59 @@ const selectRules = async (rulesInCategory) => {
     renderMenu();
   });
 };
-
-/** 
+/**
  * Security: validate output directory name
- * @param outputDir {string} 
+ * - Allows leading Windows drive letters (e.g., C:\ or D:/)
+ * - Forbids ':' in any subsequent segment
+ * - Splits on both '/' and '\' so Windows paths validate cross-platform
+ * @param outputDir {string}
  */
 const validateDirname = (outputDir) => {
   const attemptedPath = outputDir;
   if (outputDir.startsWith('=')) outputDir = outputDir.split('=')[1].trim();
-  /**
-    *  Regex to match invalid characters common across OS:
-    * / (forward slash) - path separator
-    * \ (backward slash) - path separator
-    * : (colon) - used in Windows drive letters and alternate data streams
-    * * (asterisk) - wildcard
-    * ? (question mark) - wildcard
-    * " (double quote) - often for quoting paths
-    *  < (less than) - redirection
-    *  > (greater than) - redirection
-    *  | (pipe) - piping
-    *  control characters (ASCII 0-31) and sometimes leading/trailing spaces
-   */
-  const forbiddenChars = /[<>:"\\|?*@{}!\x00-\x1F]/g;
-  const segments = outputDir.split(path.sep);
-  for (const segment of segments) {
+
+  // Detect Windows drive prefix (e.g., C:\ or D:/)
+  const hasWindowsDrivePrefix = /^[A-Za-z]:[\\/]/.test(outputDir);
+
+  // Split on both Windows and POSIX separators
+  const segments = outputDir.split(/[\\/]+/);
+
+  // Forbidden characters in a segment (colon handled separately)
+  const forbiddenChars = /[<>\"\\|?*@{}!\x00-\x1F]/g;
+
+  segments.forEach((segment, idx) => {
+    if (!segment) return;
+
     if (segment.includes('..')) {
       console.error(`❌ ERROR: Output directory contains invalid characters in segment '${segment}'.\nAttempted path: ${attemptedPath}`);
       process.exit(1);
     }
 
-    if (segment.startsWith('./') || segment.startsWith('.') || segment.startsWith('_')) continue; // skip empty/current/parent
+    // Allow drive letter only in the first segment if present on a windows env
+    if (idx === 0 && hasWindowsDrivePrefix) {
+      if (!/^[A-Za-z]:$/.test(segment)) {
+        console.error(`❌ ERROR: Invalid Windows drive segment '${segment}'. Expected like 'C:'.\nAttempted path: ${attemptedPath}`);
+        process.exit(1);
+      }
+      return; // skip further checks on the drive segment
+    }
 
-    if (forbiddenChars.test(segment)) {
+    if (segment.includes(':') || forbiddenChars.test(segment)) {
       console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.\nAttempted path: ${attemptedPath}`);
       process.exit(1);
     }
-  }
+  });
 
+  // Resolve using Node's path; this preserves absolute inputs correctly
   const resolvedOutputDir = path.resolve(projectRoot, outputDir);
   const normalizedOutputDir = path.normalize(resolvedOutputDir);
 
-  // Verify that the resolved path is within the project root
+  // Ensure path remains within project root
   if (!normalizedOutputDir.startsWith(projectRoot + path.sep) && normalizedOutputDir !== projectRoot) {
     console.error(`❌ ERROR: Output directory path is invalid.`);
-    process.exit(1)
+    process.exit(1);
   }
 
-  // Use the validated and normalized path
   return url.fileURLToPath(url.pathToFileURL(normalizedOutputDir));
 }
 
