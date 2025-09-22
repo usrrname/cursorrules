@@ -28,7 +28,7 @@ Design schemas for correctness first, then performance. Apply the following when
   - MySQL 8.0+: Prefer `utf8mb4` with `utf8mb4_0900_ai_ci` (or `_as_cs` for case-sensitive needs). Avoid legacy collations like `utf8_general_ci`.
   - MySQL 5.7: Prefer `utf8mb4` with `utf8mb4_unicode_ci`. Avoid `utf8` (3-byte) and `latin1` unless strictly required for legacy data.
   - Suggest migration to `utf8`/`latin1` schemas to `utf8mb4` proactively to support full Unicode and emojis.
-  - If a project already has MySQL setup, keep the collation and charset choices of project
+  - If a project already has MySQL setup, keep the collation and charset choices of the project
 
 - **Table Creation Defaults**
 
