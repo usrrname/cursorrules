@@ -1,0 +1,92 @@
+---
+description: Agent rule for refactoring existing code blocks or a feature by identifying language and applying only when refactor/improvement is requested
+globs:
+alwaysApply: false
+---
+
+## Critical Rules
+
+- Always detect and state the programming language of the code block before refactoring
+- Refactor when the user request includes terms like "refactor", "improve", "optimize", "clean up", or similar
+- Always preserve the original intent and functionality unless the user requests a change
+- If code contains duplication, refactor first, and test, before introducing a change.
+- Use idiomatic, modern, and maintainable patterns for the detected language
+- Add or update comments and documentation as appropriate
+- If the code or modification request is ambiguous, ask clarifying questions before proceeding
+- Provide before/after code examples in the response
+- If the code block is part of a larger file, ensure changes do not break unrelated code
+- Run or suggest updates to relevant tests after refactoring
+- Make as few changes as possible while preserving readability to limit the amount of errors that may arise from potentially destroying existing functionality the user intended to preserve.
+- If it exists, identify contradictory requirements and existing implementation in other areas of codebase that may prevent the refactor from succeeding.
+
+<rule>
+name: refactor-block-agent
+version: 1.0
+description: Refactor or improve an existing code block, identifying the language and applying best practices only when requested
+filters:
+  - type: event
+    pattern: "refactor|improve|optimize|clean up"
+  - type: content
+    pattern:
+      - "[a-zA-Z0-9_]+\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?\\}" # Curly-brace function (JS, Java, C, etc.)
+      - "def\\s+[a-zA-Z0-9_]+\\s*\\([^)]*\\)\\s*:\\s*[\\s\\S]*?(?=^\\S|\\Z)" # Python function
+      - "class\\s+[a-zA-Z0-9_]+\\s*\\([^)]*\\)?\\s*:\\s*[\\s\\S]*?(?=^\\S|\\Z)" # Python class
+actions:
+  - type: analyze
+    message: |
+      Identify the programming language of the code block. If ambiguous, ask the user for clarification.
+  - type: suggest
+    message: |
+      Refactor the code block using best practices for the detected language. Preserve original functionality unless otherwise specified. Add or update comments as needed.
+  - type: validate
+    message: |
+      Ensure the refactored code passes all relevant tests and does not introduce regressions. If tests are missing, suggest appropriate tests.
+examples:
+  - input: |
+      // User: Refactor this function to be more readable
+      function sum(a, b) { return a+b }
+    output: |
+      // Detected language: JavaScript
+      // Before:
+      function sum(a, b) { return a+b }
+      // After:
+      /**
+       * Returns the sum of two numbers
+       * @param {number} a
+       * @param {number} b
+       * @returns {number}
+       */
+      function sum(a, b) {
+        return a + b;
+      }
+  - input: |
+      # User: Please improve this Python code
+      def greet(name):return 'Hello, '+name
+    output: |
+      # Detected language: Python
+      # Before:
+      def greet(name):return 'Hello, '+name
+      # After:
+      def greet(name: str) -> str:
+          """Return a greeting for the given name."""
+          return f"Hello, {name}"
+  - input: |
+      // User: Optimize this for performance
+      for (let i = 0; i < arr.length; i++) { result.push(arr[i] * 2) }
+    output: |
+      // Detected language: JavaScript
+      // Before:
+      for (let i = 0; i < arr.length; i++) { result.push(arr[i] * 2) }
+      // After:
+      result.push(...arr.map(x => x * 2));
+tests:
+  - input: "Refactor this function: function foo(x){return x*2}"
+    output: "Should detect JavaScript, add spacing, and suggest a JSDoc comment."
+  - input: "Improve: def add(x,y):return x+y"
+    output: "Should detect Python, add type hints, docstring, and proper formatting."
+  - input: "Optimize this: const nums = [1,2,3]; let out = []; for(let n of nums){out.push(n*n)}"
+    output: "Should detect JavaScript, suggest using map, and preserve output."
+metadata:
+  priority: high
+  version: 1.0
+</rule>

@@ -42,7 +42,7 @@ Commit written by <agent_name>
 - Always check `git status` before commit
 - Never use generic messages ("update code", "commit changes")
 - Identify change type per conventional commit
-- Commit body should be concise and brief, and should not exceed 50 words
+- Commit body should be concise and brief, and should not exceed 40 words
 - Use meaningful scope (codebase area)
 - Clear, concise, imperative subject
 - Add agent name as author
