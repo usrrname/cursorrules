@@ -142,7 +142,7 @@ describe('CLI', () => {
             invalidCharFolderNames.forEach(item => {
 
                 test(`should reject ${item} as output dir name`, async (ctx) => {
-                    const invalidCharDir = 'folder:name';
+                    const invalidCharDir = item;
                     try {
                         await execFileAsync('node', ['./cli.mjs', '-o', invalidCharDir]);
                     } catch (error) {
