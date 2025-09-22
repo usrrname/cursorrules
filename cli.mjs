@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
 import * as path from 'node:path';
 import * as url from 'node:url';
 import { parseArgs } from 'node:util';
-
 export const projectRoot = process.cwd()
 export const baseFolder = '.cursor/';
-
 const packageJson = JSON.parse(
   await fs.readFile(
     url.fileURLToPath(url.resolve(import.meta.url, 'package.json')),
@@ -340,16 +339,12 @@ const validateDirname = (outputDir) => {
   // Split on both Windows and POSIX separators
   const segments = outputDir.split(/[\\/]+/);
 
-  // Forbidden characters in a segment (colon handled separately)
-  const forbiddenChars = /[<>\"|?*@{}!\x00-\x1F]/g;
+  const forbiddenChars = /[<>\":\\|?*@{}!\x00-\x1F]/g;
+  const windowsForbiddenChars = /[<>"|?*@{}!\x00-\x1F:]/g;
 
   segments.forEach((segment, idx) => {
     if (!segment) return;
 
-    if (segment.includes('..')) {
-      console.error(`❌ ERROR: Output directory contains invalid characters in segment '${segment}'.\nAttempted path: ${attemptedPath}`);
-      process.exit(1);
-    }
 
     // Allow drive letter only in the first segment if present on a windows env
     if (idx === 0 && hasWindowsDrivePrefix) {
@@ -361,7 +356,10 @@ const validateDirname = (outputDir) => {
       }
     }
 
-    if (segment.includes(':') || forbiddenChars.test(segment)) {
+    if (segment.includes('..') || os.type().includes('Windows') && idx !== 0 && !windowsForbiddenChars.test(segment)) {
+      console.error(`❌ ERROR: Output directory contains invalid characters in segment '${segment}'.\nAttempted path: ${attemptedPath}`);
+      process.exit(1);
+    } else if (!os.type().includes('Windows') && segment.includes('..') || forbiddenChars.test(segment)) {
       console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.\nAttempted path: ${attemptedPath}`);
       process.exit(1);
     }
