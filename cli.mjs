@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import * as fs from 'node:fs/promises';
-import * as os from 'node:os';
 import * as path from 'node:path';
 import * as url from 'node:url';
 import { parseArgs } from 'node:util';
@@ -345,21 +344,22 @@ const validateDirname = (outputDir) => {
   segments.forEach((segment, idx) => {
     if (!segment) return;
 
-
-    // Allow drive letter only in the first segment if present on a windows env
-    if (idx === 0 && hasWindowsDrivePrefix) {
-      // Validate Windows absolute path root like "C:\"
+    if (idx === 0 && process.platform === 'win32') {
+    // Validate Windows absolute path root like "C:\"
       const winRoot = path.win32.parse(attemptedPath).root;
+      // Allow drive letter only in the first segment if present on a windows env
       if (!/^[A-Za-z]:[\\/]+$/.test(winRoot)) {
         console.error(`❌ ERROR: Invalid Windows root '${winRoot}'. Expected like 'C:\\'.\nAttempted path: ${attemptedPath}`);
         process.exit(1);
       }
     }
 
-    if (segment.includes('..') || os.type().includes('Windows') && idx !== 0 && !windowsForbiddenChars.test(segment)) {
+    if (segment.includes('..') || process.platform === 'win32' && idx !== 0 && !windowsForbiddenChars.test(segment)) {
       console.error(`❌ ERROR: Output directory contains invalid characters in segment '${segment}'.\nAttempted path: ${attemptedPath}`);
       process.exit(1);
-    } else if (!os.type().includes('Windows') && segment.includes('..') || forbiddenChars.test(segment)) {
+    }
+
+    if (process.platform !== 'win32' && segment.includes('..') || forbiddenChars.test(segment)) {
       console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.\nAttempted path: ${attemptedPath}`);
       process.exit(1);
     }
