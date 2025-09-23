@@ -3,10 +3,8 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as url from 'node:url';
 import { parseArgs } from 'node:util';
-
 export const projectRoot = process.cwd()
 export const baseFolder = '.cursor/';
-
 const packageJson = JSON.parse(
   await fs.readFile(
     url.fileURLToPath(url.resolve(import.meta.url, 'package.json')),
@@ -192,7 +190,7 @@ const interactiveCategorySelection = async (rules) => {
         items,
         currentIndex,
         footerLines: [
-          '\n↑↓ - Navigate | Enter ⏎ - Select | Esc - Cancel'
+          '\n↑↓ - Navigate | ⏎ Enter - Select | Esc - Cancel'
         ]
       });
     };
@@ -264,7 +262,7 @@ const selectRules = async (rulesInCategory) => {
       currentIndex,
       footerLines: [
         `\n☑️ Selected: ${selectedCount}/${allRules.length} rules`,
-        '\n↑↓ - Navigate | Space - Toggle selection | Enter - Confirm | Esc - Go Back'
+        '\n↑↓ - Navigate | Space - Toggle selection | ⏎ Enter - Confirm | Esc - Go Back'
       ]
     });
   };
@@ -323,54 +321,118 @@ const selectRules = async (rulesInCategory) => {
     renderMenu();
   });
 };
-
-/** 
- * Security: validate output directory name
- * @param outputDir {string} 
+/**
+ * Validates output directory name to prevent path traversal and disallow special characters.
+ * @param {string} rawPath - the output directory to validate
+ * @param {string} projectRoot - project root directory (defaults to process.cwd())
+ * @returns {string} - the validated and resolved absolute path
  */
-const validateDirname = (outputDir) => {
-  const attemptedPath = outputDir;
-  if (outputDir.startsWith('=')) outputDir = outputDir.split('=')[1].trim();
-  /**
-    *  Regex to match invalid characters common across OS:
-    * / (forward slash) - path separator
-    * \ (backward slash) - path separator
-    * : (colon) - used in Windows drive letters and alternate data streams
-    * * (asterisk) - wildcard
-    * ? (question mark) - wildcard
-    * " (double quote) - often for quoting paths
-    *  < (less than) - redirection
-    *  > (greater than) - redirection
-    *  | (pipe) - piping
-    *  control characters (ASCII 0-31) and sometimes leading/trailing spaces
-   */
-  const forbiddenChars = /[<>:"\\|?*@{}!\x00-\x1F]/g;
-  const segments = outputDir.split(path.sep);
-  for (const segment of segments) {
-    if (segment.includes('..')) {
-      console.error(`❌ ERROR: Output directory contains invalid characters in segment '${segment}'.\nAttempted path: ${attemptedPath}`);
-      process.exit(1);
-    }
+const validateDirname = (rawPath, projectRoot = process.cwd()) => {
+  const attemptedPath = rawPath;
+  if (rawPath.startsWith('=')) rawPath = rawPath.split('=')[1].trim();
 
-    if (segment.startsWith('./') || segment.startsWith('.') || segment.startsWith('_')) continue; // skip empty/current/parent
+  const isWindows = /^[A-Za-z]:[\\/]/.test(rawPath) || rawPath.startsWith('\\\\');
+  const parsed = isWindows ? path.win32.parse(rawPath) : path.parse(rawPath);
+  const root = parsed.root; // e.g., 'D:\\' or '\\\\server\\share\\' or '/' or ''
+  const isAbsolute = isWindows ? path.win32.isAbsolute(rawPath) : path.isAbsolute(rawPath);
 
-    if (forbiddenChars.test(segment)) {
-      console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.\nAttempted path: ${attemptedPath}`);
+  // Only validate Windows root when a Windows absolute is provided
+  if (isWindows && isAbsolute) {
+    if (!/^(?:[A-Za-z]:[\\/]|\\\\)/.test(root)) {
+      console.error(`❌ ERROR: Invalid Windows root '${root}'. Expected like 'C:\\'.\nAttempted path: ${attemptedPath}`);
       process.exit(1);
     }
   }
 
-  const resolvedOutputDir = path.resolve(projectRoot, outputDir);
-  const normalizedOutputDir = path.normalize(resolvedOutputDir);
+  // Build segments safely, skipping the drive root and empty artifacts
+  const splitter = /[\\/]+/;
+  const segments = rawPath.split(splitter);
 
-  // Verify that the resolved path is within the project root
-  if (!normalizedOutputDir.startsWith(projectRoot + path.sep) && normalizedOutputDir !== projectRoot) {
-    console.error(`❌ ERROR: Output directory path is invalid.`);
-    process.exit(1)
+  let startIdx = 0;
+  if (segments.length > 0 && /^[A-Za-z]:$/.test(segments[0])) {
+    // Skip 'D:' and a following '' if present (due to root separator)
+    startIdx = (segments[1] === '') ? 2 : 1;
+  } else if (rawPath.startsWith('\\\\')) {
+    // UNC path: skip leading empty parts caused by split of '\\server\share'
+    // Reconstruct UNC head '\\server\share' and skip it as "root"
+    // We conservatively skip first 3 parts: '', '', 'server' -> start at index 3
+    startIdx = 3;
   }
 
-  // Use the validated and normalized path
-  return url.fileURLToPath(url.pathToFileURL(normalizedOutputDir));
+  // Define invalid chars per segment (do not include slashes; we already split)
+  // For Windows: <>:"|?* and control chars; for POSIX: just NUL, but we also reject some symbols per test expectations.
+  const invalidWindowsChars = /[<>:"|?*\x00-\x1F]/;
+  // To satisfy tests that reject things like '@something', '!folder', '{{something}}.com'
+  const extraDisallow = /[@!{}]/;
+  const invalidPosix = /[\x00]/;
+
+  for (let i = startIdx; i < segments.length; i++) {
+    const segment = segments[i];
+    if (!segment) continue; // skip empty artifacts between separators
+
+    // Handle relative path indicators
+    if (segment === '.') {
+      // Allow '.' at the beginning for relative paths like './folder'
+      if (i === 0 && !isAbsolute) {
+        continue; // Skip validation for leading '.' in relative paths
+      } else {
+        console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
+        console.error(`Attempted path: ${attemptedPath}`);
+        process.exit(1);
+      }
+    }
+
+    // Always disallow parent directory traversal
+    if (segment === '..') {
+      console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
+      console.error(`Attempted path: ${attemptedPath}`);
+      process.exit(1);
+    }
+    // Skip validation for the final segment if it's just '.' from a trailing '/.' (already handled), else validate
+    if (process.platform === 'win32') {
+      if (invalidWindowsChars.test(segment) || extraDisallow.test(segment)) {
+        console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
+        console.error(`Attempted path: ${attemptedPath}`);
+        process.exit(1);
+      }
+      // Colon is only allowed in the drive root, not in segment names
+      if (segment.includes(':')) {
+        console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
+        console.error(`Attempted path: ${attemptedPath}`);
+        process.exit(1);
+      }
+    } else {
+      if (invalidPosix.test(segment) || extraDisallow.test(segment)) {
+        console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
+        console.error(`Attempted path: ${attemptedPath}`);
+        process.exit(1);
+      }
+      // Also reject ':' on POSIX to keep behavior consistent with tests
+      if (segment.includes(':')) {
+        console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
+        console.error(`Attempted path: ${attemptedPath}`);
+        process.exit(1);
+      }
+    }
+  }
+
+  // Resolve and ensure absolute outside-project paths are rejected
+  const resolver = process.platform === 'win32' ? path.win32.resolve : path.resolve;
+  const absolutePath = resolver(rawPath);
+  const absoluteProjectRoot = resolver(projectRoot);
+
+  /** @param {string} p */
+  const toKey = (p) => (process.platform === 'win32') ? p.toLowerCase() : p;
+
+  if (isAbsolute) {
+    if (!toKey(absolutePath).startsWith(toKey(absoluteProjectRoot))) {
+      console.error('❌ ERROR: Output directory path is invalid.');
+      console.error(`Attempted path: ${attemptedPath}`);
+      process.exit(1);
+    }
+  }
+
+  return url.fileURLToPath(url.pathToFileURL(absolutePath));
 }
 
 /**
@@ -494,8 +556,12 @@ async function main() {
         }
         break;
       case 'output':
-        downloadFiles(values[key]?.toString() ??
-          `${projectRoot}/output/.cursor`);
+        const outputValue = values[key]?.toString() ?? `${projectRoot}/output/.cursor`;
+        if (!outputValue.trim()) {
+          console.error('❌ ERROR: Output directory cannot be empty.');
+          process.exit(1);
+        }
+        downloadFiles(outputValue);
         break;
       default:
         console.log(`~~~~ 📂 Flattening rules ~~~~`);

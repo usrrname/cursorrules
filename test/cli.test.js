@@ -65,7 +65,7 @@ describe('CLI', () => {
                 await execFileAsync('node', ['./cli.mjs', '-o', '']);
                 assert.fail('Expected command to fail for empty output directory');
             } catch (error) {
-                assert.ok(error.message.includes('Output directory is required'));
+                assert.ok(error.stderr.includes('Output directory cannot be empty') || error.message.includes('Output directory is required'));
                 assert.strictEqual(error.code, 1);
             }
         });
@@ -145,6 +145,7 @@ describe('CLI', () => {
                     const invalidCharDir = item;
                     try {
                         await execFileAsync('node', ['./cli.mjs', '-o', invalidCharDir]);
+                        assert.fail('Expected command to fail for invalid characters');
                     } catch (error) {
                         assert.ok(error.stderr.includes(`Output directory contains invalid characters`));
                         assert.strictEqual(error.code, 1);
