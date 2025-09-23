@@ -60,7 +60,7 @@ npx @usrrname/cursorrules [options]
 Options:
 -f, --flat: Install without parent directory
 -h, --help: Help instructions <----- You are here
--i, --interactive: Interactive rule selection mode
+-i, --interactive: Select the rules you want 
 -o, --output: Set output directory (Default: .cursor/)
 -v, --version: Show package version
 
