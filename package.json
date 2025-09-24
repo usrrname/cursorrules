@@ -20,8 +20,8 @@
     "local:publish": "npm publish --registry http://localhost:4873/ --scope=@usrrname",
     "clear": "npm unpublish --registry http://localhost:4873/ --scope=@usrrname",
     "lint": "tsc --noEmit --project tsconfig.json",
-    "test": "node --test --watch \"test/cli.test.js\"",
-    "test:ci": "node --test test/cli.test.js"
+    "test": "node --test --watch \"cli/test/cli.test.js\"",
+    "test:ci": "node --test cli/test/cli.test.js"
   },
   "repository": {
     "type": "git",
