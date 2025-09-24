@@ -100,16 +100,9 @@ const scanAvailableRules = async () => {
   return rules;
 };
 
+
 /**
  * Finds all rules in category and prepares them for display in menu
- * @param  {Object} rules - Available rules by category
- * @returns {Array<{
- *    category: 'standards' | 'utils' | 'test'
- *    displayName: string
- *    selected: boolean
- * }>}
- */
-/**
  * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules
  * @returns {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>}
  */
@@ -355,14 +348,13 @@ const validateDirname = (rawPath, projectRoot = process.cwd()) => {
   } else if (rawPath.startsWith('\\\\')) {
     // UNC path: skip leading empty parts caused by split of '\\server\share'
     // Reconstruct UNC head '\\server\share' and skip it as "root"
-    // We conservatively skip first 3 parts: '', '', 'server' -> start at index 3
+    // Skip first 3 parts: '', '', 'server' -> start at index 3
     startIdx = 3;
   }
 
   // Define invalid chars per segment (do not include slashes; we already split)
-  // For Windows: <>:"|?* and control chars; for POSIX: just NUL, but we also reject some symbols per test expectations.
+  // For Windows: <>:"|?* and control chars;
   const invalidWindowsChars = /[<>:"|?*\x00-\x1F]/;
-  // To satisfy tests that reject things like '@something', '!folder', '{{something}}.com'
   const extraDisallow = /[@!{}]/;
   const invalidPosix = /[\x00]/;
 
@@ -390,13 +382,7 @@ const validateDirname = (rawPath, projectRoot = process.cwd()) => {
     }
     // Skip validation for the final segment if it's just '.' from a trailing '/.' (already handled), else validate
     if (process.platform === 'win32') {
-      if (invalidWindowsChars.test(segment) || extraDisallow.test(segment)) {
-        console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
-        console.error(`Attempted path: ${attemptedPath}`);
-        process.exit(1);
-      }
-      // Colon is only allowed in the drive root, not in segment names
-      if (segment.includes(':')) {
+      if (invalidWindowsChars.test(segment) || extraDisallow.test(segment) || segment.includes(':')) {
         console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
         console.error(`Attempted path: ${attemptedPath}`);
         process.exit(1);
@@ -556,7 +542,7 @@ async function main() {
         }
         break;
       case 'output':
-        const outputValue = values[key]?.toString() ?? `${projectRoot}/output/.cursor`;
+        const outputValue = values[key]?.toString() ?? `${projectRoot}/.cursor`;
         if (!outputValue.trim()) {
           console.error('❌ ERROR: Output directory cannot be empty.');
           process.exit(1);
