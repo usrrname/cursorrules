@@ -7,7 +7,7 @@
   },
   "type": "module",
   "bin": {
-    "cursorrules": "cli.mjs"
+    "cursorrules": "cli/index.mjs"
   },
   "files": [
     ".cursor/**/*",
