@@ -83,12 +83,11 @@ export const interactiveMode = async (values) => {
  * @returns {Promise<void>}
 */
 export const output = async (outputDir) => {
-    console.log('🎯 Starting output mode...');
-    const outputValue = validateDirname(outputDir);
-    if (!outputValue.trim()) {
+    if (!outputDir.trim()) {
         console.error('❌ ERROR: Output directory cannot be empty.');
         process.exit(1);
     }
+    const outputValue = validateDirname(outputDir);
     await downloadFiles(outputValue);
 }
 
