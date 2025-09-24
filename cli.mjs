@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict'
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as url from 'node:url';
@@ -58,7 +59,7 @@ Usage:
 npx @usrrname/cursorrules [options]
 
 Options:
--f, --flat: Install without parent directory
+-f, --flat: Install all rules without parent directory
 -h, --help: Help instructions <----- You are here
 -i, --interactive: Select the rules you want 
 -o, --output: Set output directory (Default: .cursor/)
@@ -179,7 +180,7 @@ const interactiveCategorySelection = async (rules) => {
     const renderMenu = () => {
       const items = categories.concat(['🌈 Save Rules']);
       createMenu({
-        title: '⌨ Select rules by category',
+        title: 'Select rules by category',
         items,
         currentIndex,
         footerLines: [
@@ -494,11 +495,18 @@ async function main() {
   console.log("🚀 Loading @usrrname/cursorrules ...");
 
   const { values } = parseArgs(config);
+  const flags = Object.keys(config.options || {});
 
-  const allowedKeys = ['flat', 'output']
+  const allowedKeys = flags.filter(flag => flag === 'output')[0]
+
+  if (Object.keys(values || {}).length === 0) downloadFiles(path.join(projectRoot, '.cursor'))
 
   for (let key in values) {
 
+    /**
+     * prevent unknown flags from being used
+     * prevent arguments without values
+     * @param {string} key */
     if (!allowedKeys.includes(key) && !values[key]) continue;
 
     switch (key) {
@@ -549,9 +557,8 @@ async function main() {
         }
         downloadFiles(outputValue);
         break;
-      default:
-        console.log(`~~~~ 📂 Flattening rules ~~~~`);
-        downloadFiles(path.join(projectRoot, '.cursor'))
+      case 'flat':
+        downloadFiles(path.join(projectRoot, ''))
         break;
     }
   }
@@ -560,6 +567,6 @@ async function main() {
 try {
   await main();
 } catch (err) {
-  process.stderr.write('❌ Error: ' + err + '\n');
+  process.stderr.write('❌ Error: ' + err);
   process.exit(1);
 }
