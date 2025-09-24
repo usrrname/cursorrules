@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict'
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as url from 'node:url';
@@ -58,9 +59,9 @@ Usage:
 npx @usrrname/cursorrules [options]
 
 Options:
--f, --flat: Install without parent directory
+-f, --flat: Install all rules without parent directory
 -h, --help: Help instructions <----- You are here
--i, --interactive: Interactive rule selection mode
+-i, --interactive: Select the rules you want 
 -o, --output: Set output directory (Default: .cursor/)
 -v, --version: Show package version
 
@@ -100,16 +101,9 @@ const scanAvailableRules = async () => {
   return rules;
 };
 
+
 /**
  * Finds all rules in category and prepares them for display in menu
- * @param  {Object} rules - Available rules by category
- * @returns {Array<{
- *    category: 'standards' | 'utils' | 'test'
- *    displayName: string
- *    selected: boolean
- * }>}
- */
-/**
  * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules
  * @returns {Array<{category: "standards" | "test" | "utils", displayName: string, selected: boolean, name: string, path: string, fullPath: string}>}
  */
@@ -186,7 +180,7 @@ const interactiveCategorySelection = async (rules) => {
     const renderMenu = () => {
       const items = categories.concat(['🌈 Save Rules']);
       createMenu({
-        title: '⌨ Select rules by category',
+        title: 'Select rules by category',
         items,
         currentIndex,
         footerLines: [
@@ -355,14 +349,13 @@ const validateDirname = (rawPath, projectRoot = process.cwd()) => {
   } else if (rawPath.startsWith('\\\\')) {
     // UNC path: skip leading empty parts caused by split of '\\server\share'
     // Reconstruct UNC head '\\server\share' and skip it as "root"
-    // We conservatively skip first 3 parts: '', '', 'server' -> start at index 3
+    // Skip first 3 parts: '', '', 'server' -> start at index 3
     startIdx = 3;
   }
 
   // Define invalid chars per segment (do not include slashes; we already split)
-  // For Windows: <>:"|?* and control chars; for POSIX: just NUL, but we also reject some symbols per test expectations.
+  // For Windows: <>:"|?* and control chars;
   const invalidWindowsChars = /[<>:"|?*\x00-\x1F]/;
-  // To satisfy tests that reject things like '@something', '!folder', '{{something}}.com'
   const extraDisallow = /[@!{}]/;
   const invalidPosix = /[\x00]/;
 
@@ -390,13 +383,7 @@ const validateDirname = (rawPath, projectRoot = process.cwd()) => {
     }
     // Skip validation for the final segment if it's just '.' from a trailing '/.' (already handled), else validate
     if (process.platform === 'win32') {
-      if (invalidWindowsChars.test(segment) || extraDisallow.test(segment)) {
-        console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
-        console.error(`Attempted path: ${attemptedPath}`);
-        process.exit(1);
-      }
-      // Colon is only allowed in the drive root, not in segment names
-      if (segment.includes(':')) {
+      if (invalidWindowsChars.test(segment) || extraDisallow.test(segment) || segment.includes(':')) {
         console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
         console.error(`Attempted path: ${attemptedPath}`);
         process.exit(1);
@@ -508,11 +495,18 @@ async function main() {
   console.log("🚀 Loading @usrrname/cursorrules ...");
 
   const { values } = parseArgs(config);
+  const flags = Object.keys(config.options || {});
 
-  const allowedKeys = ['flat', 'output']
+  const allowedKeys = flags.filter(flag => flag === 'output')[0]
+
+  if (Object.keys(values || {}).length === 0) downloadFiles(path.join(projectRoot, '.cursor'))
 
   for (let key in values) {
 
+    /**
+     * prevent unknown flags from being used
+     * prevent arguments without values
+     * @param {string} key */
     if (!allowedKeys.includes(key) && !values[key]) continue;
 
     switch (key) {
@@ -556,16 +550,15 @@ async function main() {
         }
         break;
       case 'output':
-        const outputValue = values[key]?.toString() ?? `${projectRoot}/output/.cursor`;
+        const outputValue = values[key]?.toString() ?? `${projectRoot}/.cursor`;
         if (!outputValue.trim()) {
           console.error('❌ ERROR: Output directory cannot be empty.');
           process.exit(1);
         }
         downloadFiles(outputValue);
         break;
-      default:
-        console.log(`~~~~ 📂 Flattening rules ~~~~`);
-        downloadFiles(path.join(projectRoot, '.cursor'))
+      case 'flat':
+        downloadFiles(path.join(projectRoot, ''))
         break;
     }
   }
@@ -574,6 +567,6 @@ async function main() {
 try {
   await main();
 } catch (err) {
-  process.stderr.write('❌ Error: ' + err + '\n');
+  process.stderr.write('❌ Error: ' + err);
   process.exit(1);
 }

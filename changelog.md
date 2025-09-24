@@ -11,6 +11,30 @@ No unreleased changes.
 
 ---
 
+## [v0.5.0] - 2024-12-19
+
+### 🚀 Added
+- **Fair Witness Agent** 🪄📜 - New analytical agent using 5 epistemological functions (observer, evaluator, analyst, synthesist, communicator) for structured, objective topic analysis with customizable complexity and tone
+- **Dependency Analysis Agent** - Comprehensive dependency analysis with maintenance frequency, security vulnerabilities, and popularity metrics
+- **Security Scan Agent** - Deep security scanning including CVE analysis, license compliance, and supply chain risk assessment
+
+### 🛠️ Enhanced
+- **Expanded Agent Roster** - Added 3 new specialized agents (FairWitness, DependencyAnalysis, SecurityScan) to the existing 8-agent team
+- **Improved Agent Capabilities** - Enhanced existing agents with better tool access and workflow integration
+- **Better Agent Communication** - Refined personality traits and communication styles for more effective collaboration
+
+### 📚 Documentation
+- **Fair Witness Framework Documentation** - Comprehensive examples and usage patterns for the new analytical framework
+- **Enhanced Release Workflow** - Improved automated release notes and changelog generation
+- **Better Project Structure** - Organized rules into logical categories (core, standards, templates, utils, workflows)
+
+### 🔧 Technical Improvements
+- **Updated Dependencies** - Latest package versions and security updates
+- **Better Error Handling** - Improved CLI error messages and user experience
+- **Enhanced Testing** - Expanded test coverage for new features
+
+---
+
 ## [v0.4.1] - 2025-01-16
 
 ### 🔧 Technical Improvements
@@ -141,7 +165,8 @@ No unreleased changes.
 
 ---
 
-[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.5.0...HEAD
+[v0.5.0]: https://github.com/usrrname/cursorrules/compare/v0.4.1...v0.5.0
 [v0.4.1]: https://github.com/usrrname/cursorrules/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/usrrname/cursorrules/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/usrrname/cursorrules/compare/v0.2.2...v0.3.0
