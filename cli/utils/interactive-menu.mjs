@@ -73,7 +73,9 @@ const renderCategoryMenu = (categories, currentIndex) => {
  * @param {function(string):void} handleKeyPress
  */
 export const setupInput = (handleKeyPress) => {
-    process.stdin.setRawMode(true);
+    if (process.stdin.isTTY) {
+        process.stdin.setRawMode(true);
+    }
     process.stdin.resume();
     process.stdin.setEncoding('utf8');
     process.stdin.on('data', handleKeyPress);
