@@ -17,13 +17,13 @@ export const findFolderUp = async (folderName, startPath = process.cwd()) => {
         try {
             const stats = await stat(candidatePath);
             if (stats.isDirectory()) {
-                console.log(`🎉 Found '${folderName}' at: ${candidatePath}`);
+                console.log(`[findFolderUp]: Found '${folderName}' at: ${candidatePath}`);
                 return candidatePath;
             }
         } catch (err) {
             // ENOENT means 'No such file or directory', which is what we expect if it's not here
             if (err.code !== 'ENOENT') {
-                console.warn(`⚠️ Unexpected error while checking ${candidatePath}: ${err.message}`);
+                console.warn(`[findFolderUp]: Unexpected error while checking ${candidatePath}: ${err.message}`);
             }
         }
 
@@ -32,7 +32,7 @@ export const findFolderUp = async (folderName, startPath = process.cwd()) => {
 
         // If we've reached the root directory and haven't found it, stop.
         if (currentPath === rootPath) {
-            console.log(`❌ Reached root '${rootPath}', '${folderName}' not found.`);
+            console.error(`[findFolderUp]: Reached root '${rootPath}', '${folderName}' not found.`);
             return null;
         }
 

@@ -203,7 +203,7 @@ describe('CLI', () => {
                 assert.ok(
                     error.stderr.includes('setRawMode is not a function') ||
                     error.stderr.includes('Starting interactive mode') ||
-                    error.stderr.includes('Error: Unable to start interactive mode in CI')
+                    error.stderr.includes('Unable to start interactive mode in CI')
                 );
             }
         });
@@ -220,7 +220,7 @@ describe('CLI', () => {
                 assert.ok(
                     error.stderr.includes('setRawMode is not a function') ||
                     error.stderr.includes('Starting interactive mode') ||
-                    error.stderr.includes('Error: Unable to start interactive mode in CI')
+                    error.stderr.includes('Unable to start interactive mode in CI')
                 );
             }
         });
@@ -238,7 +238,7 @@ describe('CLI', () => {
                 assert.ok(
                     error.stderr.includes('setRawMode is not a function') ||
                     error.stderr.includes('Starting interactive mode') ||
-                    error.stderr.includes('Error: Unable to start interactive mode in CI')
+                    error.stderr.includes('Unable to start interactive mode in CI')
                 );
             }
         });
