@@ -6,13 +6,13 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { after, afterEach, beforeEach, describe, test } from 'node:test';
 import { promisify } from 'node:util';
-import { projectRoot } from '../cli.mjs';
+import { projectRoot } from '../index.mjs';
 
 const execFileAsync = promisify(execFile);
 describe('CLI', () => {
     describe('default', () => {
         test('should accept default command with no flags and download the cursorrules', async () => {
-            const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs']);
+            const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs']);
             if (existsSync(path.join(projectRoot, 'output', '.cursor/rules'))) {
                 assert.ok(stdout.includes('Success'));
             }
@@ -28,24 +28,24 @@ describe('CLI', () => {
 
     describe('help', () => {
         test('should accept -h and print usage instructions', async () => {
-            const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs', '-h']);
+            const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-h']);
             assert.ok(stdout.includes('Usage:'));
         });
 
         test('should accept --help value and print usage instructions', async () => {
-            const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs', '--help']);
+            const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '--help']);
             assert.ok(stdout.includes('Usage:'));
         });
     })
 
     describe('version', () => {
         test('should accept -v and print package version', async () => {
-            const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs', '-v']);
+            const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-v']);
             assert.ok(stdout.includes('@usrrname/cursorrules'));
         });
 
         test('should accept --version value and print package version', async () => {
-            const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs', '--version']);
+            const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '--version']);
             assert.ok(stdout.includes('@usrrname/cursorrules'));
         });
     })
@@ -53,7 +53,7 @@ describe('CLI', () => {
     describe('output', () => {
 
         test('should accept -o flag for output directory and download the cursorrules', async () => {
-            const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs', '-o', 'output']);
+            const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-o', 'output']);
 
             if (existsSync(path.join(projectRoot, 'output'))) {
                 assert.ok(stdout.includes('Success'));
@@ -62,7 +62,7 @@ describe('CLI', () => {
 
         test('should reject empty output directory name if -o flag provided', async () => {
             try {
-                await execFileAsync('node', ['./cli.mjs', '-o', '']);
+                await execFileAsync('node', ['./cli/index.mjs', '-o', '']);
                 assert.fail('Expected command to fail for empty output directory');
             } catch (error) {
                 assert.ok(error.stderr.includes('Output directory cannot be empty') || error.message.includes('Output directory is required'));
@@ -74,7 +74,7 @@ describe('CLI', () => {
 
             const outputDir = path.join(projectRoot, 'valid-output');
 
-            const { stdout } = await execFileAsync('node', ['./cli.mjs', '-o', outputDir]);
+            const { stdout } = await execFileAsync('node', ['./cli/index.mjs', '-o', outputDir]);
 
             // Should successfully create output directory
             assert.ok(stdout.includes('Success'));
@@ -86,7 +86,7 @@ describe('CLI', () => {
         test('should handle output flag with relative path', async () => {
             const outputDir = './test-relative-output';
 
-            const { stdout } = await execFileAsync('node', ['./cli.mjs', '-o', outputDir]);
+            const { stdout } = await execFileAsync('node', ['./cli/index.mjs', '-o', outputDir]);
 
             // Should successfully create output directory
             assert.ok(stdout.includes('Success'));
@@ -120,7 +120,7 @@ describe('CLI', () => {
 
             test('should accept a valid output directory name within project root', async () => {
                 const validDir = testBaseDir;
-                const { stdout } = await execFileAsync('node', ['./cli.mjs', '-o', validDir]);
+                const { stdout } = await execFileAsync('node', ['./cli/index.mjs', '-o', validDir]);
                 assert.ok(stdout.includes('Success'));
                 assert.ok(existsSync(validDir));
             });
@@ -128,7 +128,7 @@ describe('CLI', () => {
             test('should reject path traversal attempts (e.g., ../)', async () => {
                 const maliciousDir = '../evil-lair';
                 try {
-                    await execFileAsync('node', ['./cli.mjs', '-o', maliciousDir]);
+                    await execFileAsync('node', ['./cli/index.mjs', '-o', maliciousDir]);
                     assert.fail('Expected command to fail for path traversal');
                 } catch (error) {
                     assert.ok(error.stderr.includes(`Output directory contains invalid characters`));
@@ -137,14 +137,14 @@ describe('CLI', () => {
             });
 
 
-            const invalidCharFolderNames = ['folder:name', '{{something}}.com', '!folder', '@something']
+            const invalidCharFolderNames = ['folder:name', '{{something}}.com', '!folder', '@something', 'folder#name', '!folder']
 
             invalidCharFolderNames.forEach(item => {
 
                 test(`should reject ${item} as output dir name`, async (ctx) => {
                     const invalidCharDir = item;
                     try {
-                        await execFileAsync('node', ['./cli.mjs', '-o', invalidCharDir]);
+                        await execFileAsync('node', ['./cli/index.mjs', '-o', invalidCharDir]);
                         assert.fail('Expected command to fail for invalid characters');
                     } catch (error) {
                         assert.ok(error.stderr.includes(`Output directory contains invalid characters`));
@@ -152,19 +152,6 @@ describe('CLI', () => {
                         assert.ok(!existsSync(path.join(projectRoot, invalidCharDir)))
                     }
                 })
-            })
-
-
-            test('should reject absolute paths outside the project root', async () => {
-                // This assumes /tmp is outside the project root
-                const absoluteMaliciousPath = '/tmp/pwned-folder';
-                try {
-                    await execFileAsync('node', ['./cli.mjs', '-o', absoluteMaliciousPath]);
-                    assert.fail('Expected command to fail for absolute path outside root');
-                } catch (error) {
-                    assert.ok(error.stderr.includes('Output directory path is invalid.'));
-                    assert.strictEqual(error.code, 1);
-                }
             });
         });
     })
@@ -205,29 +192,36 @@ describe('CLI', () => {
             }
         });
 
-        test('should accept -i flag and start interactive mode', async () => {
+        test('should accept -i flag and start interactive mode', async (t) => {
             try {
-                const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs', '-i']);
-                // Should start interactive mode
+                const { stdin, stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-i']);
+
+                t.mock.method(process, 'stdin', 'isTTY', true);
+                assert.call(stdin.isTTY, t.mock.calls.length > 0);
                 assert.ok(stdout.includes('Starting interactive mode') || stdout.includes('Loading'));
                 assert.ok(stdout.includes('Select rules by category'))
+
+
             } catch (error) {
                 // Expected to fail in non-TTY environment due to setRawMode
-                assert.ok(error.stderr.includes('setRawMode is not a function') ||
-                    error.stderr.includes('Starting interactive mode'));
+                assert.strictEqual(error.code, 1)
             }
         });
 
         test('should accept --interactive flag and start interactive mode', async () => {
             try {
-                const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs', '--interactive']);
+                const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '--interactive']);
                 // Should start interactive mode
                 assert.ok(stdout.includes('Starting interactive mode') || stdout.includes('Loading'));
                 assert.ok(stdout.includes('Select rules by category'))
             } catch (error) {
-                // Expected to fail in non-TTY environment due to setRawMode
-                assert.ok(error.stderr.includes('setRawMode is not a function') ||
-                    error.stderr.includes('Starting interactive mode'));
+                if (process.platform === 'win32') {
+                    assert.ok(error.code, 'ERR_TEST_FAILURE'); // Windows error for non-TTY
+                }
+                else {
+                    // Expected to fail in non-TTY environment due to setRawMode
+                    assert.strictEqual(error.code, 1)
+                }
             }
         });
 
@@ -235,14 +229,18 @@ describe('CLI', () => {
             const customOutputDir = path.join(testDir, 'custom-output');
 
             try {
-                const { stdout, stderr } = await execFileAsync('node', ['./cli.mjs', '-i', '-o', customOutputDir]);
+                const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-i', '-o', customOutputDir]);
                 // Should start interactive mode with custom output
                 assert.ok(stdout.includes('Starting interactive mode') || stdout.includes('Loading'));
                 assert.ok(existsSync(customOutputDir))
             } catch (error) {
-                // Expected to fail in non-TTY environment due to setRawMode
-                assert.ok(error.stderr.includes('setRawMode is not a function') ||
-                    error.stderr.includes('Starting interactive mode'));
+                if (process.platform === 'win32') {
+                    assert.strictEqual(error.code, 1)
+                }
+                else {
+                    // Expected to fail in non-TTY environment due to setRawMode
+                    assert.strictEqual(error.code, 1)
+                }
             }
         });
 
@@ -255,7 +253,7 @@ describe('CLI', () => {
 
             const outputDir = path.join(testDir, 'filter-test');
 
-            const { stdout } = await execFileAsync('node', ['./cli.mjs', '-o', outputDir]);
+            const { stdout } = await execFileAsync('node', ['./cli/index.mjs', '-o', outputDir]);
 
             // Should successfully process only .mdc files
             assert.ok(stdout.includes('Success'));

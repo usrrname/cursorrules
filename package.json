@@ -1,13 +1,13 @@
 {
   "name": "@usrrname/cursorrules",
   "version": "0.5.1",
-  "description": "A wicked npx-able lib of cursorrules with Otaku AI agents, optional lean workflow",
+  "description": "A wicked npx-able lib of cursor rules with Otaku AI agents",
   "author": {
     "name": "jen chan"
   },
   "type": "module",
   "bin": {
-    "cursorrules": "cli.mjs"
+    "cursorrules": "cli/index.mjs"
   },
   "files": [
     ".cursor/**/*",
@@ -20,8 +20,8 @@
     "local:publish": "npm publish --registry http://localhost:4873/ --scope=@usrrname",
     "clear": "npm unpublish --registry http://localhost:4873/ --scope=@usrrname",
     "lint": "tsc --noEmit --project tsconfig.json",
-    "test": "node --test --watch \"test/cli.test.js\"",
-    "test:ci": "node --test test/cli.test.js"
+    "test": "node --test --watch",
+    "test:ci": "node --test cli/test/*"
   },
   "repository": {
     "type": "git",
