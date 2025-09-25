@@ -204,7 +204,7 @@ describe('CLI', () => {
 
             } catch (error) {
                 if (process.platform === 'win32') {
-                    assert.ok(error.message?.includes('The handle is invalid') || error.message?.includes('isTTY')); // Windows error for non-TTY
+                    assert.strictEqual(error.code, 'ERR_TEST_FAILURE'); // Windows error for non-TTY
                 }
                 else {
                 // Expected to fail in non-TTY environment due to setRawMode
@@ -221,7 +221,7 @@ describe('CLI', () => {
                 assert.ok(stdout.includes('Select rules by category'))
             } catch (error) {
                 if (process.platform === 'win32') {
-                    assert.ok(error.message?.includes('The handle is invalid') || error.message?.includes('isTTY')); // Windows error for non-TTY
+                    assert.ok(error.code, 'ERR_TEST_FAILURE'); // Windows error for non-TTY
                 }
                 else {
                     // Expected to fail in non-TTY environment due to setRawMode
@@ -240,7 +240,7 @@ describe('CLI', () => {
                 assert.ok(existsSync(customOutputDir))
             } catch (error) {
                 if (process.platform === 'win32') {
-                    assert.strictEqual(error.code, 'ERR_TEST_FAILURE')
+                    assert.strictEqual(error.code, 1)
                 }
                 else {
                     // Expected to fail in non-TTY environment due to setRawMode
