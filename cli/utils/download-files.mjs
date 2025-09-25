@@ -1,10 +1,12 @@
 import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
-import * as url from 'node:url';
+import { dirname, join, resolve } from 'node:path';
 import { help } from '../commands.mjs';
 import { validateDirname } from './validate-dirname.mjs';
 
-const sourceRulesBasePath = url.fileURLToPath(url.resolve(import.meta.url, `../../.cursor/rules`));
+import { findFolderUp } from './find-folder-up.mjs';
+
+const cursorFolder = await findFolderUp(process.cwd(), '.cursor')
+const sourceRulesBasePath = resolve(cursorFolder!, 'rules')
 
 /**
  * @param {string} dirname - output folder relative path
@@ -14,7 +16,7 @@ export const downloadFiles = async (dirname) => {
 
     console.info('📥 Downloading all rules...');
 
-    const outputDir = validateDirname(dirname);
+    const outputDir = await validateDirname(dirname);
 
     try {
         // copy whole folder
@@ -46,18 +48,18 @@ export const downloadSelectedFiles = async (folderName, selectedRules) => {
 
     console.info('📥 Downloading selected rules...');
 
-    const outputDir = validateDirname(folderName)
+    const outputDir = await validateDirname(folderName)
 
     try {
         // Create output directory structure
         await fs.mkdir(outputDir, { recursive: true });
-        await fs.mkdir(path.join(outputDir, 'rules'), { recursive: true });
+        await fs.mkdir(join(outputDir, 'rules'), { recursive: true });
 
         // Copy selected rules
         for (const rule of selectedRules) {
-            const sourcePath = path.join(sourceRulesBasePath, rule.path);
-            const destPath = path.join(outputDir, 'rules', rule.path);
-            const destDir = path.dirname(destPath);
+            const sourcePath = join(sourceRulesBasePath, rule.path);
+            const destPath = join(outputDir, 'rules', rule.path);
+            const destDir = dirname(destPath);
 
             // Ensure destination directory exists
             await fs.mkdir(destDir, { recursive: true });
