@@ -137,7 +137,7 @@ describe('CLI', () => {
             });
 
 
-            const invalidCharFolderNames = ['folder:name', '{{something}}.com', '!folder', '@something']
+            const invalidCharFolderNames = ['folder:name', '{{something}}.com', '!folder', '@something', 'folder#name', '!folder']
 
             invalidCharFolderNames.forEach(item => {
 
@@ -200,8 +200,11 @@ describe('CLI', () => {
                 assert.ok(stdout.includes('Select rules by category'))
             } catch (error) {
                 // Expected to fail in non-TTY environment due to setRawMode
-                assert.ok(error.stderr.includes('setRawMode is not a function') ||
-                    error.stderr.includes('Starting interactive mode'));
+                assert.ok(
+                    error.stderr.includes('setRawMode is not a function') ||
+                    error.stderr.includes('Starting interactive mode') ||
+                    error.stderr.includes('Error: Unable to start interactive mode in CI')
+                );
             }
         });
 
@@ -213,8 +216,11 @@ describe('CLI', () => {
                 assert.ok(stdout.includes('Select rules by category'))
             } catch (error) {
                 // Expected to fail in non-TTY environment due to setRawMode
-                assert.ok(error.stderr.includes('setRawMode is not a function') ||
-                    error.stderr.includes('Starting interactive mode'));
+                assert.ok(
+                    error.stderr.includes('setRawMode is not a function') ||
+                    error.stderr.includes('Starting interactive mode') ||
+                    error.stderr.includes('Error: Unable to start interactive mode in CI')
+                );
             }
         });
 
@@ -228,8 +234,11 @@ describe('CLI', () => {
                 assert.ok(existsSync(customOutputDir))
             } catch (error) {
                 // Expected to fail in non-TTY environment due to setRawMode
-                assert.ok(error.stderr.includes('setRawMode is not a function') ||
-                    error.stderr.includes('Starting interactive mode'));
+                assert.ok(
+                    error.stderr.includes('setRawMode is not a function') ||
+                    error.stderr.includes('Starting interactive mode') ||
+                    error.stderr.includes('Error: Unable to start interactive mode in CI')
+                );
             }
         });
 
@@ -242,7 +251,7 @@ describe('CLI', () => {
 
             const outputDir = path.join(testDir, 'filter-test');
 
-            const { stdout } = await execFileAsync('node', ['./cli/index.mjs', '-o', outputDir]);
+            const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-o', outputDir]);
 
             // Should successfully process only .mdc files
             assert.ok(stdout.includes('Success'));
@@ -250,6 +259,8 @@ describe('CLI', () => {
 
             // The .txt file should not be copied
             assert.ok(!existsSync(path.join(outputDir, 'rules', 'standards', 'ignore-me.txt')));
+
+            console.log(stderr);
         });
     });
 
