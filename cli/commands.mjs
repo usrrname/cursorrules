@@ -86,7 +86,7 @@ export const output = async (outputDir) => {
         console.error('❌ ERROR: Output directory cannot be empty.');
         process.exit(1);
     }
-    const outputValue = validateDirname(outputDir);
+    const outputValue = await validateDirname(outputDir);
     await downloadFiles(outputValue);
 }
 

@@ -5,25 +5,58 @@ import * as url from 'node:url';
 const resolvePathByPlatform = process.platform === 'win32' ? path.win32.resolve : path.resolve;
 
 /**
+ * Throws an error and exits the process if validation fails.
+ * @param {string} segment - The path segment that failed validation.
+ * @param {string} attemptedPath - The full path that was attempted.
+ */
+const throwError = (segment, attemptedPath) => {
+    console.error(`❌ ERROR: Output directory contains invalid characters in segment '${segment}'.`);
+    console.error(`Attempted path: ${attemptedPath}`);
+    process.exit(1);
+};
+
+/**
+ * Checks a path segment for invalid characters based on the platform.
+ * @param {string} segment - The path segment to check.
+ * @returns {boolean} - True if invalid characters are found, false otherwise.
+ */
+const hasInvalidSegmentChars = (segment) => {
+    // Define invalid chars per segment (do not include slashes; we already split)
+    // For Windows: <>:"|?* and control chars;
+    const invalidWindowsChars = /[<>:"$|?*\x00-\x1F]/;
+    const reservedNamesRegex = /^(?:aux|con|clock\$|nul|prn|com[1-9]|lpt[1-9])$/i; // Reserved names on Windows
+
+    const extraDisallow = /[#$%&@!{}]/; // Additional characters we want to disallow on both platforms
+    const invalidPosixChars = /[\x00-\x1F\\:"*?<>|$#%&@!{}]/;
+
+    if (process.platform === 'win32') {
+        return invalidWindowsChars.test(segment) || extraDisallow.test(segment) || reservedNamesRegex.test(segment);
+    } else {
+        return invalidPosixChars.test(segment);
+    }
+};
+
+/**
  * Validates output directory name to prevent path traversal and disallow special characters.
  * @param {string} rawPath - the output directory to validate
- * @param {string} projectRoot - project root directory (defaults to process.cwd())
- * @returns {string} - the validated and resolved absolute path
+ * @param {string} projectRoot - project root directory (defaults to process.cwd() where the Node.js process is running)
+ * @returns {Promise<string>} - the validated and resolved absolute path
  */
-export const validateDirname = (rawPath, projectRoot = process.cwd()) => {
+export const validateDirname = async (rawPath, projectRoot = process.cwd()) => {
     const attemptedPath = rawPath;
+
+    // Remove = prefix if it exists
     if (rawPath.startsWith('=')) rawPath = rawPath.split('=')[1].trim();
 
-    const isWindows = /^[A-Za-z]:[\\/]/.test(rawPath) || rawPath.startsWith('\\\\');
+    const isWindows = process.platform === 'win32'
     const parsed = isWindows ? path.win32.parse(rawPath) : path.parse(rawPath);
-    const root = parsed.root; // e.g., 'D:\\' or '\\\\server\\share\\' or '/' or ''
+
     const isAbsolute = isWindows ? path.win32.isAbsolute(rawPath) : path.isAbsolute(rawPath);
 
-    // Only validate Windows root when a Windows absolute is provided
+    // Validate Windows root when a Windows absolute is provided
     if (isWindows && isAbsolute) {
-        if (!/^(?:[A-Za-z]:[\\/]|\\\\)/.test(root)) {
-            console.error(`❌ ERROR: Invalid Windows root '${root}'. Expected like 'C:\\'.\nAttempted path: ${attemptedPath}`);
-            process.exit(1);
+        if (!/^(?:[A-Za-z]:[\\/]|\\\\)/.test(parsed.root)) {
+            throwError(parsed.root, attemptedPath);
         }
     }
 
@@ -42,12 +75,6 @@ export const validateDirname = (rawPath, projectRoot = process.cwd()) => {
         startIdx = 3;
     }
 
-    // Define invalid chars per segment (do not include slashes; we already split)
-    // For Windows: <>:"|?* and control chars;
-    const invalidWindowsChars = /[<>:"|?*\x00-\x1F]/;
-    const extraDisallow = /[@!{}]/;
-    const invalidPosix = /[\x00]/;
-
     for (let i = startIdx; i < segments.length; i++) {
         const segment = segments[i];
         if (!segment) continue; // skip empty artifacts between separators
@@ -58,53 +85,20 @@ export const validateDirname = (rawPath, projectRoot = process.cwd()) => {
             if (i === 0 && !isAbsolute) {
                 continue; // Skip validation for leading '.' in relative paths
             } else {
-                console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
-                console.error(`Attempted path: ${attemptedPath}`);
-                process.exit(1);
+                // If '.' is not at the beginning of a relative path, it's considered invalid here.
+                throwError(segment, attemptedPath);
             }
         }
 
-        // Always disallow parent directory traversal
-        if (segment === '..') {
-            console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
-            console.error(`Attempted path: ${attemptedPath}`);
-            process.exit(1);
-        }
-        // Skip validation for the final segment if it's just '.' from a trailing '/.' (already handled), else validate
-        if (process.platform === 'win32') {
-            if (invalidWindowsChars.test(segment) || extraDisallow.test(segment) || segment.includes(':')) {
-                console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
-                console.error(`Attempted path: ${attemptedPath}`);
-                process.exit(1);
-            }
-        } else {
-            if (invalidPosix.test(segment) || extraDisallow.test(segment)) {
-                console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
-                console.error(`Attempted path: ${attemptedPath}`);
-                process.exit(1);
-            }
-            // Also reject ':' on POSIX to keep behavior consistent with tests
-            if (segment.includes(':')) {
-                console.error(`❌ ERROR: Output directory contains invalid characters in segment ${segment}.`);
-                console.error(`Attempted path: ${attemptedPath}`);
-                process.exit(1);
-            }
+        // Check for:
+        // - parent directory traversal
+        // - platform-specific and general disallowed characters
+        if (segment.includes('..') || hasInvalidSegmentChars(segment)) {
+            throwError(segment, attemptedPath);
         }
     }
 
     const absolutePath = resolvePathByPlatform(rawPath);
-    const absoluteProjectRoot = resolvePathByPlatform(projectRoot);
-
-    /** @param {string} p */
-    const toKey = (p) => (process.platform === 'win32') ? p.toLowerCase() : p;
-
-    if (isAbsolute) {
-        if (!toKey(absolutePath).startsWith(toKey(absoluteProjectRoot))) {
-            console.error('❌ ERROR: Output directory path is invalid.');
-            console.error(`Attempted path: ${attemptedPath}`);
-            process.exit(1);
-        }
-    }
 
     return url.fileURLToPath(url.pathToFileURL(absolutePath));
 }
