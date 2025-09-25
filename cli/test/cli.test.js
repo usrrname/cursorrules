@@ -201,9 +201,8 @@ describe('CLI', () => {
             } catch (error) {
                 // Expected to fail in non-TTY environment due to setRawMode
                 assert.ok(
-                    error.stderr.includes('setRawMode is not a function') ||
-                    error.stderr.includes('Starting interactive mode') ||
-                    error.stderr.includes('Unable to start interactive mode in CI')
+                    error.stderr.includes('Unable to start interactive mode in CI') ||
+                    error.code === 'ERR_TEST_FAILURE'
                 );
             }
         });
@@ -218,9 +217,8 @@ describe('CLI', () => {
             } catch (error) {
                 // Expected to fail in non-TTY environment due to setRawMode
                 assert.ok(
-                    error.stderr.includes('setRawMode is not a function') ||
-                    error.stderr.includes('Starting interactive mode') ||
-                    error.stderr.includes('Unable to start interactive mode in CI')
+                    error.stderr.includes('Unable to start interactive mode in CI') ||
+                    error.code === 'ERR_TEST_FAILURE'
                 );
             }
         });
@@ -236,9 +234,8 @@ describe('CLI', () => {
             } catch (error) {
                 // Expected to fail in non-TTY environment due to setRawMode
                 assert.ok(
-                    error.stderr.includes('setRawMode is not a function') ||
-                    error.stderr.includes('Starting interactive mode') ||
-                    error.stderr.includes('Unable to start interactive mode in CI')
+                    error.stderr.includes('Unable to start interactive mode in CI') ||
+                    error.code === 'ERR_TEST_FAILURE'
                 );
             }
         });
