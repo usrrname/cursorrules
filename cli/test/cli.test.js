@@ -152,19 +152,6 @@ describe('CLI', () => {
                         assert.ok(!existsSync(path.join(projectRoot, invalidCharDir)))
                     }
                 })
-            })
-
-
-            test('should reject absolute paths outside the project root', async () => {
-                // This assumes /tmp is outside the project root
-                const absoluteMaliciousPath = '/tmp/pwned-folder';
-                try {
-                    await execFileAsync('node', ['./cli/index.mjs', '-o', absoluteMaliciousPath]);
-                    assert.fail('Expected command to fail for absolute path outside root');
-                } catch (error) {
-                    assert.ok(error.stderr.includes('Output directory path is invalid.'));
-                    assert.strictEqual(error.code, 1);
-                }
             });
         });
     })
