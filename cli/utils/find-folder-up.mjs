@@ -9,7 +9,7 @@ import { dirname, join, parse } from 'node:path';
  */
 export const findFolderUp = async (folderName, startPath = process.cwd()) => {
     let currentPath = startPath;
-    const rootPath = parse(currentPath).root; // e.g., '/' on Linux/macOS, 'C:\' on Windows
+    const rootPath = parse(currentPath).root;
 
     while (true) {
         const candidatePath = join(currentPath, folderName);
@@ -21,7 +21,7 @@ export const findFolderUp = async (folderName, startPath = process.cwd()) => {
                 return candidatePath;
             }
         } catch (err) {
-            // ENOENT means 'No such file or directory', which is what we expect if it's not here
+            // expect ENOENT (No such file or directory) if folder is not found
             if (err.code !== 'ENOENT') {
                 console.warn(`[findFolderUp]: Unexpected error while checking ${candidatePath}: ${err.message}`);
             }
