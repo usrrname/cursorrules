@@ -73,10 +73,6 @@ const renderCategoryMenu = (categories, currentIndex) => {
  * @param {function(string):void} handleKeyPress
  */
 export const setupInput = (handleKeyPress) => {
-    if (!process.stdin.isTTY) {
-        console.error('[setupInput]: Unable to start interactive mode in CI');
-        return;
-    }
     process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdin.setEncoding('utf8');
