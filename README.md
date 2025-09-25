@@ -4,7 +4,7 @@
 
 [![Publish Package](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml/badge.svg?event=release)](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml)
 
-A standard library of rules for Cursor, inspired by geoffrey huntley [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/) and borrowing heavily from Brian Madison [@bmadcode](https://github.com/bmadcode)'s [Cursor Custom Agents Rules Generator](https://github.com/bmadcode/cursor-custom-agents-rules-generator).
+A standard library of rules for Cursor, inspired by geoffrey huntley [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/) and borrowing heavily from Brian Madison [@bmadcode](https://github.com/bmadcode)'s [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD).
 
 ## ✨ Featured AI Agents
 
