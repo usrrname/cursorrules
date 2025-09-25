@@ -211,6 +211,7 @@ describe('CLI', () => {
         test('should accept --interactive flag and start interactive mode', async () => {
             try {
                 const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '--interactive']);
+                console.log(`stdout: ${stdout}, stderr: ${stderr}`)
                 // Should start interactive mode
                 assert.ok(stdout.includes('Starting interactive mode') || stdout.includes('Loading'));
                 assert.ok(stdout.includes('Select rules by category'))
@@ -251,7 +252,7 @@ describe('CLI', () => {
 
             const outputDir = path.join(testDir, 'filter-test');
 
-            const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-o', outputDir]);
+            const { stdout } = await execFileAsync('node', ['./cli/index.mjs', '-o', outputDir]);
 
             // Should successfully process only .mdc files
             assert.ok(stdout.includes('Success'));
@@ -259,8 +260,6 @@ describe('CLI', () => {
 
             // The .txt file should not be copied
             assert.ok(!existsSync(path.join(outputDir, 'rules', 'standards', 'ignore-me.txt')));
-
-            console.log(stderr);
         });
     });
 
