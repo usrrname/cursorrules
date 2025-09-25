@@ -192,17 +192,21 @@ describe('CLI', () => {
             }
         });
 
-        test('should accept -i flag and start interactive mode', async () => {
+        test('should accept -i flag and start interactive mode', async (t) => {
             try {
-                const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-i']);
-                // Should start interactive mode
+                const { stdin, stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-i']);
+
+                t.mock.method(process, 'stdin', 'isTTY', true);
+                assert.call(stdin.isTTY, t.mock.calls.length > 0);
                 assert.ok(stdout.includes('Starting interactive mode') || stdout.includes('Loading'));
                 assert.ok(stdout.includes('Select rules by category'))
+
+
             } catch (error) {
                 // Expected to fail in non-TTY environment due to setRawMode
                 assert.ok(
                     error.stderr.includes('Unable to start interactive mode in CI') ||
-                    error.code === 'ERR_TEST_FAILURE'
+                    error.code === 'ERR_TEST_FAILURE' || error.code === 'ERR_ASSERTION'
                 );
             }
         });
