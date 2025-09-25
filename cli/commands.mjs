@@ -1,43 +1,42 @@
 'use strict'
 import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
-import { projectRoot } from './index.mjs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { downloadFiles, downloadSelectedFiles } from './utils/download-files.mjs';
 import { interactiveCategorySelection, prepareMenu, scanAvailableRules, selectRules } from './utils/interactive-menu.mjs';
 import { validateDirname } from './utils/validate-dirname.mjs';
 
-const packageJsonPath = path.join(process.cwd(), 'package.json');
-const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
+export const __dirname = dirname(fileURLToPath(import.meta.url));
+export const packageJsonPath = resolve(__dirname, '..', 'package.json');
+export const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
 
-/**
- * Print the help message
- * @returns {void} */
+/** @returns {void} */
 export const help = () => {
-    const repository = packageJson.repository.url.replace('git+', '').replace('.git', '');
-    const version = packageJson.version;
+    const repository = packageJson?.repository?.url?.replace('git+', '').replace('.git', '') ?? 'https://github.com/usrrname/cursorrules';
+    const version = packageJson?.version;
 
     console.info(`
-╔══════════════════════════════════════╗
-║  @usrrname/cursorrules v${version}   ║
-╚══════════════════════════════════════╝
-A standard library of Cursor Rules ...with otaku vibes (✿ᴗ͈ˬᴗ͈)⁾⁾
+    ╔══════════════════════════════════════╗
+    ║  @usrrname/cursorrules v${version}   ║
+    ╚══════════════════════════════════════╝
+    A standard library of Cursor Rules ...with otaku vibes (✿ᴗ͈ˬᴗ͈)⁾⁾
 
-Usage:
-=======================================
-npx @usrrname/cursorrules [options]
+    Usage:
+    =======================================
+    npx @usrrname/cursorrules [options]
 
-Options:
--f, --flat: Install all rules without parent directory
--h, --help: Help instructions <----- You are here
--i, --interactive: Select the rules you want 
--o, --output: Set output directory (Default: .cursor/)
--v, --version: Show package version
-${repository}
+    Options:
+    -f, --flat: Install all rules without parent directory
+    -h, --help: Help instructions <----- You are here
+    -i, --interactive: Select the rules you want
+    -o, --output: Set output directory (Default: .cursor/)
+    -v, --version: Show package version
+    ${repository}
 `);
 }
 
 /** Print the version of the package*/
-export const version = () => console.log(`${packageJson.name} v${packageJson.version}`);
+export const version = () => console.log(`${packageJson?.name} v${packageJson?.version}`);
 
 /** interactive mode 
  * @param {Record<string, any>} values
@@ -64,14 +63,14 @@ export const interactiveMode = async (values) => {
             const allSelectedRules = Object.values(persistentSelections)
                 .flat()
                 .filter(rule => rule.selected);
-            const outputDir = values?.output?.toString() ?? `${projectRoot}/.cursor/`;
+            const outputDir = values?.output?.toString() ?? `${process.cwd()}/.cursor/`;
             if (allSelectedRules.length > 0)
                 return await downloadSelectedFiles(outputDir, allSelectedRules);
             else
                 console.log('⚠️  No rules selected');
             break;
         }
-        // Show rule selection for the chosen category, with persistent state
+        // Show rule selection for the chosen category
         persistentSelections[selectedCategory] = await selectRules(
             persistentSelections[selectedCategory]
         );
