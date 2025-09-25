@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 'use strict'
-import * as path from 'node:path';
+import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { help, interactiveMode, output, version } from './commands.mjs';
 import { downloadFiles } from './utils/download-files.mjs';
 
-export const projectRoot = process.cwd()
-export const baseFolder = '.cursor/';
+/** project root @type {string} */
+export const projectRoot = resolve(import.meta.dirname, '..')
+export const defaultCursorPath = join(projectRoot, '.cursor');
 
 /** 
  * CLI options @type {import('node:util').ParseArgsConfig}
@@ -44,12 +45,10 @@ export const config = {
 async function main() {
     console.log("🚀 Loading @usrrname/cursorrules ...");
 
-    const { values } = parseArgs(config);
+    const { values, positionals } = parseArgs(config);
     const flags = Object.keys(config.options || {});
 
     const allowedKeys = flags.filter(flag => flag === 'output')[0]
-
-    if (Object.keys(values || {}).length === 0) await downloadFiles(path.join(projectRoot, '.cursor'))
 
     for (let key in values) {
 
@@ -70,11 +69,11 @@ async function main() {
                 await interactiveMode(values);
                 process.exit(0);
             case 'output':
-                const outputDir = values[key]?.toString() ?? `${projectRoot}/.cursor`;
+                const outputDir = values[key]?.toString() ?? defaultCursorPath;
                 await output(outputDir);
                 break;
             case 'flat':
-                await downloadFiles(path.join(projectRoot, ''))
+                await downloadFiles(defaultCursorPath)
                 break;
         }
     }
@@ -83,7 +82,7 @@ async function main() {
 try {
     await main();
 } catch (err) {
-    process.stderr.write('❌ Error: ' + err);
+    process.stderr.write('❌ Error: ' + err + '\n' + err.stack);
     process.exit(1);
 }
 
