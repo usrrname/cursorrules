@@ -203,13 +203,8 @@ describe('CLI', () => {
 
 
             } catch (error) {
-                if (process.platform === 'win32') {
-                    assert.strictEqual(error.code, 'ERR_TEST_FAILURE'); // Windows error for non-TTY
-                }
-                else {
                 // Expected to fail in non-TTY environment due to setRawMode
-                    assert.strictEqual(error.code, 1)
-                }
+                assert.strictEqual(error.code, 1)
             }
         });
 
