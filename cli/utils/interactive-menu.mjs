@@ -1,7 +1,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as url from 'node:url';
-import { baseFolder } from '../index.mjs';
+import { findFolderUp } from './find-folder-up.mjs';
 /**
  * Finds all rules in category and prepares them for display in menu
  * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules
@@ -52,6 +52,23 @@ export const createMenu = ({ title, items, currentIndex, footerLines = [] }) => 
 }
 
 /**
+ * Utility to render a menu with highlighting and indicators
+ * @param {string[]} categories
+ * @param {number} currentIndex
+ */
+const renderCategoryMenu = (categories, currentIndex) => {
+    const items = categories.concat(['🌈 Save Rules']);
+    createMenu({
+        title: 'Select rules by category',
+        items,
+        currentIndex,
+        footerLines: [
+            '\n↑↓ - Navigate | ⏎ Enter - Select | Esc - Cancel'
+        ]
+    });
+}
+
+/**
  * Utility to set up interactive input for a menu
  * @param {function(string):void} handleKeyPress
  */
@@ -62,6 +79,15 @@ export const setupInput = (handleKeyPress) => {
     process.stdin.on('data', handleKeyPress);
 }
 
+/**
+ * Utility to unmount interactive input
+ * @param {function(string):void} handleKeyPress
+ */
+const unmountInput = (handleKeyPress) => {
+    process.stdin.setRawMode(false);
+    process.stdin.pause();
+    process.stdin.removeListener('data', handleKeyPress);
+}
 /**
  * Interactive category selection
  * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules
@@ -76,17 +102,6 @@ export const interactiveCategorySelection = async (rules) => {
     let currentIndex = 0;
 
     return new Promise((resolve) => {
-        const renderMenu = () => {
-            const items = categories.concat(['🌈 Save Rules']);
-            createMenu({
-                title: 'Select rules by category',
-                items,
-                currentIndex,
-                footerLines: [
-                    '\n↑↓ - Navigate | ⏎ Enter - Select | Esc - Cancel'
-                ]
-            });
-        };
 
         /**
          * @param {*} key 
@@ -96,16 +111,14 @@ export const interactiveCategorySelection = async (rules) => {
                 case '\u0003': // Ctrl+C
                 case '\u001b': // Escape
                 case '\u001b[D': // Left Arrow
-                    process.stdin.setRawMode(false);
-                    process.stdin.pause();
+                    unmountInput(handleKeyPress);
                     process.stdin.removeListener('data', handleKeyPress);
                     console.log('\n❌ Category selection cancelled');
                     resolve(null);
                     break;
                 case '\r': // Enter
                 case '\n':
-                    process.stdin.setRawMode(false);
-                    process.stdin.pause();
+                    unmountInput(handleKeyPress);
                     process.stdin.removeListener('data', handleKeyPress);
                     if (currentIndex === categories.length) {
                         // Finish selection
@@ -117,24 +130,25 @@ export const interactiveCategorySelection = async (rules) => {
                 case '\u001b[A': // Up arrow
                     if (currentIndex > 0) {
                         currentIndex--;
-                        renderMenu();
+                        renderCategoryMenu(categories, currentIndex);
                     }
                     break;
                 case '\u001b[B': // Down arrow
                     if (currentIndex < categories.length) {
                         currentIndex++;
-                        renderMenu();
+                        renderCategoryMenu(categories, currentIndex);
                     }
                     break;
             }
         };
 
         setupInput(handleKeyPress);
-        renderMenu();
+        renderCategoryMenu(categories, currentIndex);
     });
 };
 
 /** 
+ * Render rule selection menu for a category
  * @param {Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} allRules
  * @param {number} currentIndex
  * @param {number} selectedCount
@@ -155,8 +169,9 @@ const renderMenu = (allRules, currentIndex, selectedCount) => {
     });
 };
 
+
 /**
- * Displays menu containing rules in a category
+ * Enable rule selection inside a category of rules
  * @param {Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>} rulesInCategory
  * @returns {Promise<Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>>}
  */
@@ -166,7 +181,7 @@ export const selectRules = async (rulesInCategory) => {
     let selectedCount = allRules.filter(r => r.selected).length;
 
     let skipMenu = false;
-
+    /** @param {function(Array<{category: string, displayName: string, selected: boolean, name: string, path: string, fullPath: string}>?): void} resolve */
     return new Promise((resolve) => {
         /** @param key {string} */
         const handleKeyPress = (key) => {
@@ -174,22 +189,14 @@ export const selectRules = async (rulesInCategory) => {
             switch (key) {
                 case '\u0003': // Ctrl+C
                 case '\u001b': // Escape
-                    if (process.stdin.isTTY) {
-                        process.stdin.setRawMode(false);
-                    }
-                    process.stdin.pause();
-                    process.stdin.removeListener('data', handleKeyPress);
+                    unmountInput(handleKeyPress);
                     // Return current state (persist selections)
                     resolve(allRules);
                     break;
                 case '\r': // Enter
                 case '\n':
                     skipMenu = true;
-                    if (process.stdin.isTTY) {
-                        process.stdin.setRawMode(false);
-                    }
-                    process.stdin.pause();
-                    process.stdin.removeListener('data', handleKeyPress);
+                    unmountInput(handleKeyPress);
                     resolve(allRules);
                     break;
                 case ' ':
@@ -225,7 +232,9 @@ export const selectRules = async (rulesInCategory) => {
  * @returns {Promise<Record<string, Array<{name: string, path: string, fullPath: string}>>>} Object with categorized rules
  */
 export const scanAvailableRules = async () => {
-    const rulesPath = url.fileURLToPath(url.resolve(import.meta.url, `../../${baseFolder}/rules`));
+    // whereever this function is called, it should find the rules path relative to the current file
+    const cursorFolder = await findFolderUp('.cursor', process.cwd());
+    const rulesPath = url.fileURLToPath(url.resolve(import.meta.url, `${cursorFolder}/rules`));
 
     const categories = ['standards', 'test', 'utils'];
     /** @type {Record<string, Array<{name: string, path: string, fullPath: string}>>} */
@@ -234,13 +243,13 @@ export const scanAvailableRules = async () => {
     for (const category of categories) {
         const categoryPath = path.join(rulesPath, category);
         try {
-            const files = await fs.readdir(categoryPath);
+            const files = await fs.readdir(categoryPath, { withFileTypes: true });
             rules[category] = files
-                .filter(file => file.endsWith('.mdc'))
+                .filter(file => file.isFile() && file.name.endsWith('.mdc'))
                 .map(file => ({
-                    name: file.replace('.mdc', ''),
-                    path: path.join(category, file),
-                    fullPath: path.join(categoryPath, file)
+                    name: file.name.replace('.mdc', ''),
+                    path: path.join(category, file.name),
+                    fullPath: path.join(categoryPath, file.name)
                 }));
         } catch (err) {
             rules[category] = [];
