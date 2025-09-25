@@ -1,12 +1,12 @@
 import * as fs from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { help } from '../commands.mjs';
+import { findFolderUp } from './find-folder-up.mjs';
 import { validateDirname } from './validate-dirname.mjs';
 
-import { findFolderUp } from './find-folder-up.mjs';
-
-const cursorFolder = await findFolderUp(process.cwd(), '.cursor')
-const sourceRulesBasePath = resolve(cursorFolder!, 'rules')
+const cursorFolder = await findFolderUp('.cursor', process.cwd())
+if (!cursorFolder) throw new Error('Cursor folder not found');
+const sourceRulesBasePath = resolve(cursorFolder, 'rules')
 
 /**
  * @param {string} dirname - output folder relative path
