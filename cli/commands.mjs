@@ -1,14 +1,17 @@
 'use strict'
 import * as fs from 'node:fs/promises';
+import { homedir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { downloadFiles, downloadSelectedFiles } from './utils/download-files.mjs';
+import { findPackageRoot } from './utils/find-package-root.mjs';
 import { interactiveCategorySelection, prepareMenu, scanAvailableRules, selectRules } from './utils/interactive-menu.mjs';
 import { validateDirname } from './utils/validate-dirname.mjs';
 
 export const __dirname = dirname(fileURLToPath(import.meta.url));
 export const packageJsonPath = resolve(__dirname, '..', 'package.json');
 export const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
+const defaultOutput = resolve(homedir(), 'Downloads', '.cursor');
 
 /** @returns {void} */
 export const help = () => {
@@ -44,7 +47,9 @@ export const version = () => console.log(`${packageJson?.name} v${packageJson?.v
 */
 export const interactiveMode = async (values) => {
     console.log('🎯 Starting interactive mode...');
-    const rules = await scanAvailableRules();
+    const packageRoot = findPackageRoot(__dirname, '@usrrname/cursorrules');
+    const sourceRulesBasePath = resolve(packageRoot, '.cursor', 'rules');
+    const rules = await scanAvailableRules(sourceRulesBasePath);
     // Prepare persistent selection state for each category
     const categories = Object.keys(rules).filter(cat => rules[cat].length > 0);
 
@@ -63,7 +68,7 @@ export const interactiveMode = async (values) => {
             const allSelectedRules = Object.values(persistentSelections)
                 .flat()
                 .filter(rule => rule.selected);
-            const outputDir = values?.output?.toString() ?? `${process.cwd()}/.cursor/`;
+            const outputDir = values?.output?.toString() ?? defaultOutput;
             if (allSelectedRules.length > 0)
                 return await downloadSelectedFiles(outputDir, allSelectedRules);
             else

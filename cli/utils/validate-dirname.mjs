@@ -43,6 +43,8 @@ const hasInvalidSegmentChars = (segment) => {
  * @returns {Promise<string>} - the validated and resolved absolute path
  */
 export const validateDirname = async (rawPath, projectRoot = process.cwd()) => {
+    console.log('DEBUG: validateDirname rawPath:', rawPath);
+    console.log('DEBUG: validateDirname projectRoot:', projectRoot);
     const attemptedPath = rawPath;
 
     // Remove = prefix if it exists
