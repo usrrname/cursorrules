@@ -68,11 +68,11 @@ async function main() {
                 await interactiveMode(values);
                 process.exit(0);
             case 'output':
-                const outputDir = values[key]?.toString() ?? defaultCursorPath;
+                const outputDir = values[key]?.toString() ?? process.cwd();
                 await output(outputDir);
                 break;
             case 'flat':
-                const cursorRulesPath = process.env.npm_config_prefix?.toString() ?? `${defaultCursorPath}/rules`;
+                const cursorRulesPath = process.cwd();
                 await downloadFiles(cursorRulesPath);
                 break;
         }
