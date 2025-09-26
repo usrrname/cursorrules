@@ -1,6 +1,5 @@
 'use strict'
 import * as fs from 'node:fs/promises';
-import { homedir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { styleText } from 'node:util';
@@ -13,7 +12,7 @@ import { validateDirname } from './utils/validate-dirname.mjs';
 export const __dirname = dirname(fileURLToPath(import.meta.url));
 export const packageJsonPath = resolve(__dirname, '..', 'package.json');
 export const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
-const defaultOutput = resolve(homedir(), 'Downloads', '.cursor');
+const defaultOutput = process.cwd();
 
 /** @returns {void} */
 export const help = () => {
