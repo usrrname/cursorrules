@@ -1,7 +1,5 @@
-import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
-import * as url from 'node:url';
-import { findFolderUp } from './find-folder-up.mjs';
+import { readdirSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 /**
  * Finds all rules in category and prepares them for display in menu
  * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules
@@ -36,18 +34,18 @@ export const prepareMenu = (rules) => {
 export const createMenu = ({ title, items, currentIndex, footerLines = [] }) => {
     process.stdout.write('\x1B[2J\x1B[0f');
     if (title) {
-        console.log(title);
-        console.log('='.repeat(title.length) + '\n');
+        console.info(title);
+        console.info('='.repeat(title.length) + '\n');
     }
     items.forEach((item, idx) => {
         const isCurrent = idx === currentIndex;
         const indicator = isCurrent ? '▶ ' : '  ';
         const highlight = isCurrent ? '\x1B[7m' : '';
         const reset = '\x1B[0m';
-        console.log(`${highlight}${indicator}${item}${reset}`);
+        console.info(`${highlight}${indicator}${item}${reset}`);
     });
     if (footerLines.length) {
-        footerLines.forEach(line => console.log(line));
+        footerLines.forEach(line => console.info(line));
     }
 }
 
@@ -229,27 +227,25 @@ export const selectRules = async (rulesInCategory) => {
 
 /**
  * Scan available rules from standards and test directories
+ * @param {string} rulesBasePath
  * @returns {Promise<Record<string, Array<{name: string, path: string, fullPath: string}>>>} Object with categorized rules
  */
-export const scanAvailableRules = async () => {
-    // whereever this function is called, it should find the rules path relative to the current file
-    const cursorFolder = await findFolderUp('.cursor', process.cwd());
-    const rulesPath = url.fileURLToPath(url.resolve(import.meta.url, `${cursorFolder}/rules`));
+export const scanAvailableRules = async (rulesBasePath) => {
 
     const categories = ['standards', 'test', 'utils'];
     /** @type {Record<string, Array<{name: string, path: string, fullPath: string}>>} */
     let rules = {}
 
     for (const category of categories) {
-        const categoryPath = path.join(rulesPath, category);
+        const categoryPath = resolve(rulesBasePath, category);
         try {
-            const files = await fs.readdir(categoryPath, { withFileTypes: true });
+            const files = await readdirSync(categoryPath, { withFileTypes: true });
             rules[category] = files
                 .filter(file => file.isFile() && file.name.endsWith('.mdc'))
                 .map(file => ({
                     name: file.name.replace('.mdc', ''),
-                    path: path.join(category, file.name),
-                    fullPath: path.join(categoryPath, file.name)
+                    path: join(category, file.name),
+                    fullPath: resolve(categoryPath, file.name)
                 }));
         } catch (err) {
             rules[category] = [];
