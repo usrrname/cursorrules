@@ -2,12 +2,15 @@
 import * as fs from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { styleText } from 'node:util';
+import * as util from 'node:util';
 import { config } from './index.mjs';
 import { downloadFiles, downloadSelectedFiles } from './utils/download-files.mjs';
 import { findPackageRoot } from './utils/find-package-root.mjs';
 import { interactiveCategorySelection, prepareMenu, scanAvailableRules, selectRules } from './utils/interactive-menu.mjs';
 import { validateDirname } from './utils/validate-dirname.mjs';
+
+/** fallback for Node < 21 */
+const styleText = util.styleText ?? ((_, text) => text);
 
 export const __dirname = dirname(fileURLToPath(import.meta.url));
 export const packageJsonPath = resolve(__dirname, '..', 'package.json');
