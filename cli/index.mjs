@@ -2,8 +2,8 @@
 'use strict'
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
-import { help, interactiveMode, output, version } from './commands.mjs';
-import { downloadFiles } from './utils/download-files.mjs';
+const { downloadFiles } = await import('./utils/download-files.mjs');
+const { help, interactiveMode, output, version } = await import('./commands.mjs');
 
 /** project root @type {string} */
 export const projectRoot = resolve(import.meta.dirname, '..')
