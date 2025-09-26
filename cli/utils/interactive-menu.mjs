@@ -1,6 +1,10 @@
 import { readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { styleText } from 'node:util';
+// `styleText` is only available in Node 21+. To stay compatible with Node 18/20
+// we safely import the entire util namespace and fall back to a no-op when
+// `styleText` is not present.
+import * as util from 'node:util';
+const styleText = util.styleText ?? ((_, text) => text);
 /**
  * Finds all rules in category and prepares them for display in menu
  * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules
