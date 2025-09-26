@@ -10,13 +10,20 @@ export const __dirname = dirname(fileURLToPath(import.meta.url));
 // Detect if we're running inside an npx sandbox. npm sets npm_config_prefix to that temp dir.
 const npmPrefix = process.env.npm_config_prefix?.toString() || '';
 const isNpxSandbox = npmPrefix.includes(`${pathSep}_npx${pathSep}`);
-
+/** @type {string} */
 let sourceRulesBasePath;
+
+console.log('DEBUG: npmPrefix:', npmPrefix);
+console.log('DEBUG: pathSep:', pathSep);
+console.log('DEBUG: isNpxSandbox check string:', `${pathSep}_npx${pathSep}`);
+console.log('DEBUG: isNpxSandbox:', isNpxSandbox);
 
 if (isNpxSandbox) {
     // inside npx → rules live alongside package contents
     sourceRulesBasePath = resolve(npmPrefix, 'rules');
-} else {
+}
+
+if (process.env.CI || ['development', 'test'].includes(process.env.NODE_ENV ?? '')) {
     // running inside repo / globally installed copy → locate nearest .cursor
     const found = await findFolderUp('.cursor', process.cwd())
         ?? await findFolderUp('.cursor', __dirname);
