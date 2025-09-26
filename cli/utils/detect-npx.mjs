@@ -7,7 +7,6 @@ export function detectNpxSandbox() {
     // Check environment variables
     const npmPrefix = process.env.npm_config_prefix || '';
     const npmCache = process.env.npm_config_cache || '';
-    const tempDir = process.env.TMPDIR || process.env.TEMP || process.env.TMP || '';
 
     // Analyze current file path
     const currentPath = __dirname;

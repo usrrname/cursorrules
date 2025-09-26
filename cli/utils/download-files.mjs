@@ -8,18 +8,14 @@ import { findPackageRoot } from './find-package-root.mjs';
 import { validateDirname } from './validate-dirname.mjs';
 
 const detection = detectNpxSandbox();
-console.log('🔍 NPX Detection Results:', detection);
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
-console.log('🔍 __dirname:', __dirname);
+
 /** @type {string} */
 let sourceRulesBasePath;
 
 if (detection.isNpxSandbox) {
     const packageRoot = findPackageRoot(__dirname, '@usrrname/cursorrules');
-    console.log('DEBUG: packageRoot (npx branch):', packageRoot);
     sourceRulesBasePath = resolve(packageRoot, '.cursor', 'rules');
-    console.log('DEBUG: sourceRulesBasePath:', sourceRulesBasePath);
 }
 
 
