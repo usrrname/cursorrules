@@ -10,10 +10,10 @@ import { validateDirname } from './validate-dirname.mjs';
 const detection = detectNpxSandbox();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-/** @type {string} */
-let sourceRulesBasePath;
+/** @type {string|undefined} */
+let sourceRulesBasePath = '';
 
-if (detection.isNpxSandbox) {
+if (detection.isNpxSandbox || !sourceRulesBasePath) {
     const packageRoot = findPackageRoot(__dirname, '@usrrname/cursorrules');
     sourceRulesBasePath = resolve(packageRoot, '.cursor', 'rules');
 }
