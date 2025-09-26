@@ -22,7 +22,7 @@ export const help = () => {
 
     const repoLink = styleText('underline', repository)
     const version = packageJson?.version;
-    const title = styleText(['bgMagenta'], `@usrrname/cursorrules v${version}`)
+    const title = styleText(['black', 'bgMagenta'], `@usrrname/cursorrules v${version}`)
     const description = packageJson?.description + ` ✦`;
     const usage = styleText('magentaBright', `npx @usrrname/cursorrules`)
     const options = styleText('dim', `[options]`)
