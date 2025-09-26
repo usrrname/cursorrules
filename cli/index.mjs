@@ -45,7 +45,7 @@ export const config = {
 async function main() {
     console.log("🚀 Loading @usrrname/cursorrules ...");
 
-    const { values, positionals } = parseArgs(config);
+    const { values } = parseArgs(config);
     const flags = Object.keys(config.options || {});
 
     const allowedKeys = flags.filter(flag => flag === 'output')[0]
@@ -73,7 +73,8 @@ async function main() {
                 await output(outputDir);
                 break;
             case 'flat':
-                await downloadFiles(defaultCursorPath)
+                const cursorRulesPath = process.env.npm_config_prefix?.toString() ?? `${defaultCursorPath}/rules`;
+                await downloadFiles(cursorRulesPath);
                 break;
         }
     }
