@@ -35,8 +35,8 @@ export const prepareMenu = (rules) => {
 export const createMenu = ({ title, items, currentIndex, footerLines = [] }) => {
     process.stdout.write('\x1B[2J\x1B[0f');
     if (title) {
-        console.info(styleText('bold', title));
-        console.info(styleText('bold', '='.repeat(title.length) + '\n'));
+        console.info(styleText("white", title));
+        console.info(styleText("white", '='.repeat(title.length) + '\n'));
     }
     items.forEach((item, idx) => {
         const isCurrent = idx === currentIndex;
@@ -99,7 +99,6 @@ export const interactiveCategorySelection = async (rules) => {
         return null;
     }
     let currentIndex = 0;
-
     return new Promise((resolve) => {
 
         /**
@@ -113,6 +112,7 @@ export const interactiveCategorySelection = async (rules) => {
                     unmountInput(handleKeyPress);
                     process.stdin.removeListener('data', handleKeyPress);
                     console.log('\n❌ Category selection cancelled');
+                    currentIndex = currentIndex;
                     resolve(null);
                     break;
                 case '\r': // Enter
