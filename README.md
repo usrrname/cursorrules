@@ -6,6 +6,8 @@
 
 A standard library of rules for Cursor, inspired by geoffrey huntley [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/) and borrowing heavily from Brian Madison [@bmadcode](https://github.com/bmadcode)'s [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD).
 
+![cursorrules-ezgif com-optimize](https://github.com/user-attachments/assets/8d522514-6e56-4dcd-9fd0-08a20ff69919)
+
 ## ✨ Featured AI Agents
 
 Meet our delightfully (neuro)diverse team of AI assistants:
