@@ -1,10 +1,30 @@
 import { copyFile, cp, mkdir } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, sep as pathSep, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { help } from '../commands.mjs';
+import { findFolderUp } from './find-folder-up.mjs';
 import { validateDirname } from './validate-dirname.mjs';
 
-const tempDirectory = process.env.npm_config_prefix?.toString() + '/.cursor/rules';
-const sourceRulesBasePath = resolve(tempDirectory, 'rules')
+export const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Detect if we're running inside an npx sandbox. npm sets npm_config_prefix to that temp dir.
+const npmPrefix = process.env.npm_config_prefix?.toString() || '';
+const isNpxSandbox = npmPrefix.includes(`${pathSep}_npx${pathSep}`);
+
+let sourceRulesBasePath;
+
+if (isNpxSandbox) {
+    // inside npx → rules live alongside package contents
+    sourceRulesBasePath = resolve(npmPrefix, 'rules');
+} else {
+    // running inside repo / globally installed copy → locate nearest .cursor
+    const found = await findFolderUp('.cursor', process.cwd())
+        ?? await findFolderUp('.cursor', __dirname);
+
+    if (!found) throw new Error("'.cursor' folder not found – are you running inside a cursorrules project?");
+
+    sourceRulesBasePath = resolve(found, 'rules');
+}
 
 /**
  * @param {string} dirname - output folder relative path
