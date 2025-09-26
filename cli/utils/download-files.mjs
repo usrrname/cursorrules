@@ -1,12 +1,10 @@
-import * as fs from 'node:fs/promises';
+import { copyFile, cp, mkdir } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { help } from '../commands.mjs';
-import { findFolderUp } from './find-folder-up.mjs';
 import { validateDirname } from './validate-dirname.mjs';
 
-const cursorFolder = await findFolderUp('.cursor', process.cwd())
-if (!cursorFolder) throw new Error('Cursor folder not found');
-const sourceRulesBasePath = resolve(cursorFolder, 'rules')
+const tempDirectory = process.env.npm_config_prefix?.toString() + '/.cursor/rules';
+const sourceRulesBasePath = resolve(tempDirectory, 'rules')
 
 /**
  * @param {string} dirname - output folder relative path
@@ -20,7 +18,7 @@ export const downloadFiles = async (dirname) => {
 
     try {
         // copy whole folder
-        await fs.cp(
+        await cp(
             sourceRulesBasePath,
             outputDir,
             { recursive: true },
@@ -52,8 +50,8 @@ export const downloadSelectedFiles = async (folderName, selectedRules) => {
 
     try {
         // Create output directory structure
-        await fs.mkdir(outputDir, { recursive: true });
-        await fs.mkdir(join(outputDir, 'rules'), { recursive: true });
+        await mkdir(outputDir, { recursive: true });
+        await mkdir(join(outputDir, 'rules'), { recursive: true });
 
         // Copy selected rules
         for (const rule of selectedRules) {
@@ -62,10 +60,10 @@ export const downloadSelectedFiles = async (folderName, selectedRules) => {
             const destDir = dirname(destPath);
 
             // Ensure destination directory exists
-            await fs.mkdir(destDir, { recursive: true });
+            await mkdir(destDir, { recursive: true });
 
             // Copy the rule file
-            await fs.copyFile(sourcePath, destPath);
+            await copyFile(sourcePath, destPath);
             console.log(`  📄 Copied: ${rule.displayName}`);
         }
 
