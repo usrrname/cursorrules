@@ -3,6 +3,8 @@ import * as fs from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { styleText } from 'node:util';
+import { config } from './index.mjs';
 import { downloadFiles, downloadSelectedFiles } from './utils/download-files.mjs';
 import { findPackageRoot } from './utils/find-package-root.mjs';
 import { interactiveCategorySelection, prepareMenu, scanAvailableRules, selectRules } from './utils/interactive-menu.mjs';
@@ -15,26 +17,58 @@ const defaultOutput = resolve(homedir(), 'Downloads', '.cursor');
 
 /** @returns {void} */
 export const help = () => {
-    const repository = packageJson?.repository?.url?.replace('git+', '').replace('.git', '') ?? 'https://github.com/usrrname/cursorrules';
+
+    const repository = packageJson?.repository?.url?.replace('git+', '').replace('.git', '') ?? 'https://github.com/usrrname/cursorrules'
+
+    const repoLink = styleText('underline', repository)
     const version = packageJson?.version;
+    const title = styleText(['bgMagenta'], `@usrrname/cursorrules v${version}`)
+    const description = packageJson?.description + ` ✦`;
+    const usage = styleText('magentaBright', `npx @usrrname/cursorrules`)
+    const options = styleText('dim', `[options]`)
+
+    /** @param {string} key */
+    const getFlagDescription = (key) => {
+        switch (key) {
+            case 'flat':
+                return styleText('green', 'install all rules without parent directory');
+            case 'help':
+                return styleText('green', 'help instructions');
+            case 'interactive':
+                return styleText('green', 'select the rules you want');
+            case 'output':
+                return styleText('green', 'set output directory (Default: .cursor/)');
+            case 'version':
+                return styleText('green', 'show package version');
+            case 'interactive':
+                return styleText('green', 'select the rules you want');
+        }
+    }
+    const tableContent = Object.entries(config?.options || {}).map(([key, value]) => {
+        return {
+            flag: `-${value?.short}`,
+            name: `--${key}`,
+            description: getFlagDescription(key),
+            type: value?.type,
+            default: value?.default ? `(Default: ${value?.default})` : '',
+        }
+    })
 
     console.info(`
-    ╔══════════════════════════════════════╗
-    ║  @usrrname/cursorrules v${version}   ║
-    ╚══════════════════════════════════════╝
-    A standard library of Cursor Rules ...with otaku vibes (✿ᴗ͈ˬᴗ͈)⁾⁾
+╔══════════════════════════════════════╗
+║ ${title}  ║
+╚══════════════════════════════════════╝
+(✿ᴗ͈ˬᴗ͈)⁾⁾ 
 
-    Usage:
-    =======================================
-    npx @usrrname/cursorrules [options]
+${description}
 
-    Options:
-    -f, --flat: Install all rules without parent directory
-    -h, --help: Help instructions <----- You are here
-    -i, --interactive: Select the rules you want
-    -o, --output: Set output directory (Default: .cursor/)
-    -v, --version: Show package version
-    ${repository}
+Usage:
+========================================
+${usage} ${options}
+
+${tableContent.map(item => `${item.name} ${item.flag} ${item.type} ${item.description} ${item.default}`).join('\n')}
+
+${repoLink}
 `);
 }
 
