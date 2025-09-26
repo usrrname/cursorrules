@@ -75,12 +75,12 @@ export const downloadSelectedFiles = async (folderName, selectedRules) => {
     try {
         // Create output directory structure
         await mkdir(outputDir, { recursive: true });
-        await mkdir(join(outputDir, 'rules'), { recursive: true });
+        await mkdir(join(outputDir, '.cursor'), { recursive: true });
 
         // Copy selected rules
         for (const rule of selectedRules) {
             const sourcePath = join(sourceRulesBasePath, rule.path);
-            const destPath = join(outputDir, 'rules', rule.path);
+            const destPath = join(outputDir, '.cursor', 'rules', rule.path);
             const destDir = dirname(destPath);
 
             // Ensure destination directory exists
