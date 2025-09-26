@@ -1,5 +1,6 @@
 import { readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { styleText } from 'node:util';
 /**
  * Finds all rules in category and prepares them for display in menu
  * @param {Record<string, Array<{name: string, path: string, fullPath: string}>>} rules
@@ -34,13 +35,13 @@ export const prepareMenu = (rules) => {
 export const createMenu = ({ title, items, currentIndex, footerLines = [] }) => {
     process.stdout.write('\x1B[2J\x1B[0f');
     if (title) {
-        console.info(title);
-        console.info('='.repeat(title.length) + '\n');
+        console.info(styleText('bold', title));
+        console.info(styleText('bold', '='.repeat(title.length) + '\n'));
     }
     items.forEach((item, idx) => {
         const isCurrent = idx === currentIndex;
         const indicator = isCurrent ? '▶ ' : '  ';
-        const highlight = isCurrent ? '\x1B[7m' : '';
+        const highlight = isCurrent ? styleText(['bold', 'black', 'bgWhite'], '\x1B[7m') : '';
         const reset = '\x1B[0m';
         console.info(`${highlight}${indicator}${item}${reset}`);
     });
