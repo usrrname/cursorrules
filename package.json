@@ -10,6 +10,7 @@
     "cursorrules": "cli/index.mjs"
   },
   "files": [
+    "cli/",
     ".cursor/**/*",
     "changelog.md"
   ],

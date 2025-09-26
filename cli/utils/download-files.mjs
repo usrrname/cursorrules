@@ -21,7 +21,7 @@ if (isNpxSandbox) {
     const found = await findFolderUp('.cursor', process.cwd())
         ?? await findFolderUp('.cursor', __dirname);
 
-    if (!found) throw new Error("'.cursor' folder not found – are you running inside a cursorrules project?");
+    if (!found) throw new Error("'.cursor' folder not found");
 
     sourceRulesBasePath = resolve(found, 'rules');
 }
