@@ -20,7 +20,7 @@ export const prepareMenu = (rules) => {
                 path: rule.path,
                 fullPath: rule.fullPath,
                 category: /** @type {"standards" | "test" | "utils"} */ (category),
-                displayName: `[${category}] ${rule.name}`,
+                displayName: `${rule.name}`,
                 selected: false
             });
         }
@@ -39,8 +39,7 @@ export const prepareMenu = (rules) => {
 export const createMenu = ({ title, items, currentIndex, footerLines = [] }) => {
     process.stdout.write('\x1B[2J\x1B[0f');
     if (title) {
-        console.info(styleText("white", title));
-        console.info(styleText("white", '='.repeat(title.length) + '\n'));
+        console.info(styleText("italic", title + '\n'));
     }
     items.forEach((item, idx) => {
         const isCurrent = idx === currentIndex;
@@ -62,7 +61,7 @@ export const createMenu = ({ title, items, currentIndex, footerLines = [] }) => 
 const renderCategoryMenu = (categories, currentIndex) => {
     const items = categories.concat(['🌈 Save Rules']);
     createMenu({
-        title: 'Select rules by category',
+        title: styleText('underline', 'Select rules by category'),
         items,
         currentIndex,
         footerLines: [
