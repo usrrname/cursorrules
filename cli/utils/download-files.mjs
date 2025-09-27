@@ -83,9 +83,8 @@ export const downloadSelectedFiles = async (folderName, selectedRules) => {
         // Copy selected rules
         for (const rule of selectedRules) {
             const sourcePath = join(sourceRulesBasePath, rule.path);
-            console.log(`sourcePath:`, sourcePath);
+
             const destPath = join(outputDir, '.cursor', 'rules', rule.path);
-            console.log(`destPath:`, destPath);
             const destDir = dirname(destPath);
 
             // Ensure destination directory exists
