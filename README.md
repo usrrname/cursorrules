@@ -1,12 +1,39 @@
 # cursorrules 🌸
 
+<div style="display: flex; flex-direction: row; gap: 10px;">
+
 [![Deploy to GitHub Pages](https://github.com/usrrname/cursorrules/actions/workflows/pages.yml/badge.svg)](https://github.com/usrrname/cursorrules/actions/workflows/pages.yml)
 
 [![Publish Package](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml/badge.svg?event=release)](https://github.com/usrrname/cursorrules/actions/workflows/publish.yml)
 
+[![npm version](https://badge.fury.io/js/%40usrrname%2Fcursorrules.svg)](https://badge.fury.io/js/%40usrrname%2Fcursorrules)
+</div>
+
 A standard library of rules for Cursor, inspired by geoffrey huntley [@ghuntley](https://github.com/ghuntley)'s ["You are using Cursor AI incorrectly..."](https://ghuntley.com/stdlib/) and borrowing heavily from Brian Madison [@bmadcode](https://github.com/bmadcode)'s [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD).
 
 ![cursorrules-ezgif com-optimize](https://github.com/user-attachments/assets/8d522514-6e56-4dcd-9fd0-08a20ff69919)
+
+
+## 🚀 Installation
+
+```bash
+npx @usrrname/cursorrules
+```
+
+By default, the package saves `.cursor/` folder inside a `output/` directory at your current working directory. 
+
+But if you're inside the root of a project folder, running `npx @usrrname/cursorrules --flat` will save the `.cursor/` folder to the root of the project, and then you're ready to go!
+
+### Command Options
+
+| Flag | Description |
+|------|-------------|
+| `-h, --help` | Display help instructions |
+| `-i, --interactive` | Interactive Rule Selection |
+| `-f, --flat` | Install without parent directory |
+| `-o, --output` | Set output directory (Default: `.cursor/`) |
+| `-v, --version` | Show package version |
+
 
 ## ✨ Featured AI Agents
 
@@ -62,27 +89,6 @@ Principles:
 
 - uses Cursor latest version
 - _TRY_ to prompt and use the agent/composer to reach goals as much as possible
-
-## 🚀 Installation
-
-```bash
-npx @usrrname/cursorrules
-```
-
-By default, the package saves `.cursor/` folder inside a `output/` directory at your current working directory. 
-
-But if you're inside the root of a project folder, running `npx @usrrname/cursorrules --flat` will save the `.cursor/` folder to the root of the project, and then you're ready to go!
-
-### Command Options
-
-| Flag | Description |
-|------|-------------|
-| `-h, --help` | Display help instructions |
-| `-i, --interactive` | Interactive Rule Selection |
-| `-f, --flat` | Install without parent directory |
-| `-o, --output` | Set output directory (Default: `.cursor/`) |
-| `-v, --version` | Show package version |
-
 
 ## 📁 Project Structure
 
