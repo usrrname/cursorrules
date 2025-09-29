@@ -17,7 +17,6 @@ export const findFolderUp = async (folderName, startPath = process.cwd()) => {
         try {
             const stats = await stat(candidatePath);
             if (stats.isDirectory()) {
-                /* console.log(`[findFolderUp]: Found '${folderName}' at: ${candidatePath}`); */
                 return candidatePath;
             }
         } catch (err) {

@@ -39,7 +39,7 @@ export const prepareMenu = (rules) => {
 export const createMenu = ({ title, items, currentIndex, footerLines = [] }) => {
     process.stdout.write('\x1B[2J\x1B[0f');
     if (title) {
-        console.info(styleText("italic", title + '\n'));
+        console.info(title + '\n');
     }
     items.forEach((item, idx) => {
         const isCurrent = idx === currentIndex;
@@ -61,7 +61,7 @@ export const createMenu = ({ title, items, currentIndex, footerLines = [] }) => 
 const renderCategoryMenu = (categories, currentIndex) => {
     const items = categories.concat(['🌈 Save Rules']);
     createMenu({
-        title: styleText('underline', 'Select rules by category'),
+        title: 'Select rules by category',
         items,
         currentIndex,
         footerLines: [
@@ -161,7 +161,7 @@ const renderMenu = (allRules, currentIndex, selectedCount) => {
         return `${checkbox} ${rule.displayName}`;
     });
     createMenu({
-        title: `🎯 [${allRules[0]?.category}] Rule Selection Mode ✨`,
+        title: `🎯 ${allRules[0]?.category} Rule Selection Mode ✨`,
         items,
         currentIndex,
         footerLines: [
