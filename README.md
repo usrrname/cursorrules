@@ -34,6 +34,8 @@ But if you're inside the root of a project folder, running `npx @usrrname/cursor
 | `-o, --output` | Set output directory (Default: `.cursor/`) |
 | `-v, --version` | Show package version |
 
+![interactive](https://github.com/user-attachments/assets/179777e5-9ee3-4f4b-8d6b-9dd1b33ba8d2)
+
 
 ## ✨ Featured AI Agents
 
