@@ -44,8 +44,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "dependencies": {
-    "varlock": "^0.0.3"
   }
 }
