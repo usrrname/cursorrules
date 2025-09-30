@@ -1,4 +1,4 @@
-/** @ts-nocheck */
+// @ts-nocheck
 import { strict as assert } from 'node:assert';
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -7,10 +7,11 @@ import * as path from 'node:path';
 import { afterEach, before, describe, mock, test } from 'node:test';
 import { promisify } from 'node:util';
 import { projectRoot } from '../index.mjs';
-
 const execFileAsync = promisify(execFile);
 describe('downloadFiles', () => {
-    let downloadFilesMock, downloadSelectedFilesMock;
+    let downloadFilesMock;
+    let downloadSelectedFilesMock;
+    /** @type {string} */
     let validDir = '';
 
     before(async () => {
