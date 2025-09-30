@@ -14,7 +14,7 @@ describe('downloadFiles', () => {
     /** @type {string} */
     let validDir = '';
 
-    before(async () => {
+    before(async (t) => {
         const downloadFilesModule = await import('../utils/download-files.mjs');
 
         downloadFilesMock = mock.fn((...args) => downloadFilesModule.downloadFiles(...args));
