@@ -11,7 +11,6 @@ const execFileAsync = promisify(execFile);
 describe('downloadFiles', () => {
     let downloadFilesMock;
     let downloadSelectedFilesMock;
-    /** @type {string} */
     let validDir = '';
 
     before(async (t) => {
@@ -20,10 +19,12 @@ describe('downloadFiles', () => {
         downloadFilesMock = mock.fn((...args) => downloadFilesModule.downloadFiles(...args));
         downloadSelectedFilesMock = mock.fn((...args) => downloadFilesModule.downloadSelectedFiles(...args));
 
-        mock.module('../utils/download-files.mjs', {
-            cache: true,
-            downloadFiles: downloadFilesMock,
-            downloadSelectedFiles: downloadSelectedFilesMock,
+        mock?.module?.('../utils/download-files.mjs', () => {
+            return {
+                cache: true,
+                downloadFiles: downloadFilesMock,
+                downloadSelectedFiles: downloadSelectedFilesMock,
+            }
         });
         validDir = path.join(projectRoot, 'test-download-files');
     });
@@ -62,13 +63,15 @@ describe('downloadFiles', () => {
             }
 
             const { stdout } = await execFileAsync('node', ['./cli/index.mjs', '-io', validDir]);
-            assert.call(downloadSelectedFilesMock.mockImplementationOnce((validDir, mockSelectedFiles) => {
+            assert.call(downloadSelectedFilesMock?.mockImplementationOnce((validDir, mockSelectedFiles) => {
                 assert.strictEqual(validDir, validDir);
                 assert.strictEqual(mockSelectedFiles, mockSelectedFiles);
             }));
 
+
             assert.ok(stdout.includes('Copied'));
             assert.ok(existsSync(validDir));
+            assert.equal(downloadSelectedFilesMock?.mock.calls?.length, 1);
 
         } catch (error) {
             assert.strictEqual(error.code, 1);
