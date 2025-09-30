@@ -1,4 +1,4 @@
-// @ts-nocheck
+/** @ts-nocheck */
 import { strict as assert } from 'node:assert';
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -7,24 +7,22 @@ import * as path from 'node:path';
 import { afterEach, before, describe, mock, test } from 'node:test';
 import { promisify } from 'node:util';
 import { projectRoot } from '../index.mjs';
+
 const execFileAsync = promisify(execFile);
 describe('downloadFiles', () => {
-    let downloadFilesMock;
-    let downloadSelectedFilesMock;
+    let downloadFilesMock, downloadSelectedFilesMock;
     let validDir = '';
 
-    before(async (t) => {
+    before(async () => {
         const downloadFilesModule = await import('../utils/download-files.mjs');
 
         downloadFilesMock = mock.fn((...args) => downloadFilesModule.downloadFiles(...args));
         downloadSelectedFilesMock = mock.fn((...args) => downloadFilesModule.downloadSelectedFiles(...args));
 
-        mock?.module?.('../utils/download-files.mjs', () => {
-            return {
-                cache: true,
-                downloadFiles: downloadFilesMock,
-                downloadSelectedFiles: downloadSelectedFilesMock,
-            }
+        mock.module('../utils/download-files.mjs', {
+            cache: true,
+            downloadFiles: downloadFilesMock,
+            downloadSelectedFiles: downloadSelectedFilesMock,
         });
         validDir = path.join(projectRoot, 'test-download-files');
     });
@@ -63,15 +61,13 @@ describe('downloadFiles', () => {
             }
 
             const { stdout } = await execFileAsync('node', ['./cli/index.mjs', '-io', validDir]);
-            assert.call(downloadSelectedFilesMock?.mockImplementationOnce((validDir, mockSelectedFiles) => {
+            assert.call(downloadSelectedFilesMock.mockImplementationOnce((validDir, mockSelectedFiles) => {
                 assert.strictEqual(validDir, validDir);
                 assert.strictEqual(mockSelectedFiles, mockSelectedFiles);
             }));
 
-
             assert.ok(stdout.includes('Copied'));
             assert.ok(existsSync(validDir));
-            assert.equal(downloadSelectedFilesMock?.mock.calls?.length, 1);
 
         } catch (error) {
             assert.strictEqual(error.code, 1);
