@@ -1,5 +1,5 @@
 // @ts-nocheck
-import * as assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import * as fs from 'node:fs/promises';
@@ -11,11 +11,9 @@ import { projectRoot } from '../index.mjs';
 const execFileAsync = promisify(execFile);
 describe('CLI', () => {
     describe('default', () => {
-        test('should accept default command with no flags and download the cursorrules', async () => {
+        test('should accept default command with no flags', async () => {
             const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs']);
-            if (existsSync(path.join(projectRoot, 'output', '.cursor/rules'))) {
-                assert.ok(stdout.includes('Success'));
-            }
+            assert.ok(stdout.includes('Loading @usrrname/cursorrules ...'));
         });
         after(async () => {
             try {
@@ -51,6 +49,14 @@ describe('CLI', () => {
     })
 
     describe('output', () => {
+
+        test('should accept --output flag for output directory and download the cursorrules', async () => {
+            const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '--output', 'output']);
+
+            if (existsSync(path.join(projectRoot, 'output'))) {
+                assert.ok(stdout.includes('Success'));
+            }
+        })
 
         test('should accept -o flag for output directory and download the cursorrules', async () => {
             const { stdout, stderr } = await execFileAsync('node', ['./cli/index.mjs', '-o', 'output']);
@@ -105,22 +111,24 @@ describe('CLI', () => {
                 console.error(`Error: ${err}`);
             }
         })
-        describe('output directory Validation', () => {
+
+        describe('output directory validation', () => {
             const testBaseDir = path.join(projectRoot, 'test-output-validation');
 
-            beforeEach(async () => {
+            beforeEach(async (t) => {
                 await fs.mkdir(testBaseDir, { recursive: true });
             });
 
-            afterEach(async () => {
+            afterEach(async (t) => {
                 if (existsSync(testBaseDir)) {
                     await fs.rm(testBaseDir, { recursive: true, force: true });
                 }
             });
 
-            test('should accept a valid output directory name within project root', async () => {
+            test('should accept a valid output directory name within project root', async (t) => {
                 const validDir = testBaseDir;
                 const { stdout } = await execFileAsync('node', ['./cli/index.mjs', '-o', validDir]);
+
                 assert.ok(stdout.includes('Success'));
                 assert.ok(existsSync(validDir));
             });
