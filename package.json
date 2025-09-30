@@ -22,7 +22,7 @@
     "clear": "npm unpublish --registry http://localhost:4873/ --scope=@usrrname",
     "lint": "tsc --noEmit --project tsconfig.json",
     "test": "node --test --watch",
-    "test:ci": "node --test cli/test/*"
+    "test:ci": "node --test cli/test/*  --experimental-test-module-mocks"
   },
   "repository": {
     "type": "git",
