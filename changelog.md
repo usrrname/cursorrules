@@ -11,6 +11,25 @@ No unreleased changes.
 
 ---
 
+## [v0.6.0] - 2025-11-09
+
+### 🚀 Added
+- **Cursor Command Invocation Support** ([2ade249](https://github.com/usrrname/cursorrules/commit/2ade249499fe63a46195337a2b712f65e686bfc8)) - Updated rules that can be invoked as cursor commands, enabling better integration with Cursor's command system (#66)
+
+### 🎨 Enhanced
+- **Agent Communication Standards** ([9246db2](https://github.com/usrrname/cursorrules/commit/9246db26d2146c333bcbd29d557eac3415d2a4c0)) - Revised communication rules for clarity and precision, improving agent-to-agent and agent-to-user interactions
+
+### 🧪 Testing
+- **CLI Test Enhancements** ([d1c7cc5](https://github.com/usrrname/cursorrules/commit/d1c7cc559bb1614d9b533d9a313f54cbb2c1e6be)) - Enhanced CLI tests for output directory handling and added comprehensive downloadFiles tests (#65)
+
+### 📚 Documentation
+- **README Updates** ([b0ee40a](https://github.com/usrrname/cursorrules/commit/b0ee40a7732cab8cf3137e3b5415934c72792afb)) - Updated README.md with latest information and improvements
+
+### 🔧 Technical Improvements
+- **Dependency Cleanup** ([ae485e4](https://github.com/usrrname/cursorrules/commit/ae485e4f207994c20f8a7ebeb37e672878b54381)) - Removed unused dependencies for cleaner package management
+
+---
+
 ## [v0.5.9] - 2025-01-16
 
 ### 🎨 Enhanced
@@ -268,7 +287,9 @@ No unreleased changes.
 
 ---
 
-[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.5.9...HEAD
+[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.6.0...HEAD
+[v0.6.0]: https://github.com/usrrname/cursorrules/compare/v0.5.10...v0.6.0
+[v0.5.10]: https://github.com/usrrname/cursorrules/compare/v0.5.9...v0.5.10
 [v0.5.9]: https://github.com/usrrname/cursorrules/compare/v0.5.8...v0.5.9
 [v0.5.8]: https://github.com/usrrname/cursorrules/compare/v0.5.8-alpha.1...v0.5.8
 [v0.5.8-alpha.1]: https://github.com/usrrname/cursorrules/compare/v0.5.7...v0.5.8-alpha.1
