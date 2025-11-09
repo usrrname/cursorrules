@@ -71,12 +71,6 @@ If Cursor adds support for custom slash commands, the `commands.json` file conta
 
 ## 📦 Release Commands
 
-### `/release` - Full Release Workflow
-
-**Rule:** `.cursor/rules/utils/release-workflow-auto.mdc`  
-**Description:** Start full release workflow (version, changelog, tags)  
-**Usage:** "Create release" or "Start release workflow"
-
 ### `/changelog` - Generate Changelog
 
 **Rule:** `.cursor/rules/utils/changelog-generator-manual.mdc`  
@@ -142,8 +136,50 @@ If Cursor adds support for custom slash commands, the `commands.json` file conta
 - **Manual rules** (ending in `-manual.mdc`) require explicit invocation
 - **Agent rules** (ending in `-agent.mdc`) trigger based on context and description
 
+### Rule Types
+
+- **`-agent.mdc`**: Context-aware rules that trigger based on user intent and description
+- **`-auto.mdc`**: Automatically applied based on file patterns/globs
+- **`-manual.mdc`**: Must be explicitly invoked (perfect for commands)
+- **No suffix**: General rules that can be referenced directly
+
+### Finding Rules
+
+To find a rule referenced by a command:
+
+1. Check the **Rule Path** column in the mapping table above
+2. Navigate to `.cursor/rules/{path}`
+3. Example: `/commit` → `.cursor/rules/utils/git-commit-push-agent.mdc`
+
 ## 🔗 Related Files
 
-- `commands.json` - Command configuration (for future Cursor features)
-- `modes.json` - Custom AI agent modes
-- `.cursor/rules/` - All rule definitions
+- **`commands.json`** - Command configuration mapping (single source of truth for command-to-rule mappings)
+- **`modes.json`** - Custom AI agent modes and personalities
+- **`.cursor/rules/`** - All rule definitions organized by purpose
+- **`COMMANDS.md`** - This file (command reference documentation)
+
+## 🗺️ Quick Reference by Rule Location
+
+### Rules in `workflows/` (4 commands)
+
+- `/arch` → `arch.mdc`
+- `/dev` → `dev-workflow.mdc`
+- `/spike` → `dev-spike.mdc`
+- `/story` → `pm-story.mdc`
+
+### Rules in `utils/` (8 commands)
+
+- `/commit` → `git-commit-push-agent.mdc`
+- `/branch` → `git-branch-agent.mdc`
+- `/refactor` → `refactor-agent.mdc`
+- `/changelog` → `changelog-generator-manual.mdc`
+- `/version` → `release-package-version-auto.mdc`
+- `/tag` → `release-git-tags-auto.mdc`
+- `/validate-release` → `release-validation-auto.mdc`
+- `/analyze-commits` → `release-commit-analysis-auto.mdc`
+
+### Rules in `core/`
+
+- `/deps` → `dependency-analysis-agent.mdc`
+- `/security` → `security-scan-agent.mdc`
+- `/witness` → `fair-witness-agent.mdc`
