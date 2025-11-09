@@ -81,7 +81,7 @@ See [Examples of using the Fair Witness Framework](./docs/fair-witness-examples.
 
 This project supports models supported by Cursor.
 
-For the complete list of supported models, configuration guidelines, and selection recommendations, see our [**Supported Models Documentation**](./docs/supported-models.md).
+For the complete list of supported models, configuration guidelines, and selection recommendations, see Cursor's [**Supported Models Documentation**](https://docs.cursor.com/models#overview).
 
 ## About
 
@@ -123,26 +123,6 @@ A project that uses these cursor rules and agents will generate the following st
 └── spikes/
     └── spike-#.spike.md
 ```
-
-## 🪄 Using the Lean Workflow
-
-The lean workflow (defined in `.cursor/rules/workflows/dev-workflow.mdc`) guides how our AI agents collaborate on features. 
-
-You can start the workflow in Agent or Manual mode. 
-
-1. **Create a new user story**
-
-Ask `SailorScrum` to create a new user story or task. She'll guide you through defining the requirements and save the file (e.g., `story-1.md`) in the `.cursor/.ai/` directory. 🌙
-
-2. **Use an Existing Story:** 
-
-If you already have a user story file (like `story-1.md`) in the `.cursor/.ai/` directory that follows the expected format, you can ask an agent (like `SailorScrum` for refinement or `SageDaddy`/`KawaiiSamurai` for implementation) to start working on it.
-
-Just remember to attach the `.cursor/.ai/` directory to the chat as context!
-
-Once a story is ready and approved, agents like `KawaiiSamurai` or `SageDaddy` will follow the workflow steps (like architecture planning and implementation) to bring it to life! ✨
-
-In fact, any of the agents can be called upon to help with the workflow at any time.
 
 ## 📝 Release Notes & Changelog Generation
 

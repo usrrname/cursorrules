@@ -56,12 +56,8 @@ The `modes.json` file contains a JSON object with two main fields:
 | `autoFixErrors`      | boolean           | No       | false   | Automatically attempt to fix detected errors                                                                                                   |
 | `autoRunLint`        | boolean           | No       | false   | Automatically run linting tools                                                                                                              |
 
-## Supported Models
 
-The following models are currently supported for the `model` field:
-See [Supported Models Documentation](./supported-models.md)
-
-Note: Additional models may be supported in the future as Cursor expands its model integrations. For the most up-to-date list, detailed model descriptions, selection guidelines, and pricing information, see our comprehensive [**Supported Models Documentation**](./supported-models.md) and [Cursor's Models documentation](https://docs.cursor.com/models#overview).
+See [Cursor's Models documentation](https://docs.cursor.com/models#overview).
 
 ## Supported Cursor Tools
 

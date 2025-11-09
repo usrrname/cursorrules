@@ -1,0 +1,39 @@
+---
+description: This rule enforces Next.js best practices for React 19 with TypeScript.
+globs: *.tsx, *.ts, *.jsx, *.js
+alwaysApply: true
+---
+
+# Critical Rules
+
+- Favor React Server Components (RSC) where possible
+- Minimize 'use client' directives
+- Implement proper error boundaries
+- Use Suspense for async operations
+- Use the App Router structure with `page.tsx` files in route directories.
+- Client components must be explicitly marked with `'use client'` at the top of the file.
+- Use kebab-case for directory names (e.g., `components/auth-form`) and PascalCase for component files.
+
+State Management
+
+- Use getServerSideProps for server-side data fetching
+- Use getStaticProps for static data fetching
+- Use getStaticPaths for static path generation
+- Use useActionState instead of deprecated useFormState
+- Leverage enhanced useFormStatus with new properties (data, method, action)
+- Minimize client-side state
+- Avoid unnecessary `useState` and `useEffect` when possible:
+- Use server actions for server-side state management and form handling
+- Use server components for data fetching
+- Use URL search params for shareable state
+
+Async Request APIs
+
+- Always use async versions of runtime APIs
+- Handle async params in layouts/pages
+
+Data Fetching
+
+- Use appropriate fetching methods (Server Components, SWR, React Query)
+
+Route Handlers

@@ -1,5 +1,5 @@
 ---
-description: This rule defines the workflow for AI architect agents to analyze user stories and propose multiple architectural solutions. The workflow emphasizes thorough analysis, consideration of trade-offs, and alignment with business goals. This rule runs when: 1. the user asks the agent to create or brainstorm an architectural solution, 2. the user requests creation of an architectural decision record 3. the lean workflow is being run.
+description: This rule defines the workflow for AI architect agents to analyze user stories and propose multiple architectural solutions. The workflow emphasizes thorough analysis, consideration of trade-offs, and alignment with business goals. This rule runs when: 1. the user asks the agent to create or brainstorm an architectural solution, 2. the user requests creation of an architectural decision record 3. the user requests an analysis of an existing codebase.
 globs: .cursor/.ai/architecture/*.md
 alwaysApply: false
 ---
@@ -9,10 +9,11 @@ alwaysApply: false
 This rule defines the workflow for AI architect agents to analyze user stories and propose multiple architectural solutions. The workflow emphasizes thorough analysis, consideration of trade-offs, and alignment with business goals.
 
 ## Critical Rules
-- Always start with understanding the user story and its business context
+
+- Always start with understanding the user's request or the user story and its business context
 - Propose multiple viable solutions (minimum 3 unless constrained)
 - Consider both functional and non-functional requirements
-- Evaluate trade-offs systematically
+- Only offer trade-offs if the user requests them; evaluate trade-offs systematically
 - Consider impact on existing architecture, if there are any existing `.cursor/.ai/architecture/` files.
 - Validate solutions against system constraints
 - Include implementation complexity assessment
@@ -20,12 +21,13 @@ This rule defines the workflow for AI architect agents to analyze user stories a
 - Evaluate impact on legacy systems (if any)
 - Document architectural decisions (ADRs) using `.cursor/rules/templates/architecture-decision-record.md`
 - Architecture document filename conventions:
-    - `high-level-architecture.md` - shows architecture at system level and the different parts that constitute a solution
-    - `solution_proposal.md` - should be created as part of a spike task and stored in `.cursor/.ai/spikes/`.
+  - `high-level-architecture.md` - shows architecture at system level and the different parts that constitute a solution
+  - `solution_proposal.md` - should be created as part of a spike task and stored in `.cursor/.ai/spikes/`.
 
 ### Workflow Phases
 
 1. **Story Analysis**
+
    - Extract functional requirements
    - Identify non-functional requirements
    - Define constraints and assumptions
@@ -47,6 +49,7 @@ Checkpoint: You will provide the user with your progress and check if you missed
 The user will offer feedback to update, change course, or spike particular concerns.
 
 3. **Trade-off Analysis** - This may be update due to spike findings.
+
    - Evaluate each solution against criteria:
      - Performance characteristics
      - Scalability potential
@@ -60,6 +63,7 @@ The user will offer feedback to update, change course, or spike particular conce
      - Migration complexity
 
 4. **Documentation**
+
    - Create architecture decision records (ADRs)
    - Document component diagrams
    - Define integration points
@@ -70,6 +74,7 @@ The user will offer feedback to update, change course, or spike particular conce
    - Prepare stakeholder-specific presentations
 
 5. **Validation**
+
    - Review against system constraints
    - Validate against quality attributes
    - Check compliance requirements
@@ -95,60 +100,74 @@ Each proposed solution must include:
 ## Solution [Number]: [Name]
 
 ### Overview
+
 [High-level description of the approach]
 
 ### Key Components
+
 - Component 1: [Description]
 - Component 2: [Description]
-...
+  ...
 
 ### Architecture Style
+
 [Description of architectural pattern/style used]
 
 ### Integration Points
+
 - Integration 1: [Description]
 - Integration 2: [Description]
-...
+  ...
 
 ### Data Flow
+
 [Description of data flow between components]
 
 ### Technology Stack
+
 - Frontend: [Technologies]
 - Backend: [Technologies]
 - Database: [Technologies]
 - Infrastructure: [Technologies]
 
 ### Trade-offs
+
 #### Advantages
+
 - [Advantage 1]
 - [Advantage 2]
-...
+  ...
 
 #### Disadvantages
+
 - [Disadvantage 1]
 - [Disadvantage 2]
-...
+  ...
 
 ### Implementation Complexity
+
 - Timeline Estimate: [Duration]
 - Team Size: [Number]
 - Key Challenges: [List]
 
 ### Security Considerations
+
 - [Security measure 1]
 - [Security measure 2]
-...
+  ...
 
 ### Cost Implications
+
 - Development Cost: [Estimate]
 - Operational Cost: [Estimate]
 - Maintenance Cost: [Estimate]
 
 ### Scalability Assessment
+
 [Description of how the solution scales]
 
 ### Legacy System Considerations
+
 - Integration Points: [List of touchpoints with legacy systems]
 - Data Migration: [Strategy for data migration if needed]
 - Compatibility Issues: [Potential conflicts and resolutions]
@@ -156,6 +175,7 @@ Each proposed solution must include:
 - Transition Strategy: [Plan for gradual migration/integration]
 
 ### Stakeholder Communication
+
 - Executive Summary: [High-level overview for management]
 - Technical Deep-dive: [Detailed explanation for engineers]
 - Operations Impact: [Details for ops/maintenance teams]
@@ -170,53 +190,61 @@ version: 1.0
 severity: warning
 
 filters:
-  - type: event
-    pattern: "(architecture|solution_proposal)"
-  - type: content
-    pattern: "(architecture|solution)"
+
+- type: event
+  pattern: "(architecture|solution_proposal)"
+- type: content
+  pattern: "(architecture|solution)"
 
 transforms: |
-  {{
-    // Transform architecture proposals to follow standards
-    const story = context.getUserStory();
-    const requirements = extractRequirements(story);
-    
+{{
+// Transform architecture proposals to follow standards
+const story = context.getUserStory();
+const requirements = extractRequirements(story);
+
     // Generate multiple solutions
     const solutions = generateSolutions(requirements);
-    
+
     // Analyze trade-offs
     const analysis = analyzeSolutions(solutions);
-    
+
     // Create documentation
     return createArchitectureDocument(solutions, analysis);
-  }}
+
+}}
 
 examples:
-  - input: |
-      User Story: As a user, I want to securely store and share files with team members
-    output: |
-      # Architecture Proposal: Secure File Sharing System
 
-      ## Solution 1: Microservices with S3
-      [Details following solution template]
+- input: |
+  User Story: As a user, I want to securely store and share files with team members
+  output: |
 
-      ## Solution 2: Monolithic with Local Storage
-      [Details following solution template]
+  # Architecture Proposal: Secure File Sharing System
 
-      ## Solution 3: Hybrid with CDN
-      [Details following solution template]
+  ## Solution 1: Microservices with S3
+
+  [Details following solution template]
+
+  ## Solution 2: Monolithic with Local Storage
+
+  [Details following solution template]
+
+  ## Solution 3: Hybrid with CDN
+
+  [Details following solution template]
 
 tests:
-  - input: "Basic user authentication story"
-    output: "Multiple authentication architecture proposals"
-  - input: "Data processing pipeline story"
-    output: "Multiple pipeline architecture proposals"
-  - input: "Real-time notification story"
-    output: "Multiple notification system proposals"
+
+- input: "Basic user authentication story"
+  output: "Multiple authentication architecture proposals"
+- input: "Data processing pipeline story"
+  output: "Multiple pipeline architecture proposals"
+- input: "Real-time notification story"
+  output: "Multiple notification system proposals"
 
 metadata:
-  priority: high
-  version: 1.0
+priority: high
+version: 1.0
 </rule>
 
 ## Usage Examples
@@ -227,16 +255,19 @@ metadata:
 User Story: As a user, I want to securely log in using multiple authentication methods
 
 Solution 1: OAuth Integration
+
 - Uses third-party OAuth providers
 - Implements JWT tokens
 - Includes MFA support
 
 Solution 2: Custom Auth System
+
 - Custom implementation
 - Password + biometric
 - Session management
 
 Solution 3: Hybrid Approach
+
 - Combined OAuth and custom
 - Unified auth interface
 - Flexible provider system
@@ -248,16 +279,19 @@ Solution 3: Hybrid Approach
 User Story: As an analyst, I want to process large datasets in real-time
 
 Solution 1: Stream Processing
+
 - Apache Kafka
 - Real-time processing
 - Distributed system
 
 Solution 2: Batch Processing
+
 - Apache Spark
 - Scheduled jobs
 - Data warehouse
 
 Solution 3: Lambda Architecture
+
 - Combined stream/batch
 - Complex but flexible
 - Best of both worlds
