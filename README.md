@@ -81,7 +81,7 @@ See [Examples of using the Fair Witness Framework](./docs/fair-witness-examples.
 
 This project supports models supported by Cursor.
 
-For the complete list of supported models, configuration guidelines, and selection recommendations, see our [**Supported Models Documentation**](./docs/supported-models.md).
+For the complete list of supported models, configuration guidelines, and selection recommendations, see Cursor's [**Supported Models Documentation**](https://docs.cursor.com/models#overview).
 
 ## About
 
