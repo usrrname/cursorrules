@@ -1,0 +1,94 @@
+{
+    "commands": [
+        {
+            "name": "/arch",
+            "description": "🏗️ Analyze architecture and propose multiple architectural solutions",
+            "rule": ".cursor/rules/workflows/arch.mdc",
+            "category": "workflow"
+        },
+        {
+            "name": "/dev",
+            "description": "💻 Implement features from user stories following dev workflow",
+            "rule": ".cursor/rules/workflows/dev-workflow.mdc",
+            "category": "workflow"
+        },
+        {
+            "name": "/spike",
+            "description": "🔬 Conduct time-boxed technical investigation or proof of concept",
+            "rule": ".cursor/rules/workflows/dev-spike.mdc",
+            "category": "workflow"
+        },
+        {
+            "name": "/story",
+            "description": "📝 Create or validate user stories (PBIs)",
+            "rule": ".cursor/rules/workflows/pm-story.mdc",
+            "category": "workflow"
+        },
+        {
+            "name": "/commit",
+            "description": "📦 Commit changes with conventional commit standards",
+            "rule": ".cursor/rules/utils/git-commit-push-agent.mdc",
+            "category": "git"
+        },
+        {
+            "name": "/branch",
+            "description": "🌿 Manage git branches (create, checkout, delete)",
+            "rule": ".cursor/rules/utils/git-branch-agent.mdc",
+            "category": "git"
+        },
+        {
+            "name": "/refactor",
+            "description": "✨ Refactor code blocks with best practices",
+            "rule": ".cursor/rules/utils/refactor-agent.mdc",
+            "category": "code"
+        },
+        {
+            "name": "/changelog",
+            "description": "📋 Generate comprehensive changelog from git tags and commits",
+            "rule": ".cursor/rules/utils/changelog-generator-manual.mdc",
+            "category": "release"
+        },
+        {
+            "name": "/version",
+            "description": "🔢 Update package version with semantic versioning",
+            "rule": ".cursor/rules/utils/release-package-version-auto.mdc",
+            "category": "release"
+        },
+        {
+            "name": "/tag",
+            "description": "🏷️ Create and manage git tags for releases",
+            "rule": ".cursor/rules/utils/release-git-tags-auto.mdc",
+            "category": "release"
+        },
+        {
+            "name": "/validate-release",
+            "description": "✅ Validate release prerequisites (branch, package.json)",
+            "rule": ".cursor/rules/utils/release-validation-auto.mdc",
+            "category": "release"
+        },
+        {
+            "name": "/analyze-commits",
+            "description": "📊 Analyze commits to determine version bump type",
+            "rule": ".cursor/rules/utils/release-commit-analysis-auto.mdc",
+            "category": "release"
+        },
+        {
+            "name": "/deps",
+            "description": "📦 Analyze dependencies before installation (maintenance, security, popularity)",
+            "rule": ".cursor/rules/core/dependency-analysis-agent.mdc",
+            "category": "analysis"
+        },
+        {
+            "name": "/security",
+            "description": "🔒 Comprehensive security scan (CVE, licenses, supply chain)",
+            "rule": ".cursor/rules/core/security-scan-agent.mdc",
+            "category": "analysis"
+        },
+        {
+            "name": "/witness",
+            "description": "👁️ Fair Witness analysis using epistemological functions",
+            "rule": ".cursor/rules/core/fair-witness-agent.mdc",
+            "category": "analysis"
+        }
+    ]
+}
