@@ -25,6 +25,8 @@ jobs:
         run: npm run lint
 
   test:
+    permissions:
+      contents: read
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
