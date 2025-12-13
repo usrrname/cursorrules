@@ -1,150 +1,199 @@
 ---
-description: Enforces testing standards based on the testing pyramid principle
-globs: **/*.test.{js,ts,jsx,tsx}
+description: Provides guidance on testing pyramid principles and how to analyze test distribution. Use this rule when discussing test distribution, test strategy, or when analyzing test coverage across unit, integration, and E2E tests.
+globs: **/*.test.js, *.spec.js, *.test.ts, *.spec.ts, *.test.jsx, *.spec.jsx, *.test.tsx
 alwaysApply: false
 ---
-<rule>
-name: testing-pyramid
-description: Enforces testing standards based on the testing pyramid principle
-filters:
-  - type: file_extension
-    pattern: "\\.(test|spec)\\.(js|ts|jsx|tsx)$"
-  - type: content
-    pattern: "(describe|it|test)\\s*\\(['\"].*['\"]"
 
-actions:
-  - type: validate
-    message: |
-      Ensure your tests follow the testing pyramid principles:
-      - Unit tests should be the majority (70%)
-      - Integration tests should be moderate (20%)
-      - E2E tests should be minimal (10%)
-      
-      Current test appears to violate these proportions.
+<rule>
+name: testing-pyramid-analysis
+description: Guides developers on testing pyramid principles and how to analyze test distribution
+filters:
+  - type: content
+    pattern: "(test|testing|pyramid|unit test|integration test|e2e)"
   
+actions:
   - type: suggest
     message: |
-      Consider the following improvements:
-      1. Add more unit tests for individual functions
-      2. Focus integration tests on service boundaries
-      3. Keep E2E tests focused on critical paths only
+      To analyze test distribution, first identify the test framework and check for coverage commands:
+      
+      1. Check package.json for test framework dependencies (jest, vitest, playwright, cypress, mocha)
+      2. Look for coverage scripts in package.json scripts section (test:coverage, coverage, etc.)
+      3. Use the framework's list command to identify test files:
+         - Jest: `npx jest --listTests`
+         - Vitest: `npx vitest list`
+         - Playwright: `npx playwright test --list`
+         - Cypress: Check cypress.config.js for test patterns
+      
+      Then classify tests by:
+      - File path (e2e/, integration/, unit/)
+      - Content keywords (mock, playwright, cypress, database, etc.)
+      - Test framework indicators
+      
+      Target distribution: 70% unit, 20% integration, 10% E2E
 
 examples:
-  - description: "Unit Test Example"
-    input: |
-      // Bad: Testing multiple units together
-      test('process user data', () => {
-        const result = processUserData(validateUser(createUser(data)));
-        expect(result).toBe(expected);
-      });
-    output: |
-      // Good: Testing single unit with clear arrangement
-      describe('User Processing', () => {
-        it('should process valid user data correctly', () => {
-          // Arrange
-          const mockUser = createMockUser();
-          
-          // Act
-          const result = processUserData(mockUser);
-          
-          // Assert
-          expect(result).toEqual(expected);
-        });
+
+- description: "Unit Test Example"
+  input: |
+  // Bad: Testing multiple units together
+  test('process user data', () => {
+  const result = processUserData(validateUser(createUser(data)));
+  expect(result).toBe(expected);
+  });
+  output: |
+  // Good: Testing single unit with clear arrangement
+  describe('User Processing', () => {
+  it('should process valid user data correctly', () => {
+  // Arrange
+  const mockUser = createMockUser();
+
+        // Act
+        const result = processUserData(mockUser);
+
+        // Assert
+        expect(result).toEqual(expected);
       });
 
-  - description: "Integration Test Example"
-    input: |
-      // Bad: Testing everything in one E2E test
-      test('user workflow', async () => {
-        await createUser();
-        await loginUser();
-        await updateProfile();
-        await deleteUser();
-      });
-    output: |
-      // Good: Focused integration test
-      describe('User Authentication Integration', () => {
-        it('should successfully authenticate valid user', async () => {
-          // Arrange
-          const user = await createTestUser();
-          
-          // Act
-          const result = await authService.authenticate(user.credentials);
-          
-          // Assert
-          expect(result.authenticated).toBe(true);
-        });
+  });
+
+- description: "Integration Test Example"
+  input: |
+  // Bad: Testing everything in one E2E test
+  test('user workflow', async () => {
+  await createUser();
+  await loginUser();
+  await updateProfile();
+  await deleteUser();
+  });
+  output: |
+  // Good: Focused integration test
+  describe('User Authentication Integration', () => {
+  it('should successfully authenticate valid user', async () => {
+  // Arrange
+  const user = await createTestUser();
+
+        // Act
+        const result = await authService.authenticate(user.credentials);
+
+        // Assert
+        expect(result.authenticated).toBe(true);
       });
 
-  - description: "E2E Test Example"
-    input: |
-      // Bad: Testing minor features end-to-end
-      test('user can change avatar', async () => {
-        await page.goto('/profile');
-        await page.click('#avatar');
-        await page.upload('#file-input', 'test.jpg');
-        await expect(page.locator('#avatar')).toHaveAttribute('src', /test/);
+  });
+
+- description: "E2E Test Example"
+  input: |
+  // Bad: Testing minor features end-to-end
+  test('user can change avatar', async () => {
+  await page.goto('/profile');
+  await page.click('#avatar');
+  await page.upload('#file-input', 'test.jpg');
+  await expect(page.locator('#avatar')).toHaveAttribute('src', /test/);
+  });
+  output: |
+  // Good: E2E test for critical user journey
+  describe('Critical User Journey', () => {
+  it('should allow user to complete checkout process', async () => {
+  // Arrange
+  await loginAsTestUser();
+  // Act
+  await navigateToProducts();
+  await addItemToCart();
+  await proceedToCheckout();
+  await fillShippingDetails();
+  await completePayment();
+
+        // Assert
+        await expect(page.locator('#order-confirmation')).toBeVisible();
       });
-    output: |
-      // Good: E2E test for critical user journey
-      describe('Critical User Journey', () => {
-        it('should allow user to complete checkout process', async () => {
-          // Arrange
-          await loginAsTestUser();
-          
-          // Act
-          await navigateToProducts();
-          await addItemToCart();
-          await proceedToCheckout();
-          await fillShippingDetails();
-          await completePayment();
-          
-          // Assert
-          await expect(page.locator('#order-confirmation')).toBeVisible();
-        });
-      });
+
+  });
 
 tests:
-  - input: |
-      // Single test file with no structure
-      test('it works', () => {
-        expect(true).toBe(true);
-      });
-    output: |
-      describe('Feature Module', () => {
-        describe('Unit Tests', () => {
-          it('should handle valid input correctly', () => {
-            // Arrange
-            const input = validTestData();
-            
-            // Act
-            const result = processInput(input);
-            
-            // Assert
-            expect(result).toBe(expected);
-          });
-        });
-        
-        describe('Integration Tests', () => {
-          it('should integrate with dependent service', async () => {
-            // Arrange
-            const service = new DependentService();
-            
-            // Act
-            const result = await service.process();
-            
-            // Assert
-            expect(result).toMatchExpectedIntegration();
-          });
+
+- input: |
+  // Single test file with no structure
+  test('it works', () => {
+  expect(true).toBe(true);
+  });
+  output: |
+  describe('Feature Module', () => {
+  describe('Unit Tests', () => {
+  it('should handle valid input correctly', () => {
+  // Arrange
+  const input = validTestData();
+  // Act
+  const result = processInput(input);
+
+          // Assert
+          expect(result).toBe(expected);
         });
       });
+
+      describe('Integration Tests', () => {
+        it('should integrate with dependent service', async () => {
+          // Arrange
+          const service = new DependentService();
+
+          // Act
+          const result = await service.process();
+
+          // Assert
+          expect(result).toMatchExpectedIntegration();
+        });
+      });
+
+  });
 
 metadata:
-  priority: high
-  version: 1.0
+priority: high
+version: 1.0
 </rule>
 
-# Testing Pyramid Standards
+# Testing Pyramid Analysis
+
+This rule provides guidance on the testing pyramid principle and how to analyze test distribution in your repository.
+
+## Identifying Test Framework and Coverage Commands
+
+When analyzing test distribution, follow these steps:
+
+### 1. Identify Test Framework
+
+Check `package.json` for test framework dependencies:
+
+- **Jest**: `jest` or `@jest/core` in dependencies/devDependencies
+- **Vitest**: `vitest` in dependencies/devDependencies
+- **Playwright**: `@playwright/test` in dependencies/devDependencies
+- **Cypress**: `cypress` in dependencies/devDependencies
+- **Mocha**: `mocha` in dependencies/devDependencies
+
+### 2. Check for Coverage Commands
+
+Look in `package.json` scripts section for:
+
+- `test:coverage` or `coverage` scripts
+- Scripts that include coverage flags (`--coverage`, `--coverage-report`, etc.)
+
+### 3. Use Framework Commands to List Tests
+
+- **Jest**: `npx jest --listTests` (lists all test files without running)
+- **Vitest**: `npx vitest list` (lists all test files)
+- **Playwright**: `npx playwright test --list` (lists all test specs)
+- **Cypress**: Check `cypress.config.js` for `specPattern` or run `npx cypress run --dry-run`
+
+### 4. Classify Tests
+
+Classify each test file as unit, integration, or E2E based on:
+
+- **File path**: `e2e/`, `integration/`, `unit/` directories
+- **Content keywords**:
+  - E2E: `playwright`, `cypress`, `page.goto`, `browser`, `user journey`
+  - Integration: `database`, `api`, `service`, `repository`, `endpoint`
+  - Unit: `mock`, `stub`, `spy`, isolated function testing
+- **Test framework indicators**: E2E frameworks have distinct APIs (page objects, browser commands)
+
+## Testing Pyramid Standards
 
 This rule defines the standards for maintaining a proper testing pyramid in your codebase, ensuring comprehensive test coverage across all levels while maintaining the right balance between different types of tests.
 
@@ -171,6 +220,7 @@ This rule defines the standards for maintaining a proper testing pyramid in your
 ## Test Types and Their Characteristics
 
 ### Unit Tests (70%)
+
 - Test individual functions, methods, or components in isolation
 - Should be fast and deterministic
 - Use mocks for external dependencies
@@ -178,6 +228,7 @@ This rule defines the standards for maintaining a proper testing pyramid in your
 - Should have high code coverage
 
 ### Integration Tests (20%)
+
 - Test interaction between multiple components or services
 - Use real dependencies when possible
 - Focus on API contracts and data flow
@@ -185,11 +236,30 @@ This rule defines the standards for maintaining a proper testing pyramid in your
 - Can be slower than unit tests
 
 ### End-to-End Tests (10%)
+
 - Test complete user journeys
 - Run against production-like environment
 - Focus on critical business flows
 - Can be slow and more brittle
 - Should be minimal but crucial
+
+## Analyzing Test Distribution
+
+To analyze your test distribution:
+
+1. **Identify all test files** using your framework's list command
+2. **Classify each test** as unit, integration, or E2E
+3. **Calculate percentages**: unit / total, integration / total, e2e / total
+4. **Compare to ideal ratios**: 70% unit, 20% integration, 10% E2E
+5. **Make recommendations** based on deviations from ideal
+
+Example workflow:
+
+```bash
+# For Jest projects
+npx jest --listTests > test-files.txt
+# Then manually classify or use path/content analysis
+```
 
 ## Common Violations
 
@@ -203,6 +273,8 @@ This rule defines the standards for maintaining a proper testing pyramid in your
 8. Missing error case coverage
 9. Brittle tests that break with minor changes
 10. Insufficient test documentation
+
+Regularly analyze your test distribution using the framework's list commands to catch these issues early.
 
 ## Best Practices
 
