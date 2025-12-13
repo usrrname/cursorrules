@@ -89,6 +89,15 @@
             "description": "👁️ Fair Witness analysis using epistemological functions",
             "rule": ".cursor/rules/core/fair-witness-agent.mdc",
             "category": "analysis"
+        },
+        {
+            "name": "/testing-pyramid",
+            "description": "🧪 Analyze test distribution and maintain testing pyramid principles",
+            "aliases": [
+                "/analyze-tests"
+            ],
+            "command": ".cursor/commands/testing-pyramid.md",
+            "category": "test"
         }
     ]
 }

@@ -29,12 +29,6 @@ If Cursor adds support for custom slash commands, the `commands.json` file conta
 
 ## 🚀 Workflow Commands
 
-### `/arch` - Architecture Analysis
-
-**Rule:** `.cursor/rules/workflows/arch.mdc`  
-**Description:** Analyze architecture and propose multiple architectural solutions  
-**Usage:** "Analyze architecture" or "Propose architectural solutions"
-
 ### `/spike` - Technical Spike
 
 **Rule:** `.cursor/rules/workflows/dev-spike.mdc`  
@@ -177,6 +171,7 @@ To find a rule referenced by a command:
 - `/tag` → `release-git-tags-auto.mdc`
 - `/validate-release` → `release-validation-auto.mdc`
 - `/analyze-commits` → `release-commit-analysis-auto.mdc`
+- `/test-pyramid` → `testing-pyramid-agent.mdc`
 
 ### Rules in `core/`
 
