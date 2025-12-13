@@ -8,9 +8,10 @@ alwaysApply: false
 ## Critical Rules
 
 - Must analyze both conventional and non-conventional commit messages
-- Must categorize commits into Features, Bug Fixes, Breaking Changes, Documentation, and Other
+- Must categorize commits into Features, Bug Fixes, Breaking Changes, Chore, Documentation, and Other
 - Must use intelligent keyword matching for non-conventional commits
 - Must analyze file changes to help categorize documentation commits
+- Must analyze file changes to help categorize chore commits or renamed files or folders
 - Must provide comprehensive change summaries for version bump suggestions
 - Must handle cases where no commits exist since last tag
 
