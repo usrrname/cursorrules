@@ -1,10 +1,15 @@
 {
     "commands": [
         {
-            "name": "/arch",
-            "description": "🏗️ Analyze architecture and propose multiple architectural solutions",
-            "rule": ".cursor/rules/workflows/arch.mdc",
-            "category": "workflow"
+            "name": "/architecture",
+            "aliases": [
+                "/arch",
+                "/solution"
+            ],
+            "description": "🏗️ Analyze architecture or propose multiple architectural solutions to a user story or problem",
+            "rule": ".cursor/commands/architecture.md",
+            "category": "analysis",
+            "agent": "SageDaddy"
         },
         {
             "name": "/dev",
