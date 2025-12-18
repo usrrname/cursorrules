@@ -6,6 +6,7 @@ alwaysApply: true
 
 # Critical Rules
 
+- Adapt approach to app router or page router project structure
 - Favor React Server Components (RSC) where possible
 - Minimize 'use client' directives
 - Implement proper error boundaries
@@ -34,6 +35,7 @@ Async Request APIs
 
 Data Fetching
 
-- Use appropriate fetching methods (Server Components, SWR, React Query)
+- Use appropriate fetching methods (Server Components, SWR, React Query, etc.)
+- Use API Routes inside route directories for server-side data fetching (ie. `app/api/users/route.ts` for `/api/users`)
 
-Route Handlers
+Remind user of default caching behavior in Next.js when using API routes or fetching data from external APIs.
