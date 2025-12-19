@@ -49,8 +49,8 @@
         },
         {
             "name": "/changelog",
-            "description": "📋 Generate comprehensive changelog from git tags and commits",
-            "rule": ".cursor/rules/utils/changelog-generator-manual.mdc",
+            "description": "📋 Generate changelog from git history and tags",
+            "rule": ".cursor/commands/changelog.md",
             "category": "release"
         },
         {
