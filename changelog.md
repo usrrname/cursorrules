@@ -11,6 +11,28 @@ No unreleased changes.
 
 ---
 
+## [v0.7.0] - 2025-12-19
+
+### 🚀 Added
+- **Changelog Generation Command** ([ebfa1e4](https://github.com/usrrname/cursorrules/commit/ebfa1e4)) - Add changelog command for git history analysis
+- **Playwright Testing Standards** ([52941a3](https://github.com/usrrname/cursorrules/commit/52941a3)) - Playwright e2e testing best practices (#72)
+
+### 🔧 Refactored
+- **Architecture Command** ([a3348ec](https://github.com/usrrname/cursorrules/commit/a3348ec)) - Rename and update documentation (#71)
+- **Testing Pyramid Agent** ([b6e7d85](https://github.com/usrrname/cursorrules/commit/b6e7d85)) - Refactor for improved clarity (#70)
+- **Git Commit Rules** ([ddbe69d](https://github.com/usrrname/cursorrules/commit/ddbe69d)) - Identify file/folder renaming (#69)
+
+### 📚 Documentation
+- **Next.js React 19 Rules** ([3417768](https://github.com/usrrname/cursorrules/commit/3417768)) - Clarify data fetching methods (#73)
+- **Commands Documentation** ([613859b](https://github.com/usrrname/cursorrules/commit/613859b)) - Update COMMANDS.md
+- **Commands Config** ([f5d6513](https://github.com/usrrname/cursorrules/commit/f5d6513)) - Update commands.json
+
+### 🔒 Security
+- **Workflow Permissions** ([a4a47db](https://github.com/usrrname/cursorrules/commit/a4a47db)) - Fix code scanning alert #6 (#68)
+- **Workflow Permissions** ([e6db344](https://github.com/usrrname/cursorrules/commit/e6db344)) - Fix code scanning alert #7 (#67)
+
+---
+
 ## [v0.6.0] - 2025-11-09
 
 ### 🚀 Added
@@ -287,7 +309,8 @@ No unreleased changes.
 
 ---
 
-[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/usrrname/cursorrules/compare/v0.7.0...HEAD
+[v0.7.0]: https://github.com/usrrname/cursorrules/compare/v0.6.0...v0.7.0
 [v0.6.0]: https://github.com/usrrname/cursorrules/compare/v0.5.10...v0.6.0
 [v0.5.10]: https://github.com/usrrname/cursorrules/compare/v0.5.9...v0.5.10
 [v0.5.9]: https://github.com/usrrname/cursorrules/compare/v0.5.8...v0.5.9
