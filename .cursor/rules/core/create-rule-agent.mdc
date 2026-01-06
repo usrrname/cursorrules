@@ -57,7 +57,7 @@ alwaysApply: true
     - AutoRuleGen Success: path/rule-name.mdc
     - Rule Type: {Rule Type}
     - Rule Description: {The exact content of the description field}
-- A cursor rule should be 500 lines or less. If it is longer or contains multiple differeing concerns and actions, it should be split into multiple distinct rules that can be called separately or sequentially.
+- A cursor rule should be 500 lines or less. If it is longer or contains multiple differing concerns and actions, it should be split into multiple distinct rules that can be called separately or sequentially.
 - Before creating a new rule, check if a similar rule already exists. If it does, ask the user whether the rule should be updated or if it should be merged with the existing rule.
 
 ## Rule Content
