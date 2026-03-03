@@ -1,3 +1,9 @@
+---
+name: architecture
+description: Architecture Design Command 🏗️
+disable-model-invocation: true
+---
+
 # Architecture Design Command 🏗️
 
 This command guides the AI architect agent to analyze user stories and propose multiple architectural solutions following a structured workflow.

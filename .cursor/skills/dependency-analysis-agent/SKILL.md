@@ -1,22 +1,17 @@
 ---
+name: dependency-analysis
 description: This rule automatically analyzes dependencies before they're installed to provide insights about maintenance frequency, security vulnerabilities, and popularity in the developer ecosystem.
-globs:
-alwaysApply: false
 ---
+
 # Dependency Analysis
 
 ## Critical Rules
 
-- Before a dependency is installed (npm install, yarn add, pnpm add), automatically analyze the package
+- Before a dependency is installed (npm install, yarn add, pnpm add), automatically analyze the package using socket.io to get the package information from the npm registry and GitHub.
 - Check maintenance frequency by examining last release date, commit activity, and issue response times
 - Scan for known security vulnerabilities using npm audit and security databases
 - Assess popularity through download counts, GitHub stars, and community adoption
-- Provide actionable recommendations for dependency selection
-- Flag potentially problematic dependencies with clear explanations
-- Suggest alternatives for deprecated or poorly maintained packages
-- Maintain a local cache of analysis results to avoid repeated API calls
-- Respect rate limits when querying external APIs
-- Provide analysis in a clear, actionable format with severity levels
+- Provide actionable recommendations for dependency selection in a clear, actionable format with severity levels
 
 ## Analysis Categories
 
@@ -314,6 +309,11 @@ npm audit
 - Analyzes pnpm-lock.yaml
 - Respects pnpm's dependency resolution
 
+### bun
+- Compatible with `bun add` and `bun audit`
+- Analyzes bun.lockb
+- Respects bun's dependency resolution
+
 ## Configuration Options
 
 ### Analysis Depth
@@ -347,5 +347,3 @@ npm audit
 - Provide clear warnings for security vulnerabilities
 - Suggest secure alternatives when available
 - Integrate with existing security scanning tools
-
-Remember: A well-analyzed dependency is a secure dependency! 🔒✨

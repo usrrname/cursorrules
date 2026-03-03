@@ -1,7 +1,6 @@
 ---
+name: dev-workflow
 description: This rule defines the workflow for AI agents to follow when implementing features from user stories, focusing on lean development principles and agile methodologies.
-globs: 
-alwaysApply: false
 ---
 
 # Lean and Agile Development Workflow Standards

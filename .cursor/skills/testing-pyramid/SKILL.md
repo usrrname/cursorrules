@@ -1,10 +1,16 @@
+---
+name: testing-pyramid
+description: Test Distribution Analysis Command 🧪
+disable-model-invocation: true
+---
+
 # Test Distribution Analysis Command 🧪
 
 This command guides the AI agent to analyze test distribution across unit, integration, and E2E tests, and provide recommendations for increasing test coverage and improving test distribution in line with business and technical strategy.
 
 ## Critical Rules
 
-- Always start by identifying the test framework and available coverage tools
+- Start by identifying the test framework and available coverage tools
 - Analyze test distribution using framework-specific commands to list all test files
 - Classify tests accurately as unit, integration, or E2E based on multiple indicators
 - Target distribution: 70% unit tests, 20% integration tests, 10% E2E tests (this is a guideline at early stages of a project, not a strict requirement)

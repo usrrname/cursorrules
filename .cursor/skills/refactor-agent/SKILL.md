@@ -1,7 +1,6 @@
 ---
+name: refactor-agent
 description: Agent rule for refactoring existing code blocks or a feature by identifying language and applying only when refactor/improvement is requested
-globs:
-alwaysApply: false
 ---
 
 ## Critical Rules

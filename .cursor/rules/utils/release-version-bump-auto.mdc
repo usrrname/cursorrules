@@ -1,5 +1,5 @@
 ---
-description:
+description: Apply when the user is creating or preparing a release, version bump, tag, publish, or deploy. Validates semantic version bumps against change analysis (breaking/feat/fix), blocks inappropriate bumps, and guides major/minor/patch or custom version choice. Use for release workflows, package versioning, and publish/deploy preparation.
 globs:
 alwaysApply: false
 ---

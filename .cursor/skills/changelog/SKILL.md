@@ -1,3 +1,9 @@
+---
+name: changelog
+description: Changelog Generation Command 📝
+disable-model-invocation: true
+---
+
 # Changelog Generation Command 📝
 
 Generate a changelog.md by analyzing git history and tags.
