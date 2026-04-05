@@ -1,0 +1,83 @@
+# Enforces best practices for Vitest unit tests
+
+## Description
+Enforces best practices for Vitest unit tests
+
+## Applicability
+- **Files:** `**/*.test.{js|ts|jsx|tsx}`
+- **Always Apply:** false
+
+## Rules
+- Tests must use clear and descriptive names (`it`/`test` strings).
+- Use "Arrange, Act, Assert" pattern for writing unit tests.
+- Use `describe` blocks to group related tests logically.
+- Use `beforeEach`/`afterEach` for shared setup/teardown instead of duplicating code.
+- Cleanup side-effects using `vi.resetAllMocks()` or `vi.restoreAllMocks()`.
+- Prefer `vi.fn()` or `vi.spyOn()` over manually created stubs.
+- Avoid global state – never rely on test execution order.
+- For asynchronous code, always `await` promises and/or use `expect.assertions(n)`.
+- Do not snapshot complex objects blindly; snapshot only stable, meaningful output.
+- Use `vi.useFakeTimers()` cautiously and always restore real timers with `vi.useRealTimers()` afterwards.
+- Do not disable tests with `test.skip`/`it.skip`; instead, fix or remove them.
+- Keep test files co-located with source or in a dedicated `__tests__` folder.
+- Ensure each test has at least one `expect` call (or uses `.resolves`/`.rejects`).
+- Prefer explicit assertions over implicit truthiness checks.
+
+### vitest-best-practices
+
+Enforces best practices for Vitest unit tests
+
+**Actions:**
+  # Suggest more descriptive titles
+  - type: suggest
+    message: |
+      Test titles should be descriptive. Use behaviour-driven phrases, e.g. `it('renders submit button when form is valid', ...)`.
+
+  # Reject skipped tests
+  - type: reject
+    pattern: "\\b(?:it|test|describe)\\.skip\\("
+    message: "Skipped tests may hide regressions. Replace `.skip` with active tests or remove them."
+
+  # Suggest adding an expect if missing
+  - type: suggest
+    message: "Each test should contain at least one assertion via `expect`."
+
+examples:
+  - input: |
+      it('renders correctly', () => {
+        render(<Button />)
+      })
+    output: |
+      it('renders button with default label', () => {
+        render(<Button />)
+        expect(screen.getByRole('button')).toHaveTextContent('Submit')
+      })
+
+  - input: "test.skip('unimplemented', () => {})"
+    output: "// Remove .skip or implement the test"
+
+  - input: |
+      it('fetches data', async () => {
+        const data = await fetchData()
+      })
+    output: |
+      it('fetches data', async () => {
+        expect.assertions(1)
+        const data = await fetchData()
+        expect(data).toEqual(mockData)
+      })
+
+tests:
+  - input: "it('test', () => { expect(true).toBe(true) })"
+    output: "Passes – descriptive enough, contains expect"
+  - input: "it('short', () => {})"
+    output: "Suggest rewriting title and adding assertion"
+  - input: "describe.skip('module', () => {})"
+    output: "Rejected – skipped tests are not allowed"
+
+metadata:
+
+## Additional Information
+# Vitest Unit Testing Best Practices
+
+This rule enforces and suggests best practices when writing Vitest unit tests to ensure reliable, maintainable, and expressive test suites.

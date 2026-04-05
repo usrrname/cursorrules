@@ -1,0 +1,67 @@
+# This rule enforces standards and best practices for branch management operations including checkout, creation, and deletion
+
+## Description
+This rule enforces standards and best practices for branch management operations including checkout, creation, and deletion. This rule should be followed when: 1. creating new branches, 2. switching between branches, 3. deleting branches, or 4. when the git aliases 'gco', 'gcb', or similar branch-related commands are used.
+
+## Applicability
+- **Files:** `.git/HEAD`
+- **Always Apply:** false
+
+## Rules
+- Always `git status` first; stash/commit before switching
+- Branch names: `<type>/<ticket?>-kebab-description`
+- Allowed types: feature, fix, hotfix, release, docs, refactor, test, chore, experiment, spike
+- Start new work from updated `main`
+- Delete only merged branches (never current branch)
+- `git fetch --all` before new branches
+
+### Naming Examples
+
+```
+feature/#123-user-auth
+fix/#345-login-timeout
+refs/docs-api
+```
+
+## Additional Information
+<rule>
+name: git-branch
+version: 1.0
+severity: warning
+description: Enforce safe git branch operations & naming
+
+filters:
+  - type: event
+    pattern: "(pre_checkout|post_checkout|branch_create|branch_delete)"
+  - type: content
+    pattern: "(checkout|branch|gco|gcb)"
+
+matches: |
+  git checkout $branch
+  git branch $branch
+  git branch -d $branch
+  gco $branch
+  gcb $branch
+
+transforms: |
+  {{
+    const op = context.getOperation();
+    const branch = context.getBranchName();
+    if (!/^([a-z]+)\/(#?\d+-)?[a-z0-9-]+$/.test(branch)) return suggestValidBranchName(branch);
+    if (op === 'checkout') return `git status && ${command}`;
+    if (op === 'delete') return `git branch --merged | grep ${branch} && ${command}`;
+    return command;
+  }}
+
+examples:
+  - input: "git checkout feature"
+    output: "git status && git checkout feature/#123-descriptive"
+  - input: "git branch -d old"
+    output: "git branch --merged | grep old && git branch -d feature/old"
+
+tests:
+  - input: "gco main"
+    output: "git status && git checkout main"
+
+metadata:
+  priority: high

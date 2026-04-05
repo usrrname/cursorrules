@@ -1,0 +1,171 @@
+# Apply when the user is creating or preparing a release, version bump, tag, publish, or deploy
+
+## Description
+Apply when the user is creating or preparing a release, version bump, tag, publish, or deploy. Validates semantic version bumps against change analysis (breaking/feat/fix), blocks inappropriate bumps, and guides major/minor/patch or custom version choice. Use for release workflows, package versioning, and publish/deploy preparation.
+
+## Applicability
+- **Always Apply:** false
+
+## Rules
+- Must validate version bump against change analysis
+- Must block releases when breaking changes exist but non-major version is requested
+- Must provide clear error messages for version mismatches
+- Must offer force continue options for version mismatches
+- Must calculate new version numbers based on semantic versioning
+- Must handle custom version inputs
+
+### release-version-bump-auto
+
+**Actions:**
+  - type: generate
+    content: |
+
+    ## 🔄 Version Bump Process
+      
+      I'll help you choose and validate the appropriate version bump for your release.
+      
+      1. **Prompt User for Version Bump (if not specified)**:
+         ```bash
+         if [ -z "$VERSION_BUMP" ]; then
+           # Calculate potential new versions
+           MAJOR_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1+1 ".0.0"}')
+           MINOR_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1 "." $2+1 ".0"}')
+           PATCH_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1 "." $2 "." $3+1}')
+           
+           echo "Choose your version bump:"
+           echo "1) Major version: $CURRENT_VERSION → $MAJOR_VERSION (breaking changes)"
+           echo "2) Minor version: $CURRENT_VERSION → $MINOR_VERSION (new features)"
+           echo "3) Patch version: $CURRENT_VERSION → $PATCH_VERSION (bug fixes)"
+           echo "4) Custom version"
+           
+           # Wait for user input
+           read -p "Enter your choice (1-4): " USER_CHOICE
+           
+           case $USER_CHOICE in
+             1) VERSION_BUMP="major" ;;
+             2) VERSION_BUMP="minor" ;;
+             3) VERSION_BUMP="patch" ;;
+             4) 
+               read -p "Enter custom version: " CUSTOM_VERSION
+               VERSION_BUMP="custom"
+               ;;
+           esac
+         fi
+         ```
+      
+      2. **Validate Version Bump Against Changes**:
+         ```bash
+         # Validate that the chosen version bump matches the change analysis
+         if [ -n "$VERSION_BUMP" ]; then
+           echo "🔍 Validating version bump against change analysis..."
+           echo "Analysis suggests: $SUGGESTED_BUMP (breaking: $BREAKING_COUNT, features: $FEAT_COUNT, fixes: $FIX_COUNT)"
+           echo "User requested: $VERSION_BUMP"
+           
+           # Check for version mismatches
+           if [ "$SUGGESTED_BUMP" == "major" ] && [ "$VERSION_BUMP" != "major" ]; then
+             echo "❌ CRITICAL ERROR: Breaking changes detected but user requested $VERSION_BUMP version"
+             echo "Breaking changes require a MAJOR version bump according to semantic versioning."
+             echo ""
+             echo "Breaking changes found:"
+             echo "$COMMITS" | grep "BREAKING:" | while read commit; do
+               echo "  - $commit"
+             done
+             echo ""
+             echo "Please either:"
+             echo "1. Use major version bump to properly indicate breaking changes"
+             echo "2. Review and remove breaking changes from your commits"
+             echo "3. Use '--force' flag to override this validation (not recommended)"
+             echo ""
+             read -p "Do you want to force continue with $VERSION_BUMP version? (y/N): " FORCE_CONTINUE
+             if [[ ! "$FORCE_CONTINUE" =~ ^[Yy]$ ]]; then
+               echo "❌ Release workflow terminated due to version mismatch"
+               exit 1
+             else
+               echo "⚠️ WARNING: Proceeding with $VERSION_BUMP version despite breaking changes"
+               echo "This may cause dependency issues for users of your package"
+             fi
+           elif [ "$SUGGESTED_BUMP" == "minor" ] && [ "$VERSION_BUMP" == "patch" ]; then
+             echo "⚠️ WARNING: New features detected but user requested patch version"
+             echo "New features typically require a MINOR version bump according to semantic versioning."
+             echo ""
+             echo "New features found:"
+             echo "$COMMITS" | grep "feat:" | while read commit; do
+               echo "  - $commit"
+             done
+             echo ""
+             read -p "Do you want to continue with patch version? (y/N): " CONTINUE_PATCH
+             if [[ ! "$CONTINUE_PATCH" =~ ^[Yy]$ ]]; then
+               echo "❌ Release workflow terminated due to version mismatch"
+               exit 1
+             else
+               echo "⚠️ WARNING: Proceeding with patch version despite new features"
+             fi
+           else
+             echo "✅ Version bump validation passed"
+           fi
+         fi
+         ```
+
+examples:
+  - input: |
+      User: "Create a release"
+      Analysis suggests: major (breaking changes detected)
+      User requests: minor version
+    output: |
+      ## 🔄 Version Bump Process
+      
+      🔍 Validating version bump against change analysis...
+      Analysis suggests: major (breaking: 2, features: 0, fixes: 0)
+      User requested: minor
+      
+      ❌ CRITICAL ERROR: Breaking changes detected but user requested minor version
+      Breaking changes require a MAJOR version bump according to semantic versioning.
+      
+      Breaking changes found:
+        - a1b2c3d BREAKING: remove deprecated API endpoint
+        - e4f5g6h BREAKING: change authentication method
+
+  - input: |
+      User: "Create a release"
+      Analysis suggests: minor (new features detected)
+      User requests: patch version
+    output: |
+      ## 🔄 Version Bump Process
+      
+      🔍 Validating version bump against change analysis...
+      Analysis suggests: minor (breaking: 0, features: 3, fixes: 0)
+      User requested: patch
+      
+      ⚠️ WARNING: New features detected but user requested patch version
+      New features typically require a MINOR version bump according to semantic versioning.
+
+  - input: |
+      User: "Create a release"
+      Analysis suggests: patch (bug fixes only)
+      User requests: patch version
+    output: |
+      ## 🔄 Version Bump Process
+      
+      🔍 Validating version bump against change analysis...
+      Analysis suggests: patch (breaking: 0, features: 0, fixes: 2)
+      User requested: patch
+      
+      ✅ Version bump validation passed
+
+tests:
+  - input: "Create release with breaking changes but minor version"
+    output: "Should show critical error and offer force continue option"
+  
+  - input: "Create release with new features but patch version"
+    output: "Should show warning and ask for confirmation"
+  
+  - input: "Create release with matching version bump"
+    output: "Should pass validation without issues"
+  
+  - input: "Create release with custom version"
+    output: "Should accept custom version input"
+
+metadata:
+
+## Additional Information
+# Release Version Bump
