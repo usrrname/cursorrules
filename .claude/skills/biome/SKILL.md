@@ -20,6 +20,14 @@ Configure and use Biome for fast JavaScript/TypeScript linting and formatting.
 
 ## Critical Rules
 
+### Adopt Existing Conventions
+**If `biome.json` or `biome.jsonc` exists in the project:**
+- Read and adopt the existing configuration
+- Do not modify existing rules without explicit request
+- Follow the established formatting style (indent, line width, etc.)
+- Respect any disabled rules or custom overrides
+- Use the project's Biome version specified in package.json
+
 ### Configuration
 - Use `biome.json` or `biome.jsonc` for configuration
 - Extend recommended rules as base
