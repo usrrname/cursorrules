@@ -7,7 +7,7 @@ import { detectNpxSandbox } from './detect-npx.mjs';
 import { findFolderUp } from './find-folder-up.mjs';
 import { findPackageRoot } from './find-package-root.mjs';
 import { validateDirname } from './validate-dirname.mjs';
-import { validateIde, getIdeDisplayName } from './ide-selection.mjs';
+import { validateIde, getIdeDisplayName, selectIde } from './ide-selection.mjs';
 
 const detection = detectNpxSandbox();
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -97,7 +97,16 @@ function getSourcePaths(ide) {
 export const downloadFiles = async (dirname, options = {}) => {
     if (!dirname) throw new Error('Output directory is required');
     
-    const ide = validateIde(options.ide ?? '') || 'cursor';
+    // Prompt for IDE if not specified
+    let ide = validateIde(options.ide ?? '');
+    if (!ide) {
+        ide = await selectIde();
+    }
+    // Ensure ide is a valid string
+    if (!ide) {
+        ide = 'cursor';
+    }
+    
     const dryRun = options.dryRun || false;
     const validate = options.validate || false;
 
@@ -164,7 +173,15 @@ export const downloadSelectedFiles = async (folderName, selectedRules, options =
         return;
     }
 
-    const ide = validateIde(options.ide ?? '') || 'cursor';
+    // Prompt for IDE if not specified
+    let ide = validateIde(options.ide ?? '');
+    if (!ide) {
+        ide = await selectIde();
+    }
+    // Ensure ide is a valid string
+    if (!ide) {
+        ide = 'cursor';
+    }
 
     console.info(`📥 Downloading selected rules for ${getIdeDisplayName(ide)}...`);
 
