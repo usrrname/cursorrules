@@ -8,6 +8,7 @@ import { downloadFiles, downloadSelectedFiles } from './utils/download-files.mjs
 import { findPackageRoot } from './utils/find-package-root.mjs';
 import { interactiveCategorySelection, prepareMenu, scanAvailableRules, selectRules } from './utils/interactive-menu.mjs';
 import { validateDirname } from './utils/validate-dirname.mjs';
+import { selectIde } from './utils/ide-selection.mjs';
 
 /** fallback for Node < 21 */
 const styleText = util.styleText ?? ((_, text) => text);
@@ -32,23 +33,27 @@ export const help = () => {
     /** @param {string} key */
     const getFlagDescription = (key) => {
         switch (key) {
+            case 'dryRun':
+                return styleText('green', 'preview what would be downloaded');
             case 'flat':
                 return styleText('green', 'install all rules without parent directory');
             case 'help':
                 return styleText('green', 'help instructions');
+            case 'ide':
+                return styleText('green', 'target IDE: cursor|claude|both');
             case 'interactive':
                 return styleText('green', 'select the rules you want');
             case 'output':
                 return styleText('green', 'set output directory (Default: .cursor/)');
+            case 'validate':
+                return styleText('green', 'validate downloaded files');
             case 'version':
                 return styleText('green', 'show package version');
-            case 'interactive':
-                return styleText('green', 'select the rules you want');
         }
     }
     const tableContent = Object.entries(config?.options || {}).map(([key, value]) => {
         return {
-            flag: `-${value?.short}`,
+            flag: value?.short ? `-${value?.short}` : '',
             name: `--${key}`,
             description: getFlagDescription(key),
             type: value?.type,
@@ -70,6 +75,11 @@ ${usage} ${options}
 
 ${tableContent.map(item => `${item.name} ${item.flag} ${item.type} ${item.description} ${item.default}`).join('\n')}
 
+Examples:
+  npx @usrrname/cursorrules --ide cursor --flat
+  npx @usrrname/cursorrules --ide claude --dry-run
+  npx @usrrname/cursorrules --ide both --output ./config
+
 ${repoLink}
 `);
 }
@@ -83,6 +93,12 @@ export const version = () => console.log(`${packageJson?.name} v${packageJson?.v
 */
 export const interactiveMode = async (values) => {
     console.log('🎯 Starting interactive mode...');
+    
+    // Prompt for IDE selection first
+    if (!values.ide) {
+        values.ide = await selectIde();
+    }
+    
     const packageRoot = findPackageRoot(__dirname, '@usrrname/cursorrules');
     const sourceRulesBasePath = resolve(packageRoot, '.cursor', 'rules');
     const rules = await scanAvailableRules(sourceRulesBasePath);
@@ -106,7 +122,7 @@ export const interactiveMode = async (values) => {
                 .filter(rule => rule.selected);
             const outputDir = values?.output?.toString() ?? defaultOutput;
             if (allSelectedRules.length > 0)
-                return await downloadSelectedFiles(outputDir, allSelectedRules);
+                return await downloadSelectedFiles(outputDir, allSelectedRules, values);
             else
                 console.log('⚠️  No rules selected');
             break;
@@ -120,15 +136,25 @@ export const interactiveMode = async (values) => {
 
 /**
  * @param {string} outputDir - output directory
+ * @param {Object} [values] - CLI options
+ * @param {string} [values.ide] - Target IDE
+ * @param {boolean} [values.dryRun] - Dry run flag
+ * @param {boolean} [values.validate] - Validate flag
  * @returns {Promise<void>}
 */
-export const output = async (outputDir) => {
+export const output = async (outputDir, values = {}) => {
     if (!outputDir.trim()) {
         console.error('❌ ERROR: Output directory cannot be empty.');
         process.exit(1);
     }
+    
+    // Prompt for IDE if not specified
+    if (!values.ide) {
+        values.ide = await selectIde();
+    }
+    
     const outputValue = await validateDirname(outputDir);
-    await downloadFiles(outputValue);
+    await downloadFiles(outputValue, values);
 }
 
 
