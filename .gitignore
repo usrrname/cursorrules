@@ -58,3 +58,7 @@ Thumbs.db
 .env
 .envrc
 .cursor/.ai/**
+
+# Temporary PR body files
+.pr-body*
+CLI_SKILLS_PLAN.md
