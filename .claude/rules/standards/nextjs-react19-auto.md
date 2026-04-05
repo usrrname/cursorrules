@@ -1,0 +1,61 @@
+# This rule enforces Next
+
+## Description
+This rule enforces Next.js best practices for React 19 with TypeScript.
+
+## Applicability
+- **Files:** `*.tsx, *.ts, *.jsx, *.js`
+- **Always Apply:** true
+
+## Additional Information
+# Critical Rules
+
+- Adapt approach to app router or page router project structure
+- Implement proper error boundaries
+
+- Use the App Router structure with `page.tsx` files in route directories.
+- Client components must be explicitly marked with `'use client'` at the top of the file.
+- Use kebab-case for directory names (e.g., `components/auth-form`) and PascalCase for component files.
+
+
+## Project Structure
+
+ - Both the /app and /components folders under a /src directory. 
+
+## State Management
+
+- Use `getServerSideProps` for server-side data fetching
+- Use `getStaticProps` for static data fetching
+- Use `getStaticPaths` for static path generation
+- Use `useActionState` instead of deprecated `useFormState`
+- Leverage enhanced `useFormStatus` with new properties (data, method, action)
+- Avoid unnecessary `useState`,`setState`, `useEffect`, and `useCallback` when possible:
+    - Use server actions for server-side state management and form handling,
+    - Use server components for data fetching,
+    - Use URL search params for shareable state
+
+## Async Request APIs
+
+- Always use async versions of runtime APIs
+- Handle async params in layouts/pages
+
+## Data Fetching
+
+- Use appropriate fetching methods (Server Components, SWR, React Query, etc.)
+- Use API Routes inside route directories for server-side data fetching (ie. `app/api/users/route.ts` for `/api/users`)
+- Use Suspense for async operations
+
+Remind user of default caching behavior in Next.js when using API routes or fetching data from external APIs.
+
+## Routing
+
+- Use the App Router conventions
+- Implement proper loading and error states for routes
+- Use dynamic routes appropriately (ie. when a user can be identified by a unique id, or a blog post has a unique slug)
+- Handle parallel routes when needed
+
+## Components
+
+Remind the developer:
+- Importing a server component into a 'use client' file makes it a client component.
+-  Passing a server component as a child to a client component keeps it as a server component, retaining SSR benefits.

@@ -1,0 +1,107 @@
+# TypeScript development standards and type safety
+
+## Description
+TypeScript development standards and type safety
+
+## Applicability
+- **Files:** `**/*.{ts|tsx}`
+- **Always Apply:** false
+
+## Rules
+- Refer to https://www.typescriptlang.org/tsconfig when tsconfig.json values are changed.
+- Use strict mode with `"strict": true` in tsconfig.json
+- Remind user the limitations of using esModuleInterop and allowSyntheticDefaultImports in tsconfig.json https://www.typescriptlang.org/tsconfig/#Interop_Constraints_6252
+- Explicitly declare types for function parameters and return values
+- Avoid using `any` type unless absolutely necessary. Use `unknown` instead.
+- Use interfaces for object type definitions
+- Use enums for fixed sets of values
+- Use type aliases to simplify complex types
+- Document APIs with JSDoc comments
+- Maintain proper error handling with typed errors
+- Use type guards and type narrowing to improve type safety
+- Use type literals and unions to define the exact allowed values.
+- Use type assertions and annotations when necessary. They are unnecessary if type inference is possible.
+- Use type unions and intersections to combine types.
+- Export types from modules using the `export type` syntax
+- If using an existing library with types, import the types using the `import type` syntax
+- Declare types for file extensions that aren't supported by the compiler using the `declare module` syntax
+- If using node 23+, use `node --experimental-strip-types` in package.json scripts to strip types when running the code locally
+- Use utility types as much as possible to avoid type duplication.
+
+### typescript-standards
+
+Standards for TypeScript development and type safety
+
+**Actions:**
+  - type: validate
+    message: |
+      TypeScript code must follow these conventions:
+      1. Use strict mode
+      2. Explicit typing
+      3. Proper error handling
+      4. Documentation
+      5. Consistent naming
+      6. Proper use of primitives and utility types to reduce duplication and increase type safety
+
+  - type: lint
+    rules:
+      - pattern: "any"
+        message: "Avoid using 'any' type. Define a specific type or interface instead."
+      - pattern: "Object"
+        message: "Avoid using 'Object' type. Use a specific interface or type instead."
+      - pattern: "Function"
+        message: "Avoid using 'Function' type. Define specific function signature instead."
+      - pattern: "\\b[A-Z][a-z0-9]+([A-Z][a-z0-9]+)*\\b"
+        message: "Use PascalCase for type names, interfaces, and classes."
+      - pattern: "\\b[a-z][a-z0-9]*([A-Z][a-z0-9]+)*\\b"
+        message: "Use camelCase for variable and function names."
+
+metadata:
+
+## Additional Information
+# TypeScript Standards
+
+
+
+
+## Naming Conventions
+
+### Types and Interfaces
+- Use PascalCase for type names and interface names
+- Prefix interfaces with 'I' only when required by project convention
+- Follow consistent naming conventions
+
+```typescript
+interface UserData {
+  id: string;
+  name: string;
+}
+
+type ApiResponse<T> = {
+  data: T;
+  status: number;
+};
+```
+
+### Variables and Functions
+- Use camelCase for variable names and function names
+- Use PascalCase for class names
+- Function signatures should have return types
+
+### Classes
+
+- Use PascalCase for class names
+
+```typescript
+const userData: UserData;
+function fetchUserData(): Promise<UserData>;
+class UserService {};
+```
+
+### Constants
+- Use UPPER_SNAKE_CASE for constant values
+
+```typescript
+const MAX_RETRY_ATTEMPTS = 3;
+const API_BASE_URL = 'https://api.example.com';
+```

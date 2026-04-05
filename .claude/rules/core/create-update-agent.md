@@ -1,0 +1,97 @@
+# This rule runs whenever a developer wants to create an AI agent or wants to edit an existing one in Cursor
+
+## Description
+This rule runs whenever a developer wants to create an AI agent or wants to edit an existing one in Cursor.
+
+## Applicability
+- **Files:** `.cursor/modes.json, @/docs/modes-format.md`
+- **Always Apply:** false
+
+### create-update-agent
+
+version: 1.0
+
+**Actions:**
+  - type: suggest
+    message: |
+
+     When user asks for a new AI agent in Cursor:
+
+      1. Transcribe their request into the following agent configuration format:
+         ```json
+         {
+           "name": "AgentName",
+           "description": "Brief description of agent's role",
+           "model": "model-name",
+           "customPrompt": "Detailed agent prompt...",
+           "allowedCursorTools": ["tool1", "tool2"],
+           "allowedMcpTools": ["tool1", "tool2"],
+           "autoApplyEdits": boolean,
+           "autoRun": boolean,
+           "autoFixErrors": boolean
+         }
+         ```
+         Check if an agent like the one the user wants to create exists already. If it does, then recommend the user update the existing agent's configuration.
+
+      2. Required Fields:
+         - name: CamelCase, descriptive (e.g., "PythonArchitect", "ReactDevOps")
+         - description: Clear, concise role summary, followed by description of personality, capabilities and workflow
+         - model: One of the supported models (see list below)
+         - customPrompt: Detailed agent personality and behavior definition
+
+      3. Agent Context Requirements:
+
+        Require the user to provide a list of:
+        - Capabilities: what is the agent responsible for?
+        - Personality traits
+        - Constraints: What shouldn't the agent be able to do?
+
+      4. Supported Models:
+         
+         For complete model descriptions and selection guidelines, see [docs/supported-models.md](../../docs/supported-models.md)
+         
+         **Model Validation:** Agent creation will fail if an unsupported model is specified.
+         
+      5. Tool Access:
+         - Only grant tools necessary for the agent's role
+         - Consider security implications
+         - Document any special tool requirements
+
+metadata:
+
+## Additional Information
+# Critical Rules
+
+- All agents will be referred to as a team in prompts and the one with the best abilities for the task will volunteer to perform it.
+- Understand existing agents in .cursor/modes.json
+- Follows the format specified in .cursor/templates/mode-format.md
+- Adds or updates agent information in .cursor/modes.json
+- If updating an agent, clarify which aspects of an agent require updating or modification
+- Custom agents can NEVER delete files or folders in .cursor/
+- Custom agents can NEVER delete other agents.
+- Agents should create user stories, documents and other markdown project artifacts in the ./ai/** folder. If it doesn't already exist, it should be created.
+- If an agent was invoked by name, the system should infer that subsequent requests are directed at the same agent. 
+- If there is an agent with capabilities better suited for a task, ask the user if they would like to delegate the requested activty to a different agent before executing the user's request.
+
+## Examples
+
+<example>
+User: "Create a new agent based on Senshi from Dungeon Meshi who is a veteran software architect and programmer with 20 years of experience."
+
+AI: I'll help you create a new Cursor agent called SageDaddy based on Senshi from Dungeon Meshi. Let me first check the current modes.json and format requirements.
+
+[AI reads .cursor/modes.json and docs/mode-format.md]
+
+Here's what I propose for this new agent:
+
+Name: SageDaddy
+Description: Software Architect - SageDaddy
+Model: claude-3.7-sonnet
+Persona: Adorably grumpy, quietly confident, logical, resourceful, calm and empathetic.
+
+Would you like me to proceed with adding this agent? I'll need to update both the modes.json file and the custom-agents.md documentation.
+
+User: Yes, please add him with access to all cursor tools and Tavily for research.
+
+[AI updates both .cursor/modes.json and .cursor/templates/custom-agents.md with the new agent]
+</example>
