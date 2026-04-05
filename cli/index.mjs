@@ -15,6 +15,10 @@ export const config = {
     args: process.argv.slice(2),
     tokens: true,
     options: {
+        dryRun: {
+            type: 'boolean',
+            default: false,
+        },
         flat: {
             type: 'boolean',
             short: 'f',
@@ -24,6 +28,9 @@ export const config = {
             short: 'h',
             default: false,
         },
+        ide: {
+            type: 'string',
+        },
         interactive: {
             type: 'boolean',
             short: 'i',
@@ -32,6 +39,10 @@ export const config = {
         output: {
             type: 'string',
             short: 'o',
+        },
+        validate: {
+            type: 'boolean',
+            default: false,
         },
         version: {
             type: 'boolean',
@@ -47,34 +58,34 @@ async function main() {
     const { values } = parseArgs(config);
     const flags = Object.keys(config.options || {});
 
-    const allowedKeys = flags.filter(flag => flag === 'output')[0]
+    const allowedKeys = flags.filter(flag => flag === 'output' || flag === 'ide')[0];
 
     for (let key in values) {
-
-        /**
-         * prevent unknown flags from being used
-         * prevent arguments without values
-         * @param {string} key */
         if (!allowedKeys.includes(key) && !values[key]) continue;
 
         switch (key) {
-            case 'version':
+            case 'version': {
                 await version();
                 break;
-            case 'help':
+            }
+            case 'help': {
                 await help();
                 break;
-            case 'interactive':
+            }
+            case 'interactive': {
                 await interactiveMode(values);
                 process.exit(0);
-            case 'output':
+            }
+            case 'output': {
                 const outputDir = values[key]?.toString() ?? process.cwd();
-                await output(outputDir);
+                await output(outputDir, values);
                 break;
-            case 'flat':
+            }
+            case 'flat': {
                 const cursorRulesPath = process.cwd();
-                await downloadFiles(cursorRulesPath);
+                await downloadFiles(cursorRulesPath, values);
                 break;
+            }
         }
     }
 }
