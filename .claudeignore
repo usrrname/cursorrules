@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+vendor/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+out/
+coverage/
+
+# Large files
+*.log
+*.min.js
+*.min.css
+
+# Sensitive
+.env*
+.env.local
+.env.*.local
+secrets/
+credentials/
+*.pem
+*.key
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude/Cursor internal
+.claude/
+.cursor/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

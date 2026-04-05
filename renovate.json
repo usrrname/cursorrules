@@ -1,6 +1,53 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
-  ]
+    "config:recommended",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    ":automergePatch",
+    ":automergeMinor",
+    ":automergeBranch",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "schedule": [
+    "before 9am on monday"
+  ],
+  "timezone": "America/New_York",
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 2,
+  "stabilityDays": 3,
+  "dependencyDashboard": true,
+  "dependencyDashboardAutoclose": true,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "schedule": ["at any time"]
+  },
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major"],
+      "enabled": true,
+      "automerge": false,
+      "description": "Disable auto-merge for major updates - require manual review"
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true,
+      "description": "Auto-merge dev dependency updates"
+    },
+    {
+      "matchPackageNames": ["node"],
+      "enabled": false,
+      "description": "Node version updates require manual coordination"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "pinDigests": true,
+      "description": "Pin GitHub Actions to commit SHAs for security"
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["before 9am on the first day of the month"]
+  }
 }
