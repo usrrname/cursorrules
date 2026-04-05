@@ -16,11 +16,11 @@ jobs:
       changes: ${{ steps.changes.outputs.filters }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Change detection
         id: changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         with:
           filters: |
             './':
@@ -35,11 +35,11 @@ jobs:
     if: ${{ needs.changes.outputs.changes.index == 'true' || needs.changes.outputs.changes.styles == 'true' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Pages
     
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@1f0c5cde4dec8825aff22eac11aa73c856b5c886 # v4.0.0
     
       - name: Create artifact directory
         run: |
@@ -50,11 +50,11 @@ jobs:
 
       - name: Upload artifact
         if: ${{ needs.changes.outputs.changes.index == 'true' || needs.changes.outputs.changes.styles == 'true' }}
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6f4625a7d4af5 # v3.0.1
         with:
             path: "_site"
 
       - name: Deploy to GitHub Pages
         if: ${{ needs.changes.outputs.changes.index == 'true' || needs.changes.outputs.changes.styles == 'true' }}
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

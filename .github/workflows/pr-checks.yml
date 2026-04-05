@@ -17,9 +17,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@1a4442cacd436585991a76fe714fa58850bd193c # v4.1.0
         with:
           node-version: '22'
       - run: npm ci
@@ -35,9 +35,9 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Set up Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@1a4442cacd436585991a76fe714fa58850bd193c # v4.1.0
         with:
           node-version: '22'
       - run: npm ci
@@ -50,7 +50,7 @@ jobs:
       pull-requests: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
