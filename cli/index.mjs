@@ -75,6 +75,7 @@ async function main() {
             case 'interactive': {
                 await interactiveMode(values);
                 process.exit(0);
+                break;
             }
             case 'output': {
                 const outputDir = values[key]?.toString() ?? process.cwd();

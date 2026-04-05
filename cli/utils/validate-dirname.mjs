@@ -22,12 +22,12 @@ const throwError = (segment, attemptedPath) => {
  */
 const hasInvalidSegmentChars = (segment) => {
     // Define invalid chars per segment (do not include slashes; we already split)
-    // For Windows: <>:"|?* and control chars;
-    const invalidWindowsChars = /[<>:"$|?*\x00-\x1F]/;
+    // For Windows: <>:"|?* and control chars 0-31
+    const invalidWindowsChars = /[<>:"$|?*\u0000-\u001F]/;
     const reservedNamesRegex = /^(?:aux|con|clock\$|nul|prn|com[1-9]|lpt[1-9])$/i; // Reserved names on Windows
 
     const extraDisallow = /[#$%&@!{}]/; // Additional characters we want to disallow on both platforms
-    const invalidPosixChars = /[\x00-\x1F\\:"*?<>|$#%&@!{}]/;
+    const invalidPosixChars = /[\u0000-\u001F\\:"*?<>|$#%&@!{}]/;
 
     if (process.platform === 'win32') {
         return invalidWindowsChars.test(segment) || extraDisallow.test(segment) || reservedNamesRegex.test(segment);

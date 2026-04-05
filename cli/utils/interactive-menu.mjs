@@ -49,7 +49,7 @@ export const createMenu = ({ title, items, currentIndex, footerLines = [] }) => 
         console.info(`${highlight}${indicator}${item}${reset}`);
     });
     if (footerLines.length) {
-        footerLines.forEach(line => console.info(line));
+        footerLines.forEach((line) => { console.info(line); });
     }
 }
 
@@ -115,7 +115,6 @@ export const interactiveCategorySelection = async (rules) => {
                     unmountInput(handleKeyPress);
                     process.stdin.removeListener('data', handleKeyPress);
                     console.log('\n❌ Category selection cancelled');
-                    currentIndex = currentIndex;
                     resolve(null);
                     break;
                 case '\r': // Enter
@@ -201,7 +200,7 @@ export const selectRules = async (rulesInCategory) => {
                     unmountInput(handleKeyPress);
                     resolve(allRules);
                     break;
-                case ' ':
+                case ' ': {
                     const currentRule = allRules[currentIndex];
                     if (currentRule) {
                         currentRule.selected = !currentRule.selected;
@@ -209,6 +208,7 @@ export const selectRules = async (rulesInCategory) => {
                         renderMenu(allRules, currentIndex, selectedCount);
                     }
                     break;
+                }
                 case '\u001b[A': // Up arrow
                     if (currentIndex > 0) {
                         currentIndex--;
