@@ -1,9 +1,9 @@
 ---
 name: vue3-typescript
 description: Vue 3 with TypeScript and Composition API
+model: inherit
 triggers:
   - file_pattern: "*.vue"
-  - command: "/vue3"
 ---
 
 # Vue 3 TypeScript Skill

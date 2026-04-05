@@ -1,10 +1,10 @@
 ---
 name: cloudflare-workers
 description: Cloudflare Workers edge computing platform
+model: inherit
 triggers:
   - file_pattern: "wrangler.toml"
   - file_pattern: "functions/**/*.ts"
-  - command: "/cf-workers"
 ---
 
 # Cloudflare Workers Skill

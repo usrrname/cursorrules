@@ -1,9 +1,9 @@
 ---
 name: mysql
 description: MySQL database best practices and query patterns
+model: inherit
 triggers:
   - file_pattern: "*.sql"
-  - command: "/mysql"
 ---
 
 # MySQL Skill

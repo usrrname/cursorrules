@@ -1,10 +1,10 @@
 ---
 name: laravel
 description: Laravel PHP framework best practices
+model: inherit
 triggers:
   - file_pattern: "*.php"
   - file_pattern: "routes/*.php"
-  - command: "/laravel"
 ---
 
 # Laravel Skill

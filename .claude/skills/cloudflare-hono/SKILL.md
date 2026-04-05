@@ -1,9 +1,9 @@
 ---
 name: cloudflare-hono
 description: Hono lightweight web framework on Cloudflare Workers
+model: inherit
 triggers:
   - file_pattern: "**/hono/**/*.ts"
-  - command: "/hono"
 ---
 
 # Cloudflare Hono Skill

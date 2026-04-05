@@ -1,9 +1,9 @@
 ---
 name: react-typescript
 description: React with TypeScript best practices
+model: inherit
 triggers:
   - file_pattern: "*.tsx"
-  - command: "/react"
 ---
 
 # React TypeScript Skill

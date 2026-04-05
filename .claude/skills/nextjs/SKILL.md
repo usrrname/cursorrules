@@ -1,10 +1,10 @@
 ---
 name: nextjs-react19
 description: Next.js with React 19 App Router patterns
+model: inherit
 triggers:
   - file_pattern: "app/**/page.tsx"
   - file_pattern: "app/**/layout.tsx"
-  - command: "/nextjs"
 ---
 
 # Next.js React 19 Skill

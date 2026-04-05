@@ -1,10 +1,10 @@
 ---
 name: typescript-standards
 description: TypeScript best practices and coding standards
+model: inherit
 triggers:
   - file_pattern: "*.ts"
   - file_pattern: "*.tsx"
-  - command: "/typescript"
 ---
 
 # TypeScript Standards Skill
